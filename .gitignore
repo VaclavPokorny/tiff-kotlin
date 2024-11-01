@@ -1,5 +1,6 @@
 /target/
 /bin/
+/build/
 
 # IntelliJ
 .idea
@@ -8,6 +9,9 @@
 # Eclipse Core
 .project
 .settings/
+
+# Gradle
+.gradle/
 
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
