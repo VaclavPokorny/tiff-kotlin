@@ -49,8 +49,7 @@ public class TiffReader {
 	public static TIFFImage readTiff(File file, boolean cache)
 			throws IOException {
 		byte[] bytes = IOUtils.fileBytes(file);
-		TIFFImage tiffImage = readTiff(bytes, cache);
-		return tiffImage;
+        return readTiff(bytes, cache);
 	}
 
 	/**
@@ -80,8 +79,7 @@ public class TiffReader {
 	public static TIFFImage readTiff(InputStream stream, boolean cache)
 			throws IOException {
 		byte[] bytes = IOUtils.streamBytes(stream);
-		TIFFImage tiffImage = readTiff(bytes, cache);
-		return tiffImage;
+        return readTiff(bytes, cache);
 	}
 
 	/**
@@ -106,8 +104,7 @@ public class TiffReader {
 	 */
 	public static TIFFImage readTiff(byte[] bytes, boolean cache) {
 		ByteReader reader = new ByteReader(bytes);
-		TIFFImage tiffImage = readTiff(reader, cache);
-		return tiffImage;
+        return readTiff(reader, cache);
 	}
 
 	/**
@@ -133,7 +130,7 @@ public class TiffReader {
 	public static TIFFImage readTiff(ByteReader reader, boolean cache) {
 
 		// Read the 2 bytes of byte order
-		String byteOrderString = null;
+		String byteOrderString;
 		try {
 			byteOrderString = reader.readString(2);
 		} catch (UnsupportedEncodingException e) {
@@ -141,18 +138,12 @@ public class TiffReader {
 		}
 
 		// Determine the byte order
-		ByteOrder byteOrder = null;
-		switch (byteOrderString) {
-		case TiffConstants.BYTE_ORDER_LITTLE_ENDIAN:
-			byteOrder = ByteOrder.LITTLE_ENDIAN;
-			break;
-		case TiffConstants.BYTE_ORDER_BIG_ENDIAN:
-			byteOrder = ByteOrder.BIG_ENDIAN;
-			break;
-		default:
-			throw new TiffException("Invalid byte order: " + byteOrderString);
-		}
-		reader.setByteOrder(byteOrder);
+		ByteOrder byteOrder = switch (byteOrderString) {
+            case TiffConstants.BYTE_ORDER_LITTLE_ENDIAN -> ByteOrder.LITTLE_ENDIAN;
+            case TiffConstants.BYTE_ORDER_BIG_ENDIAN -> ByteOrder.BIG_ENDIAN;
+            default -> throw new TiffException("Invalid byte order: " + byteOrderString);
+        };
+        reader.setByteOrder(byteOrder);
 
 		// Validate the TIFF file identifier
 		int tiffIdentifier = reader.readUnsignedShort();
@@ -164,9 +155,7 @@ public class TiffReader {
 		long byteOffset = reader.readUnsignedInt();
 
 		// Get the TIFF Image
-		TIFFImage tiffImage = parseTIFFImage(reader, byteOffset, cache);
-
-		return tiffImage;
+        return parseTIFFImage(reader, byteOffset, cache);
 	}
 
 	/**
@@ -270,11 +259,11 @@ public class TiffReader {
 		List<Object> valuesList = getValues(reader, fieldType, typeCount);
 
 		// Get the single or array values
-		Object values = null;
+		Object values;
 		if (typeCount == 1 && fieldTag != null && !fieldTag.isArray()
 				&& !(fieldType == FieldType.RATIONAL
 						|| fieldType == FieldType.SRATIONAL)) {
-			values = valuesList.get(0);
+			values = valuesList.getFirst();
 		} else {
 			values = valuesList;
 		}
@@ -296,7 +285,7 @@ public class TiffReader {
 	private static List<Object> getValues(ByteReader reader,
 			FieldType fieldType, long typeCount) {
 
-		List<Object> values = new ArrayList<Object>();
+		List<Object> values = new ArrayList<>();
 
 		for (int i = 0; i < typeCount; i++) {
 
@@ -350,16 +339,16 @@ public class TiffReader {
 
 		// If ASCII characters, combine the strings
 		if (fieldType == FieldType.ASCII) {
-			List<Object> stringValues = new ArrayList<Object>();
+			List<Object> stringValues = new ArrayList<>();
 			StringBuilder stringValue = new StringBuilder();
 			for (Object value : values) {
 				if (value == null) {
-					if (stringValue.length() > 0) {
+					if (!stringValue.isEmpty()) {
 						stringValues.add(stringValue.toString());
 						stringValue = new StringBuilder();
 					}
 				} else {
-					stringValue.append(value.toString());
+					stringValue.append(value);
 				}
 			}
 			values = stringValues;

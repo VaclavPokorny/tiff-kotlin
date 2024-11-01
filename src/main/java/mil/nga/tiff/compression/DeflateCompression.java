@@ -33,9 +33,8 @@ public class DeflateCompression implements CompressionDecoder,
 				outputStream.write(buffer, 0, count);
 			}
 			outputStream.close();
-			byte[] output = outputStream.toByteArray();
 
-			return output;
+            return outputStream.toByteArray();
 		} catch (IOException e) {
 			throw new TiffException("Failed close decoded byte stream", e);
 		} catch (DataFormatException e) {
@@ -68,8 +67,7 @@ public class DeflateCompression implements CompressionDecoder,
 			}
 
 			outputStream.close();
-			byte[] output = outputStream.toByteArray();
-			return output;
+            return outputStream.toByteArray();
 		} catch (IOException e) {
 			throw new TiffException("Failed close encoded stream", e);
 		}

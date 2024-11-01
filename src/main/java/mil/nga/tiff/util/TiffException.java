@@ -1,5 +1,7 @@
 package mil.nga.tiff.util;
 
+import java.io.Serial;
+
 /**
  * TIFF exception
  * 
@@ -10,6 +12,7 @@ public class TiffException extends RuntimeException {
 	/**
 	 * Serial version id
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**

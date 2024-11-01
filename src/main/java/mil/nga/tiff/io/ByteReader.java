@@ -28,7 +28,7 @@ public class ByteReader {
 	/**
 	 * Byte order
 	 */
-	private ByteOrder byteOrder = null;
+	private ByteOrder byteOrder;
 
 	/**
 	 * Constructor
@@ -162,11 +162,8 @@ public class ByteReader {
 	 * @param num
 	 *            number of bytes
 	 * @return String
-	 * @throws UnsupportedEncodingException
-	 *             upon string encoding error
-	 */
-	public String readString(int offset, int num)
-			throws UnsupportedEncodingException {
+     */
+	public String readString(int offset, int num) {
 		verifyRemainingBytes(offset, num);
 		String value = null;
 		if (num != 1 || bytes[offset] != 0) {
@@ -195,8 +192,7 @@ public class ByteReader {
 	 */
 	public byte readByte(int offset) {
 		verifyRemainingBytes(offset, 1);
-		byte value = bytes[offset];
-		return value;
+        return bytes[offset];
 	}
 
 	/**
@@ -245,8 +241,7 @@ public class ByteReader {
 	 */
 	public byte[] readBytes(int offset, int num) {
 		verifyRemainingBytes(offset, num);
-		byte[] readBytes = Arrays.copyOfRange(bytes, offset, offset + num);
-		return readBytes;
+        return Arrays.copyOfRange(bytes, offset, offset + num);
 	}
 
 	/**
@@ -269,9 +264,8 @@ public class ByteReader {
 	 */
 	public short readShort(int offset) {
 		verifyRemainingBytes(offset, 2);
-		short value = ByteBuffer.wrap(bytes, offset, 2).order(byteOrder)
-				.getShort();
-		return value;
+        return ByteBuffer.wrap(bytes, offset, 2).order(byteOrder)
+                .getShort();
 	}
 
 	/**
@@ -316,8 +310,7 @@ public class ByteReader {
 	 */
 	public int readInt(int offset) {
 		verifyRemainingBytes(offset, 4);
-		int value = ByteBuffer.wrap(bytes, offset, 4).order(byteOrder).getInt();
-		return value;
+        return ByteBuffer.wrap(bytes, offset, 4).order(byteOrder).getInt();
 	}
 
 	/**
@@ -362,9 +355,8 @@ public class ByteReader {
 	 */
 	public float readFloat(int offset) {
 		verifyRemainingBytes(offset, 4);
-		float value = ByteBuffer.wrap(bytes, offset, 4).order(byteOrder)
-				.getFloat();
-		return value;
+        return ByteBuffer.wrap(bytes, offset, 4).order(byteOrder)
+                .getFloat();
 	}
 
 	/**
@@ -387,9 +379,8 @@ public class ByteReader {
 	 */
 	public double readDouble(int offset) {
 		verifyRemainingBytes(offset, 8);
-		double value = ByteBuffer.wrap(bytes, offset, 8).order(byteOrder)
-				.getDouble();
-		return value;
+        return ByteBuffer.wrap(bytes, offset, 8).order(byteOrder)
+                .getDouble();
 	}
 
 	/**

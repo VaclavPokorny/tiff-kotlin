@@ -20,7 +20,7 @@ public class ByteWriter {
 	/**
 	 * Byte order
 	 */
-	private ByteOrder byteOrder = null;
+	private ByteOrder byteOrder;
 
 	/**
 	 * Constructor
@@ -45,7 +45,7 @@ public class ByteWriter {
 	public void close() {
 		try {
 			os.close();
-		} catch (IOException e) {
+		} catch (IOException ignored) {
 		}
 	}
 

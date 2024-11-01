@@ -337,8 +337,8 @@ public class Rasters {
 		if (bitsPerSamples.length != sampleFormats.length) {
 			throw new TiffException(
 					"Equal number of bits per samples and sample formats expected. "
-							+ "Bits Per Samples: " + bitsPerSamples
-							+ ", Sample Formats: " + sampleFormats);
+							+ "Bits Per Samples: " + Arrays.toString(bitsPerSamples)
+							+ ", Sample Formats: " + Arrays.toString(sampleFormats));
 		}
 		FieldType[] result = new FieldType[bitsPerSamples.length];
 		for (int i = 0; i < bitsPerSamples.length; i++) {
@@ -533,9 +533,9 @@ public class Rasters {
 	 * @since 2.0.0
 	 */
 	public ByteBuffer[] getSampleValues() {
-		for (int i = 0; i < sampleValues.length; ++i) {
-			sampleValues[i].rewind();
-		}
+        for (ByteBuffer sampleValue : sampleValues) {
+            sampleValue.rewind();
+        }
 		return sampleValues;
 	}
 
@@ -741,7 +741,7 @@ public class Rasters {
 		validateSample(sample);
 
 		// Pixel sample value
-		Number pixelSample = null;
+		Number pixelSample;
 
 		// Get the pixel sample
 		if (sampleValues != null) {
@@ -939,10 +939,8 @@ public class Rasters {
 		} else {
 
 			for (int sample = 0; sample < getSamplesPerPixel(); ++sample) {
-				int rowsPerStripForSample = rowsPerStrip(
-						fieldTypes[sample].getBytes(), maxBytesPerStrip);
-				if (rowsPerStrip == null
-						|| rowsPerStripForSample < rowsPerStrip) {
+				int rowsPerStripForSample = rowsPerStrip(fieldTypes[sample].getBytes(), maxBytesPerStrip);
+				if (rowsPerStrip == null || rowsPerStripForSample < rowsPerStrip) {
 					rowsPerStrip = rowsPerStripForSample;
 				}
 			}
@@ -965,9 +963,7 @@ public class Rasters {
 
 		int bytesPerRow = bytesPerPixel * width;
 
-		int rowsPerStrip = Math.max(1, maxBytesPerStrip / bytesPerRow);
-
-		return rowsPerStrip;
+        return Math.max(1, maxBytesPerStrip / bytesPerRow);
 	}
 
 	/**
@@ -980,39 +976,17 @@ public class Rasters {
 	 * @return Sample from buffer
 	 */
 	private Number readSample(ByteBuffer buffer, FieldType fieldType) {
-		Number sampleValue;
-
-		switch (fieldType) {
-		case BYTE:
-			sampleValue = (short) (buffer.get() & 0xff);
-			break;
-		case SHORT:
-			sampleValue = buffer.getShort() & 0xffff;
-			break;
-		case LONG:
-			sampleValue = buffer.getInt() & 0xffffffffL;
-			break;
-		case SBYTE:
-			sampleValue = buffer.get();
-			break;
-		case SSHORT:
-			sampleValue = buffer.getShort();
-			break;
-		case SLONG:
-			sampleValue = buffer.getInt();
-			break;
-		case FLOAT:
-			sampleValue = buffer.getFloat();
-			break;
-		case DOUBLE:
-			sampleValue = buffer.getDouble();
-			break;
-		default:
-			throw new TiffException(
-					"Unsupported raster field type: " + fieldType);
-		}
-
-		return sampleValue;
+        return switch (fieldType) {
+			case BYTE -> (short) (buffer.get() & 0xff);
+			case SHORT -> buffer.getShort() & 0xffff;
+			case LONG -> buffer.getInt() & 0xffffffffL;
+			case SBYTE -> buffer.get();
+			case SSHORT -> buffer.getShort();
+			case SLONG -> buffer.getInt();
+			case FLOAT -> buffer.getFloat();
+			case DOUBLE -> buffer.getDouble();
+			default -> throw new TiffException("Unsupported raster field type: " + fieldType);
+		};
 	}
 
 	/**

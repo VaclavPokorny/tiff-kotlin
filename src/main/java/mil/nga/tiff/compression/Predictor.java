@@ -38,7 +38,7 @@ public class Predictor {
 
 		if (predictor != TiffConstants.PREDICTOR_NO) {
 
-			int numBitsPerSample = bitsPerSample.get(0);
+			int numBitsPerSample = bitsPerSample.getFirst();
 			if (numBitsPerSample % 8 != 0) {
 				throw new TiffException(
 						"When decoding with predictor, only multiple of 8 bits are supported");
@@ -176,25 +176,12 @@ public class Predictor {
 	 * @return sample value
 	 */
 	private static int readValue(ByteReader reader, int bytesPerSample) {
-
-		int value;
-
-		switch (bytesPerSample) {
-		case 1:
-			value = reader.readByte();
-			break;
-		case 2:
-			value = reader.readShort();
-			break;
-		case 4:
-			value = reader.readInt();
-			break;
-		default:
-			throw new TiffException("Predictor not supported with "
-					+ bytesPerSample + " bytes per sample");
-		}
-
-		return value;
+        return switch (bytesPerSample) {
+			case 1 -> reader.readByte();
+			case 2 -> reader.readShort();
+			case 4 -> reader.readInt();
+			default -> throw new TiffException("Predictor not supported with " + bytesPerSample + " bytes per sample");
+		};
 	}
 
 	/**

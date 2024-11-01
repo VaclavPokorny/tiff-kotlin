@@ -104,8 +104,7 @@ public class TiffWriter {
 	public static byte[] writeTiffToBytes(ByteWriter writer, TIFFImage tiffImage)
 			throws IOException {
 		writeTiff(writer, tiffImage);
-		byte[] bytes = writer.getBytes();
-		return bytes;
+        return writer.getBytes();
 	}
 
 	/**
@@ -145,6 +144,7 @@ public class TiffWriter {
 	 * @param tiffImage
 	 *            tiff image
 	 * @throws IOException
+	 * 			  IO exception
 	 */
 	private static void writeImageFileDirectories(ByteWriter writer,
 			TIFFImage tiffImage) throws IOException {
@@ -277,14 +277,13 @@ public class TiffWriter {
 
 		int rowsPerStrip = fileDirectory.getRowsPerStrip().intValue();
 		int imageHeight = fileDirectory.getImageHeight().intValue();
-		int stripsPerSample = (imageHeight + rowsPerStrip - 1) / rowsPerStrip;
-		int strips = stripsPerSample;
+        int strips = (imageHeight + rowsPerStrip - 1) / rowsPerStrip;
 		if (fileDirectory.getPlanarConfiguration() == TiffConstants.PLANAR_CONFIGURATION_PLANAR) {
 			strips *= fileDirectory.getSamplesPerPixel();
 		}
 
 		fileDirectory.setStripOffsetsAsLongs(new ArrayList<>(Collections
-				.nCopies(strips, 0l)));
+				.nCopies(strips, 0L)));
 		fileDirectory.setStripByteCounts(new ArrayList<>(Collections.nCopies(
 				strips, 0)));
 	}
@@ -300,9 +299,9 @@ public class TiffWriter {
 	 *            byte offset
 	 * @return rasters bytes
 	 * @throws IOException
+	 * 			  IO exception
 	 */
-	private static byte[] writeRasters(ByteOrder byteOrder,
-			FileDirectory fileDirectory, long offset) throws IOException {
+	private static byte[] writeRasters(ByteOrder byteOrder, FileDirectory fileDirectory, long offset) throws IOException {
 
 		Rasters rasters = fileDirectory.getWriteRasters();
 		if (rasters == null) {
@@ -341,7 +340,7 @@ public class TiffWriter {
 	 *            byte offset
 	 * @param encoder
 	 *            compression encoder
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	private static void writeStripRasters(ByteWriter writer,
 			FileDirectory fileDirectory, long offset, CompressionEncoder encoder)
@@ -380,7 +379,7 @@ public class TiffWriter {
 			int endingY = Math.min(startingY + rowsPerStrip, maxY);
 			for (int y = startingY; y < endingY; y++) {
 				// Get the row bytes and encode if needed
-				byte[] rowBytes = null;
+				byte[] rowBytes;
 				if (sample != null) {
 					rowBytes = rasters.getSampleRow(y, sample,
 							writer.getByteOrder());
@@ -432,7 +431,7 @@ public class TiffWriter {
 	@SuppressWarnings("deprecation")
 	private static CompressionEncoder getEncoder(FileDirectory fileDirectory) {
 
-		CompressionEncoder encoder = null;
+		CompressionEncoder encoder;
 
 		// Determine the encoder based upon the compression
 		Integer compression = fileDirectory.getCompression();
@@ -440,37 +439,17 @@ public class TiffWriter {
 			compression = TiffConstants.COMPRESSION_NO;
 		}
 
-		switch (compression) {
-		case TiffConstants.COMPRESSION_NO:
-			encoder = new RawCompression();
-			break;
-		case TiffConstants.COMPRESSION_CCITT_HUFFMAN:
-			throw new TiffException("CCITT Huffman compression not supported: "
-					+ compression);
-		case TiffConstants.COMPRESSION_T4:
-			throw new TiffException("T4-encoding compression not supported: "
-					+ compression);
-		case TiffConstants.COMPRESSION_T6:
-			throw new TiffException("T6-encoding compression not supported: "
-					+ compression);
-		case TiffConstants.COMPRESSION_LZW:
-			encoder = new LZWCompression();
-			break;
-		case TiffConstants.COMPRESSION_JPEG_OLD:
-		case TiffConstants.COMPRESSION_JPEG_NEW:
-			throw new TiffException("JPEG compression not supported: "
-					+ compression);
-		case TiffConstants.COMPRESSION_DEFLATE:
-		case TiffConstants.COMPRESSION_PKZIP_DEFLATE:
-			encoder = new DeflateCompression();
-			break;
-		case TiffConstants.COMPRESSION_PACKBITS:
-			encoder = new PackbitsCompression();
-			break;
-		default:
-			throw new TiffException("Unknown compression method identifier: "
-					+ compression);
-		}
+        encoder = switch (compression) {
+            case TiffConstants.COMPRESSION_NO -> new RawCompression();
+            case TiffConstants.COMPRESSION_CCITT_HUFFMAN -> throw new TiffException("CCITT Huffman compression not supported: " + compression);
+            case TiffConstants.COMPRESSION_T4 -> throw new TiffException("T4-encoding compression not supported: " + compression);
+            case TiffConstants.COMPRESSION_T6 -> throw new TiffException("T6-encoding compression not supported: " + compression);
+            case TiffConstants.COMPRESSION_LZW -> new LZWCompression();
+            case TiffConstants.COMPRESSION_JPEG_OLD, TiffConstants.COMPRESSION_JPEG_NEW -> throw new TiffException("JPEG compression not supported: " + compression);
+            case TiffConstants.COMPRESSION_DEFLATE, TiffConstants.COMPRESSION_PKZIP_DEFLATE -> new DeflateCompression();
+            case TiffConstants.COMPRESSION_PACKBITS -> new PackbitsCompression();
+            default -> throw new TiffException("Unknown compression method identifier: " + compression);
+        };
 
 		return encoder;
 	}
@@ -497,13 +476,13 @@ public class TiffWriter {
 	 * @param entry
 	 *            file directory entry
 	 * @return bytes written
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	@SuppressWarnings("unchecked")
 	private static int writeValues(ByteWriter writer, FileDirectoryEntry entry)
 			throws IOException {
 
-		List<Object> valuesList = null;
+		List<Object> valuesList;
 		if (entry.getTypeCount() == 1
 				&& !entry.getFieldTag().isArray()
 				&& !(entry.getFieldType() == FieldType.RATIONAL || entry
@@ -517,14 +496,13 @@ public class TiffWriter {
 		int bytesWritten = 0;
 
 		for (Object value : valuesList) {
-
 			switch (entry.getFieldType()) {
 			case ASCII:
 				bytesWritten += writer.writeString((String) value);
 				if (bytesWritten < entry.getTypeCount()) {
 					long fillerBytes = entry.getTypeCount() - bytesWritten;
 					writeFillerBytes(writer, fillerBytes);
-					bytesWritten += fillerBytes;
+					bytesWritten += (int) fillerBytes;
 				}
 				break;
 			case BYTE:
@@ -544,23 +522,15 @@ public class TiffWriter {
 				writer.writeShort((short) value);
 				bytesWritten += 2;
 				break;
-			case LONG:
+			case LONG, RATIONAL:
 				writer.writeUnsignedInt((long) value);
 				bytesWritten += 4;
 				break;
-			case SLONG:
+			case SLONG, SRATIONAL:
 				writer.writeInt((int) value);
 				bytesWritten += 4;
 				break;
-			case RATIONAL:
-				writer.writeUnsignedInt((long) value);
-				bytesWritten += 4;
-				break;
-			case SRATIONAL:
-				writer.writeInt((int) value);
-				bytesWritten += 4;
-				break;
-			case FLOAT:
+                case FLOAT:
 				writer.writeFloat((float) value);
 				bytesWritten += 4;
 				break;
@@ -569,8 +539,7 @@ public class TiffWriter {
 				bytesWritten += 8;
 				break;
 			default:
-				throw new TiffException("Invalid field type: "
-						+ entry.getFieldType());
+				throw new TiffException("Invalid field type: " + entry.getFieldType());
 			}
 
 		}

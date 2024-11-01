@@ -41,7 +41,7 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
 	/**
 	 * Table entries
 	 */
-	private Map<Integer, Integer[]> table = new HashMap<>();
+	private final Map<Integer, Integer[]> table = new HashMap<>();
 
 	/**
 	 * Current max table code
@@ -84,10 +84,10 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
 				initializeTable();
 
 				// Read past clear codes
-				code = getNextCode(reader);
-				while (code == CLEAR_CODE) {
-					code = getNextCode(reader);
-				}
+                do {
+                    code = getNextCode(reader);
+                } while (code == CLEAR_CODE);
+
 				if (code == EOI_CODE) {
 					break;
 				}
@@ -99,9 +99,8 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
 				// Write the code value
 				Integer[] value = table.get(code);
 				writeValue(decodedStream, value);
-				oldCode = code;
 
-			} else {
+            } else {
 
 				// If already in the table
 				Integer[] value = table.get(code);
@@ -114,9 +113,8 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
 					Integer[] newValue = concat(table.get(oldCode),
 							table.get(code)[0]);
 					addToTable(newValue);
-					oldCode = code;
 
-				} else {
+                } else {
 
 					// Create and write new value from old value
 					Integer[] oldValue = table.get(oldCode);
@@ -125,17 +123,15 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
 
 					// Write value to the table
 					addToTable(code, newValue);
-					oldCode = code;
-				}
-			}
+                }
+            }
+            oldCode = code;
 
-			// Get the next code
+            // Get the next code
 			code = getNextCode(reader);
 		}
 
-		byte[] decoded = decodedStream.toByteArray();
-
-		return decoded;
+        return decodedStream.toByteArray();
 	}
 
 	/**
@@ -221,9 +217,9 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
 	 *            value
 	 */
 	private void writeValue(ByteArrayOutputStream decodedStream, Integer[] value) {
-		for (int i = 0; i < value.length; i++) {
-			decodedStream.write(value[i]);
-		}
+        for (Integer integer : value) {
+            decodedStream.write(integer);
+        }
 	}
 
 	/**

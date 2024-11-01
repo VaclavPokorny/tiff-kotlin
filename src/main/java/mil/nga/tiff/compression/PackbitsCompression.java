@@ -41,9 +41,7 @@ public class PackbitsCompression implements CompressionDecoder,
 			}
 		}
 
-		byte[] decoded = decodedStream.toByteArray();
-
-		return decoded;
+        return decodedStream.toByteArray();
 	}
 
 	/**

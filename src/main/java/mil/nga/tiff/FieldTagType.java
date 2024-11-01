@@ -264,7 +264,7 @@ public enum FieldTagType {
 	 * @param array
 	 *            true if an array type
 	 */
-	private FieldTagType(int id, boolean array) {
+    FieldTagType(int id, boolean array) {
 		this.id = id;
 		this.array = array;
 	}
@@ -292,8 +292,9 @@ public enum FieldTagType {
 	 */
 	private static final Map<Integer, FieldTagType> idMapping = new HashMap<>();
 
-	/**
-	 * Load the id mapping
+
+	/*
+	  Load the id mapping
 	 */
 	static {
 		for (FieldTagType fieldTag : FieldTagType.values()) {
@@ -310,6 +311,9 @@ public enum FieldTagType {
 	 */
 	public static FieldTagType getById(int id) {
 		FieldTagType fieldTag = idMapping.get(id);
+		if (fieldTag == null) {
+			System.out.println("Unrecognized tag: " + id);
+		}
 		return fieldTag;
 	}
 

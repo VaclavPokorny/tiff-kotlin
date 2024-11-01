@@ -4,7 +4,7 @@ import mil.nga.tiff.util.TiffConstants;
 
 /**
  * TIFF File Directory Entry
- * 
+ *
  * @author osbornb
  */
 public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
@@ -31,7 +31,7 @@ public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param fieldTag
 	 *            field tag type
 	 * @param fieldType
@@ -51,7 +51,7 @@ public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
 
 	/**
 	 * Get the field tag type
-	 * 
+	 *
 	 * @return field tag type
 	 */
 	public FieldTagType getFieldTag() {
@@ -60,7 +60,7 @@ public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
 
 	/**
 	 * Get the field type
-	 * 
+	 *
 	 * @return field type
 	 */
 	public FieldType getFieldType() {
@@ -69,7 +69,7 @@ public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
 
 	/**
 	 * Get the type count
-	 * 
+	 *
 	 * @return type count
 	 */
 	public long getTypeCount() {
@@ -78,7 +78,7 @@ public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
 
 	/**
 	 * Get the values
-	 * 
+	 *
 	 * @return values
 	 */
 	public Object getValues() {
@@ -88,17 +88,16 @@ public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
 	/**
 	 * Size in bytes of the image file directory entry and its values (not
 	 * contiguous bytes)
-	 * 
+	 *
 	 * @return size in bytes
 	 */
 	public long sizeWithValues() {
-		long size = TiffConstants.IFD_ENTRY_BYTES + sizeOfValues();
-		return size;
+        return TiffConstants.IFD_ENTRY_BYTES + sizeOfValues();
 	}
 
 	/**
 	 * Size of the values not included in the directory entry bytes
-	 * 
+	 *
 	 * @return size in bytes
 	 */
 	public long sizeOfValues() {
@@ -131,16 +130,17 @@ public class FileDirectoryEntry implements Comparable<FileDirectoryEntry> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		FileDirectoryEntry other = (FileDirectoryEntry) obj;
-		if (fieldTag != other.fieldTag)
-			return false;
-		return true;
-	}
+        return fieldTag == other.fieldTag;
+    }
 
 }
