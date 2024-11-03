@@ -1248,17 +1248,7 @@ public class FileDirectory {
      * @return value
      */
     private Number readValue(ByteReader reader, FieldType fieldType) {
-        return switch (fieldType) {
-            case BYTE -> reader.readUnsignedByte();
-            case SHORT -> reader.readUnsignedShort();
-            case LONG -> reader.readUnsignedInt();
-            case SBYTE -> reader.readByte();
-            case SSHORT -> reader.readShort();
-            case SLONG -> reader.readInt();
-            case FLOAT -> reader.readFloat();
-            case DOUBLE -> reader.readDouble();
-            default -> throw new TiffException("Unsupported raster field type: " + fieldType);
-        };
+        return fieldType.readRasterValueFromReader(reader);
     }
 
     /**

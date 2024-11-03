@@ -1,7 +1,10 @@
 package mil.nga.tiff;
 
-import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.fields.*;
+import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffException;
+
+import java.util.Arrays;
 
 /**
  * Field Types
@@ -13,80 +16,71 @@ public enum FieldType {
 	/**
 	 * 8-bit unsigned integer
 	 */
-	BYTE(1),
+	BYTE(new ByteField()),
 
 	/**
 	 * 8-bit byte that contains a 7-bit ASCII code; the last byte must be NUL
 	 * (binary zero)
 	 */
-	ASCII(1),
+	ASCII(new ASCIIField()),
 
 	/**
 	 * 16-bit (2-byte) unsigned integer
 	 */
-	SHORT(2),
+	SHORT(new ShortField()),
 
 	/**
 	 * 32-bit (4-byte) unsigned integer
 	 */
-	LONG(4),
+	LONG(new LongField()),
 
 	/**
 	 * Two LONGs: the first represents the numerator of a fraction; the second,
 	 * the denominator
 	 */
-	RATIONAL(8),
+	RATIONAL(new RationalField()),
 
 	/**
 	 * An 8-bit signed (twos-complement) integer
 	 */
-	SBYTE(1),
+	SBYTE(new SignedByteField()),
 
 	/**
 	 * An 8-bit byte that may contain anything, depending on the definition of
 	 * the field
 	 */
-	UNDEFINED(1),
+	UNDEFINED(new UndefinedField()),
 
 	/**
 	 * A 16-bit (2-byte) signed (twos-complement) integer
 	 */
-	SSHORT(2),
+	SSHORT(new SignedShortField()),
 
 	/**
 	 * A 32-bit (4-byte) signed (twos-complement) integer
 	 */
-	SLONG(4),
+	SLONG(new SignedLongField()),
 
 	/**
 	 * Two SLONG’s: the first represents the numerator of a fraction, the second
 	 * the denominator
 	 */
-	SRATIONAL(8),
+	SRATIONAL(new SignedRationalField()),
 
 	/**
 	 * Single precision (4-byte) IEEE format
 	 */
-	FLOAT(4),
+	FLOAT(new FloatField()),
 
 	/**
 	 * Double precision (8-byte) IEEE format
 	 */
-	DOUBLE(8);
+	DOUBLE(new DoubleField());
 
-	/**
-	 * Number of bytes per field value
-	 */
-	private final int bytes;
+	private final AbstractFieldType fieldType;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param bytes
-	 *            bytes per value
-	 */
-    FieldType(int bytes) {
-		this.bytes = bytes;
+    FieldType(AbstractFieldType fieldType) {
+		this.fieldType = fieldType;
 	}
 
 	/**
@@ -104,7 +98,7 @@ public enum FieldType {
 	 * @return number of bytes
 	 */
 	public int getBytes() {
-		return bytes;
+		return fieldType.getBytes();
 	}
 
 	/**
@@ -114,7 +108,7 @@ public enum FieldType {
 	 * @since 2.0.0
 	 */
 	public int getBits() {
-		return bytes * 8;
+		return fieldType.getBits();
 	}
 
 	/**
@@ -139,34 +133,11 @@ public enum FieldType {
 	 * @since 2.0.0
 	 */
 	public static FieldType getFieldType(int sampleFormat, int bitsPerSample) {
-		FieldType fieldType = switch (sampleFormat) {
-            case TiffConstants.SAMPLE_FORMAT_UNSIGNED_INT -> switch (bitsPerSample) {
-                case 8 -> FieldType.BYTE;
-                case 16 -> FieldType.SHORT;
-                case 32 -> FieldType.LONG;
-                default -> null;
-            };
-            case TiffConstants.SAMPLE_FORMAT_SIGNED_INT -> switch (bitsPerSample) {
-                case 8 -> FieldType.SBYTE;
-                case 16 -> FieldType.SSHORT;
-                case 32 -> FieldType.SLONG;
-                default -> null;
-            };
-            case TiffConstants.SAMPLE_FORMAT_FLOAT -> switch (bitsPerSample) {
-                case 32 -> FieldType.FLOAT;
-                case 64 -> FieldType.DOUBLE;
-                default -> null;
-            };
-            default -> null;
-        };
-
-		if (fieldType == null) {
-			throw new TiffException(
-					"Unsupported field type for sample format: " + sampleFormat
-							+ ", bits per sample: " + bitsPerSample);
-		}
-
-		return fieldType;
+		return Arrays.stream(values())
+				.filter(o -> o.fieldType.hasSampleFormat(sampleFormat))
+				.filter(o -> o.fieldType.hasBitsPerSample(bitsPerSample))
+				.findAny()
+				.orElseThrow(() -> new TiffException("Unsupported field type for sample format: " + sampleFormat + ", bits per sample: " + bitsPerSample));
 	}
 
 	/**
@@ -178,12 +149,11 @@ public enum FieldType {
 	 * @since 2.0.0
 	 */
 	public static int getSampleFormat(FieldType fieldType) {
-        return switch (fieldType) {
-			case BYTE, SHORT, LONG -> TiffConstants.SAMPLE_FORMAT_UNSIGNED_INT;
-			case SBYTE, SSHORT, SLONG -> TiffConstants.SAMPLE_FORMAT_SIGNED_INT;
-			case FLOAT, DOUBLE -> TiffConstants.SAMPLE_FORMAT_FLOAT;
-			default -> throw new TiffException("Unsupported sample format for field type: " + fieldType);
-		};
+		return fieldType.fieldType.getSampleFormat();
+	}
+
+	public Number readRasterValueFromReader(ByteReader reader) {
+		return fieldType.readRasterValueFromReader(reader);
 	}
 
 }
