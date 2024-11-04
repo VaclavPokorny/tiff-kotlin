@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"mil.nga.tiff"},{"l":"mil.nga.tiff.compression"},{"l":"mil.nga.tiff.io"},{"l":"mil.nga.tiff.util"}]
