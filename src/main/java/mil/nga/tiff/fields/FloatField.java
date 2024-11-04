@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public final class FloatField extends AbstractRasterFieldType {
     public FloatField() {
-        super(4, TiffConstants.SAMPLE_FORMAT_FLOAT);
+        super(4, TiffConstants.SampleFormat.SAMPLE_FORMAT_FLOAT);
     }
 
     @Override

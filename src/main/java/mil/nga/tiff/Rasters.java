@@ -1,13 +1,13 @@
 package mil.nga.tiff;
 
+import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.util.TiffException;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import mil.nga.tiff.util.TiffConstants;
-import mil.nga.tiff.util.TiffException;
 
 /**
  * Raster image values
@@ -782,7 +782,7 @@ public class Rasters {
 
         Integer rowsPerStrip = null;
 
-        if (planarConfiguration == TiffConstants.PLANAR_CONFIGURATION_CHUNKY) {
+        if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY) {
             rowsPerStrip = rowsPerStrip(sizePixel(), maxBytesPerStrip);
         } else {
 

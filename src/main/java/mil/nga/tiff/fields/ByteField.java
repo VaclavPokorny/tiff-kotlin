@@ -1,21 +1,17 @@
 package mil.nga.tiff.fields;
 
-import mil.nga.tiff.FieldType;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffConstants;
-import mil.nga.tiff.util.TiffException;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 8-bit unsigned integer
  */
 public final class ByteField extends AbstractRasterFieldType {
     public ByteField() {
-        super(1, TiffConstants.SAMPLE_FORMAT_UNSIGNED_INT);
+        super(1, TiffConstants.SampleFormat.SAMPLE_FORMAT_UNSIGNED_INT);
     }
 
     @Override

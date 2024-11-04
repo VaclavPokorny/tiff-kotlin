@@ -278,7 +278,7 @@ public class TiffWriter {
 		int rowsPerStrip = fileDirectory.getRowsPerStrip().intValue();
 		int imageHeight = fileDirectory.getImageHeight().intValue();
         int strips = (imageHeight + rowsPerStrip - 1) / rowsPerStrip;
-		if (fileDirectory.getPlanarConfiguration() == TiffConstants.PLANAR_CONFIGURATION_PLANAR) {
+		if (fileDirectory.getPlanarConfiguration() == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
 			strips *= fileDirectory.getSamplesPerPixel();
 		}
 
@@ -353,7 +353,7 @@ public class TiffWriter {
 		int maxY = fileDirectory.getImageHeight().intValue();
 		int stripsPerSample = (maxY + rowsPerStrip - 1) / rowsPerStrip;
 		int strips = stripsPerSample;
-		if (fileDirectory.getPlanarConfiguration() == TiffConstants.PLANAR_CONFIGURATION_PLANAR) {
+		if (fileDirectory.getPlanarConfiguration() == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
 			strips *= fileDirectory.getSamplesPerPixel();
 		}
 
@@ -366,7 +366,7 @@ public class TiffWriter {
 
 			int startingY;
 			Integer sample = null;
-			if (fileDirectory.getPlanarConfiguration() == TiffConstants.PLANAR_CONFIGURATION_PLANAR) {
+			if (fileDirectory.getPlanarConfiguration() == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
 				sample = strip / stripsPerSample;
 				startingY = (strip % stripsPerSample) * rowsPerStrip;
 			} else {
@@ -436,18 +436,18 @@ public class TiffWriter {
 		// Determine the encoder based upon the compression
 		Integer compression = fileDirectory.getCompression();
 		if (compression == null) {
-			compression = TiffConstants.COMPRESSION_NO;
+			compression = TiffConstants.Compression.COMPRESSION_NO;
 		}
 
         encoder = switch (compression) {
-            case TiffConstants.COMPRESSION_NO -> new RawCompression();
-            case TiffConstants.COMPRESSION_CCITT_HUFFMAN -> throw new TiffException("CCITT Huffman compression not supported: " + compression);
-            case TiffConstants.COMPRESSION_T4 -> throw new TiffException("T4-encoding compression not supported: " + compression);
-            case TiffConstants.COMPRESSION_T6 -> throw new TiffException("T6-encoding compression not supported: " + compression);
-            case TiffConstants.COMPRESSION_LZW -> new LZWCompression();
-            case TiffConstants.COMPRESSION_JPEG_OLD, TiffConstants.COMPRESSION_JPEG_NEW -> throw new TiffException("JPEG compression not supported: " + compression);
-            case TiffConstants.COMPRESSION_DEFLATE, TiffConstants.COMPRESSION_PKZIP_DEFLATE -> new DeflateCompression();
-            case TiffConstants.COMPRESSION_PACKBITS -> new PackbitsCompression();
+            case TiffConstants.Compression.COMPRESSION_NO -> new RawCompression();
+            case TiffConstants.Compression.COMPRESSION_CCITT_HUFFMAN -> throw new TiffException("CCITT Huffman compression not supported: " + compression);
+            case TiffConstants.Compression.COMPRESSION_T4 -> throw new TiffException("T4-encoding compression not supported: " + compression);
+            case TiffConstants.Compression.COMPRESSION_T6 -> throw new TiffException("T6-encoding compression not supported: " + compression);
+            case TiffConstants.Compression.COMPRESSION_LZW -> new LZWCompression();
+            case TiffConstants.Compression.COMPRESSION_JPEG_OLD, TiffConstants.Compression.COMPRESSION_JPEG_NEW -> throw new TiffException("JPEG compression not supported: " + compression);
+            case TiffConstants.Compression.COMPRESSION_DEFLATE, TiffConstants.Compression.COMPRESSION_PKZIP_DEFLATE -> new DeflateCompression();
+            case TiffConstants.Compression.COMPRESSION_PACKBITS -> new PackbitsCompression();
             default -> throw new TiffException("Unknown compression method identifier: " + compression);
         };
 

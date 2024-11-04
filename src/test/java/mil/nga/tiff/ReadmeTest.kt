@@ -64,19 +64,20 @@ class ReadmeTest {
         )
 
         val rowsPerStrip = rasters.calculateRowsPerStrip(
-            TiffConstants.PLANAR_CONFIGURATION_CHUNKY
+            TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY
         )
 
         val directory = FileDirectory()
         directory.setImageWidth(width)
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)
-        directory.compression = TiffConstants.COMPRESSION_NO
-        directory.photometricInterpretation = TiffConstants.PHOTOMETRIC_INTERPRETATION_BLACK_IS_ZERO
+        directory.compression = TiffConstants.Compression.COMPRESSION_NO
+        directory.photometricInterpretation =
+            TiffConstants.PhotometricInterpretation.PHOTOMETRIC_INTERPRETATION_BLACK_IS_ZERO
         directory.samplesPerPixel = samplesPerPixel
         directory.setRowsPerStrip(rowsPerStrip)
-        directory.planarConfiguration = TiffConstants.PLANAR_CONFIGURATION_CHUNKY
-        directory.setSampleFormat(TiffConstants.SAMPLE_FORMAT_FLOAT)
+        directory.planarConfiguration = TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY
+        directory.setSampleFormat(TiffConstants.SampleFormat.SAMPLE_FORMAT_FLOAT)
         directory.writeRasters = rasters
 
         for (y in 0 until height) {

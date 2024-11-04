@@ -8,7 +8,6 @@ import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, ASCIIField, RationalField, UndefinedField, SignedRationalField {
@@ -21,7 +20,7 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
 
     public AbstractFieldType(int bytes) {
         this.bytes = bytes;
-        this.sampleFormat = TiffConstants.SAMPLE_FORMAT_UNDEFINED;
+        this.sampleFormat = TiffConstants.SampleFormat.SAMPLE_FORMAT_UNDEFINED;
     }
 
     public AbstractFieldType(int bytes, int sampleFormat) {
@@ -44,7 +43,7 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
      * @since 2.0.0
      */
     public int getSampleFormat() {
-        if (sampleFormat == TiffConstants.SAMPLE_FORMAT_UNDEFINED) {
+        if (sampleFormat == TiffConstants.SampleFormat.SAMPLE_FORMAT_UNDEFINED) {
             throw new TiffException("Unsupported sample format");
         }
         return sampleFormat;

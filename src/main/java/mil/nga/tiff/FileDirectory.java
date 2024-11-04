@@ -1,15 +1,5 @@
 package mil.nga.tiff;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import mil.nga.tiff.compression.CompressionDecoder;
 import mil.nga.tiff.compression.DeflateCompression;
 import mil.nga.tiff.compression.LZWCompression;
@@ -20,6 +10,16 @@ import mil.nga.tiff.compression.UnsupportedCompression;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * File Directory, represents all directory entries and can be used to read the
@@ -121,9 +121,9 @@ public class FileDirectory {
         // Determine and validate the planar configuration
         Integer pc = getPlanarConfiguration();
         planarConfiguration = pc != null ? pc
-                : TiffConstants.PLANAR_CONFIGURATION_CHUNKY;
-        if (planarConfiguration != TiffConstants.PLANAR_CONFIGURATION_CHUNKY
-                && planarConfiguration != TiffConstants.PLANAR_CONFIGURATION_PLANAR) {
+                : TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY;
+        if (planarConfiguration != TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY
+                && planarConfiguration != TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
             throw new TiffException(
                     "Invalid planar configuration: " + planarConfiguration);
         }
@@ -131,37 +131,37 @@ public class FileDirectory {
         // Determine the decoder based upon the compression
         Integer compression = getCompression();
         if (compression == null) {
-            compression = TiffConstants.COMPRESSION_NO;
+            compression = TiffConstants.Compression.COMPRESSION_NO;
         }
         switch (compression) {
-            case TiffConstants.COMPRESSION_NO:
+            case TiffConstants.Compression.COMPRESSION_NO:
                 decoder = new RawCompression();
                 break;
-            case TiffConstants.COMPRESSION_CCITT_HUFFMAN:
+            case TiffConstants.Compression.COMPRESSION_CCITT_HUFFMAN:
                 decoder = new UnsupportedCompression(
                         "CCITT Huffman compression not supported: " + compression);
                 break;
-            case TiffConstants.COMPRESSION_T4:
+            case TiffConstants.Compression.COMPRESSION_T4:
                 decoder = new UnsupportedCompression(
                         "T4-encoding compression not supported: " + compression);
                 break;
-            case TiffConstants.COMPRESSION_T6:
+            case TiffConstants.Compression.COMPRESSION_T6:
                 decoder = new UnsupportedCompression(
                         "T6-encoding compression not supported: " + compression);
                 break;
-            case TiffConstants.COMPRESSION_LZW:
+            case TiffConstants.Compression.COMPRESSION_LZW:
                 decoder = new LZWCompression();
                 break;
-            case TiffConstants.COMPRESSION_JPEG_OLD:
-            case TiffConstants.COMPRESSION_JPEG_NEW:
+            case TiffConstants.Compression.COMPRESSION_JPEG_OLD:
+            case TiffConstants.Compression.COMPRESSION_JPEG_NEW:
                 decoder = new UnsupportedCompression(
                         "JPEG compression not supported: " + compression);
                 break;
-            case TiffConstants.COMPRESSION_DEFLATE:
-            case TiffConstants.COMPRESSION_PKZIP_DEFLATE:
+            case TiffConstants.Compression.COMPRESSION_DEFLATE:
+            case TiffConstants.Compression.COMPRESSION_PKZIP_DEFLATE:
                 decoder = new DeflateCompression();
                 break;
-            case TiffConstants.COMPRESSION_PACKBITS:
+            case TiffConstants.Compression.COMPRESSION_PACKBITS:
                 decoder = new PackbitsCompression();
                 break;
             default:
@@ -1174,7 +1174,7 @@ public class FileDirectory {
         FieldType[] sampleFieldTypes = new FieldType[samples.length];
         for (int i = 0; i < samples.length; i++) {
             int sampleOffset = 0;
-            if (planarConfiguration == TiffConstants.PLANAR_CONFIGURATION_CHUNKY) {
+            if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY) {
                 sampleOffset = getBitsPerSample().subList(0, samples[i]).stream().mapToInt(Integer::intValue).sum() / 8;
             }
             srcSampleOffsets[i] = sampleOffset;
@@ -1191,7 +1191,7 @@ public class FileDirectory {
 
                 for (int sampleIndex = 0; sampleIndex < samples.length; sampleIndex++) {
                     int sample = samples[sampleIndex];
-                    if (planarConfiguration == TiffConstants.PLANAR_CONFIGURATION_PLANAR) {
+                    if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
                         bytesPerPixel = getSampleByteSize(sample);
                     }
 
@@ -1261,7 +1261,7 @@ public class FileDirectory {
 
         List<Integer> sampleFormatList = getSampleFormat();
         int sampleFormat = sampleFormatList == null
-                ? TiffConstants.SAMPLE_FORMAT_UNSIGNED_INT
+                ? TiffConstants.SampleFormat.SAMPLE_FORMAT_UNSIGNED_INT
                 : sampleFormatList
                 .get(sampleIndex < sampleFormatList.size() ? sampleIndex
                         : 0);
@@ -1290,9 +1290,9 @@ public class FileDirectory {
         int numTilesPerCol = (imageHeight + tileHeight - 1) / tileHeight;
 
         int index = 0;
-        if (planarConfiguration == TiffConstants.PLANAR_CONFIGURATION_CHUNKY) {
+        if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY) {
             index = y * numTilesPerRow + x;
-        } else if (planarConfiguration == TiffConstants.PLANAR_CONFIGURATION_PLANAR) {
+        } else if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
             index = sample * numTilesPerRow * numTilesPerCol
                     + y * numTilesPerRow + x;
         }

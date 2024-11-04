@@ -1,12 +1,12 @@
 package mil.nga.tiff.compression;
 
-import java.io.IOException;
-import java.util.List;
-
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Differencing Predictor decoder
@@ -36,7 +36,7 @@ public class Predictor {
 	public static byte[] decode(byte[] bytes, int predictor, int width,
 			int height, List<Integer> bitsPerSample, int planarConfiguration) {
 
-		if (predictor != TiffConstants.PREDICTOR_NO) {
+		if (predictor != TiffConstants.DifferencingPredictor.PREDICTOR_NO) {
 
 			int numBitsPerSample = bitsPerSample.getFirst();
 			if (numBitsPerSample % 8 != 0) {
@@ -65,11 +65,11 @@ public class Predictor {
 						break;
 					}
 					switch (predictor) {
-					case TiffConstants.PREDICTOR_HORIZONTAL:
+					case TiffConstants.DifferencingPredictor.PREDICTOR_HORIZONTAL:
 						decodeHorizontal(reader, writer, width, bytesPerSample,
 								samples);
 						break;
-					case TiffConstants.PREDICTOR_FLOATINGPOINT:
+					case TiffConstants.DifferencingPredictor.PREDICTOR_FLOATINGPOINT:
 						decodeFloatingPoint(reader, writer, width,
 								bytesPerSample, samples);
 						break;

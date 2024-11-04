@@ -1,10 +1,10 @@
 package mil.nga.tiff.compression;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteOrder;
-
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffException;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteOrder;
 
 /**
  * Packbits Compression

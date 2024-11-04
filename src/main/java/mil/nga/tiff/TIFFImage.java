@@ -1,10 +1,10 @@
 package mil.nga.tiff;
 
+import mil.nga.tiff.util.TiffConstants;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import mil.nga.tiff.util.TiffConstants;
 
 /**
  * TIFF Image containing the File Directories

@@ -2,7 +2,6 @@ package mil.nga.tiff;
 
 import mil.nga.tiff.fields.ASCIIField;
 import mil.nga.tiff.fields.AbstractFieldType;
-import mil.nga.tiff.fields.AbstractRasterFieldType;
 import mil.nga.tiff.fields.ByteField;
 import mil.nga.tiff.fields.DoubleField;
 import mil.nga.tiff.fields.FloatField;
@@ -20,7 +19,6 @@ import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

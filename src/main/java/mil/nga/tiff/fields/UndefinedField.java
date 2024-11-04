@@ -1,6 +1,5 @@
 package mil.nga.tiff.fields;
 
-import mil.nga.tiff.FieldType;
 import mil.nga.tiff.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;

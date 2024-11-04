@@ -1,12 +1,12 @@
 package mil.nga.tiff.io;
 
+import mil.nga.tiff.util.TiffException;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-
-import mil.nga.tiff.util.TiffException;
 
 /**
  * Read through a byte array

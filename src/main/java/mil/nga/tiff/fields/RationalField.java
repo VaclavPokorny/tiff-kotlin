@@ -1,10 +1,8 @@
 package mil.nga.tiff.fields;
 
-import mil.nga.tiff.FieldType;
 import mil.nga.tiff.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ public final class RationalField extends AbstractFieldType {
 
     @Override
     public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount) {
-
         List<Object> values = new ArrayList<>();
 
         for (int i = 0; i < typeCount; i++) {

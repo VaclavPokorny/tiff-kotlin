@@ -1,8 +1,8 @@
 package mil.nga.tiff.compression;
 
-import java.nio.ByteOrder;
-
 import mil.nga.tiff.util.TiffException;
+
+import java.nio.ByteOrder;
 
 /**
  * Unsupported compression

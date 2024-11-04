@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public final class SignedShortField extends AbstractRasterFieldType {
     public SignedShortField() {
-        super(2, TiffConstants.SAMPLE_FORMAT_SIGNED_INT);
+        super(2, TiffConstants.SampleFormat.SAMPLE_FORMAT_SIGNED_INT);
     }
 
     @Override

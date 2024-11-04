@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public final class LongField extends AbstractRasterFieldType {
     public LongField() {
-        super(4, TiffConstants.SAMPLE_FORMAT_UNSIGNED_INT);
+        super(4, TiffConstants.SampleFormat.SAMPLE_FORMAT_UNSIGNED_INT);
     }
 
     @Override

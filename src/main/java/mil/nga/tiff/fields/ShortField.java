@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public final class ShortField extends AbstractRasterFieldType {
     public ShortField() {
-        super(2, TiffConstants.SAMPLE_FORMAT_UNSIGNED_INT);
+        super(2, TiffConstants.SampleFormat.SAMPLE_FORMAT_UNSIGNED_INT);
     }
 
     @Override
