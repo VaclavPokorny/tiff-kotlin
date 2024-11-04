@@ -1,13 +1,5 @@
 package mil.nga.tiff;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import mil.nga.tiff.compression.CompressionEncoder;
 import mil.nga.tiff.compression.DeflateCompression;
 import mil.nga.tiff.compression.LZWCompression;
@@ -17,6 +9,14 @@ import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.io.IOUtils;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * TIFF Writer.
@@ -478,73 +478,8 @@ public class TiffWriter {
 	 * @return bytes written
 	 * @throws IOException IO exception
 	 */
-	@SuppressWarnings("unchecked")
-	private static int writeValues(ByteWriter writer, FileDirectoryEntry entry)
-			throws IOException {
-
-		List<Object> valuesList;
-		if (entry.getTypeCount() == 1
-				&& !entry.getFieldTag().isArray()
-				&& !(entry.getFieldType() == FieldType.RATIONAL || entry
-						.getFieldType() == FieldType.SRATIONAL)) {
-			valuesList = new ArrayList<>();
-			valuesList.add(entry.getValues());
-		} else {
-			valuesList = (List<Object>) entry.getValues();
-		}
-
-		int bytesWritten = 0;
-
-		for (Object value : valuesList) {
-			switch (entry.getFieldType()) {
-			case ASCII:
-				bytesWritten += writer.writeString((String) value);
-				if (bytesWritten < entry.getTypeCount()) {
-					long fillerBytes = entry.getTypeCount() - bytesWritten;
-					writeFillerBytes(writer, fillerBytes);
-					bytesWritten += (int) fillerBytes;
-				}
-				break;
-			case BYTE:
-			case UNDEFINED:
-				writer.writeUnsignedByte((short) value);
-				bytesWritten += 1;
-				break;
-			case SBYTE:
-				writer.writeByte((byte) value);
-				bytesWritten += 1;
-				break;
-			case SHORT:
-				writer.writeUnsignedShort((int) value);
-				bytesWritten += 2;
-				break;
-			case SSHORT:
-				writer.writeShort((short) value);
-				bytesWritten += 2;
-				break;
-			case LONG, RATIONAL:
-				writer.writeUnsignedInt((long) value);
-				bytesWritten += 4;
-				break;
-			case SLONG, SRATIONAL:
-				writer.writeInt((int) value);
-				bytesWritten += 4;
-				break;
-                case FLOAT:
-				writer.writeFloat((float) value);
-				bytesWritten += 4;
-				break;
-			case DOUBLE:
-				writer.writeDouble((double) value);
-				bytesWritten += 8;
-				break;
-			default:
-				throw new TiffException("Invalid field type: " + entry.getFieldType());
-			}
-
-		}
-
-		return bytesWritten;
+	private static int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
+        return entry.getFieldType().writeDirectoryEntryValues(writer, entry);
 	}
 
 }

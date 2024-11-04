@@ -1,11 +1,17 @@
 package mil.nga.tiff.fields;
 
-import mil.nga.tiff.FieldType;
+import mil.nga.tiff.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
+import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 
-abstract public sealed class AbstractFieldType permits ByteField, ASCIIField, ShortField, LongField, RationalField, SignedByteField, UndefinedField, SignedShortField, SignedLongField, SignedRationalField, FloatField, DoubleField {
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, ASCIIField, RationalField, UndefinedField, SignedRationalField {
 
     /**
      * Number of bytes per field value
@@ -31,6 +37,12 @@ abstract public sealed class AbstractFieldType permits ByteField, ASCIIField, Sh
         return getBits() == bitsPerSample;
     }
 
+    /**
+     * Get the sample format of the field type
+     *
+     * @return sample format
+     * @since 2.0.0
+     */
     public int getSampleFormat() {
         if (sampleFormat == TiffConstants.SAMPLE_FORMAT_UNDEFINED) {
             throw new TiffException("Unsupported sample format");
@@ -46,6 +58,39 @@ abstract public sealed class AbstractFieldType permits ByteField, ASCIIField, Sh
         return bytes * 8;
     }
 
-    abstract public Number readRasterValueFromReader(ByteReader reader);
+    public Number readValue(ByteReader reader) {
+        throw new TiffException("Unsupported raster field type.");
+    }
+
+    public Number readSample(ByteBuffer buffer) {
+        throw new TiffException("Unsupported raster field type.");
+    }
+
+    public void writeSample(ByteBuffer buffer, Number value) {
+        throw new TiffException("Unsupported raster field type.");
+    }
+
+    public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
+        throw new TiffException("Unsupported raster field type.");
+    }
+
+    /**
+     * Get the directory entry values
+     *
+     * @param reader    byte reader
+     * @param typeCount type count
+     * @return values
+     */
+    abstract public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount);
+
+    /**
+     * Write file directory entry values
+     *
+     * @param writer byte writer
+     * @param entry  file directory entry
+     * @return bytes written
+     * @throws IOException IO exception
+     */
+    abstract public int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException;
 
 }

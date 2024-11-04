@@ -1248,7 +1248,7 @@ public class FileDirectory {
      * @return value
      */
     private Number readValue(ByteReader reader, FieldType fieldType) {
-        return fieldType.readRasterValueFromReader(reader);
+        return fieldType.readValue(reader);
     }
 
     /**

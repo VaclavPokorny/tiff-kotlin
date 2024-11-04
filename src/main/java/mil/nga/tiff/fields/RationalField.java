@@ -1,7 +1,14 @@
 package mil.nga.tiff.fields;
 
+import mil.nga.tiff.FieldType;
+import mil.nga.tiff.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
+import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Two LONGs: the first represents the numerator of a fraction; the second,
@@ -13,7 +20,32 @@ public final class RationalField extends AbstractFieldType {
     }
 
     @Override
-    public Number readRasterValueFromReader(ByteReader reader) {
-        throw new TiffException("Unsupported raster field type.");
+    public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount) {
+
+        List<Object> values = new ArrayList<>();
+
+        for (int i = 0; i < typeCount; i++) {
+            values.add(reader.readUnsignedInt());
+            values.add(reader.readUnsignedInt());
+        }
+
+        return values;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
+        List<Object> valuesList;
+        valuesList = (List<Object>) entry.getValues();
+
+        int bytesWritten = 0;
+
+        for (Object value : valuesList) {
+            writer.writeUnsignedInt((long) value);
+            bytesWritten += 4;
+        }
+
+        return bytesWritten;
+    }
+
 }
