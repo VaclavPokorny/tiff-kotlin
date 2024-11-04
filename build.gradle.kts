@@ -22,6 +22,7 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(21)
 }
