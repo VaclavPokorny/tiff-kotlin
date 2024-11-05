@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  */
 public final class ByteField extends AbstractRasterFieldType {
     public ByteField() {
-        super(1, TiffConstants.SampleFormat.SAMPLE_FORMAT_UNSIGNED_INT);
+        super(1, TiffConstants.SampleFormat.UNSIGNED_INT);
     }
 
     @Override

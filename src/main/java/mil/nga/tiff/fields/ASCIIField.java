@@ -66,24 +66,12 @@ public final class ASCIIField extends AbstractFieldType {
             bytesWritten += writer.writeString((String) value);
             if (bytesWritten < entry.getTypeCount()) {
                 long fillerBytes = entry.getTypeCount() - bytesWritten;
-                writeFillerBytes(writer, fillerBytes);
+                writer.writeFillerBytes(fillerBytes);
                 bytesWritten += (int) fillerBytes;
             }
         }
 
         return bytesWritten;
-    }
-
-    /**
-     * Write filler 0 bytes
-     *
-     * @param writer byte writer
-     * @param count  number of 0 bytes to write
-     */
-    private void writeFillerBytes(ByteWriter writer, long count) {
-        for (long i = 0; i < count; i++) {
-            writer.writeUnsignedByte((short) 0);
-        }
     }
 
 }

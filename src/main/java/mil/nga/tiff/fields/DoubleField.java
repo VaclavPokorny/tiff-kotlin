@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public final class DoubleField extends AbstractRasterFieldType {
     public DoubleField() {
-        super(8, TiffConstants.SampleFormat.SAMPLE_FORMAT_FLOAT);
+        super(8, TiffConstants.SampleFormat.FLOAT);
     }
 
     @Override

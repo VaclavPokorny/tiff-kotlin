@@ -782,7 +782,7 @@ public class Rasters {
 
         Integer rowsPerStrip = null;
 
-        if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY) {
+        if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
             rowsPerStrip = rowsPerStrip(sizePixel(), maxBytesPerStrip);
         } else {
 

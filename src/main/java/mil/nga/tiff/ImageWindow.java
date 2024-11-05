@@ -147,6 +147,18 @@ public class ImageWindow {
 		this.maxY = maxY;
 	}
 
+    public int getWidth() {
+        return maxX - minX;
+    }
+
+    public int getHeight() {
+        return maxY - minY;
+    }
+
+    public int getNumPixels() {
+        return getWidth() * getHeight();
+    }
+
 	/**
 	 * {@inheritDoc}
 	 */

@@ -36,7 +36,7 @@ public class Predictor {
 	public static byte[] decode(byte[] bytes, int predictor, int width,
 			int height, List<Integer> bitsPerSample, int planarConfiguration) {
 
-		if (predictor != TiffConstants.DifferencingPredictor.PREDICTOR_NO) {
+		if (predictor != TiffConstants.DifferencingPredictor.NO) {
 
 			int numBitsPerSample = bitsPerSample.getFirst();
 			if (numBitsPerSample % 8 != 0) {
@@ -65,11 +65,11 @@ public class Predictor {
 						break;
 					}
 					switch (predictor) {
-					case TiffConstants.DifferencingPredictor.PREDICTOR_HORIZONTAL:
+					case TiffConstants.DifferencingPredictor.HORIZONTAL:
 						decodeHorizontal(reader, writer, width, bytesPerSample,
 								samples);
 						break;
-					case TiffConstants.DifferencingPredictor.PREDICTOR_FLOATINGPOINT:
+					case TiffConstants.DifferencingPredictor.FLOATINGPOINT:
 						decodeFloatingPoint(reader, writer, width,
 								bytesPerSample, samples);
 						break;

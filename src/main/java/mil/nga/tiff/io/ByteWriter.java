@@ -244,4 +244,15 @@ public class ByteWriter {
 		os.write(valueBytes);
 	}
 
+    /**
+     * Write filler 0 bytes
+     *
+     * @param count  number of 0 bytes to write
+     */
+    public void writeFillerBytes(long count) {
+        for (long i = 0; i < count; i++) {
+            writeUnsignedByte((short) 0);
+        }
+    }
+
 }

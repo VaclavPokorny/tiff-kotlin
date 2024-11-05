@@ -90,8 +90,7 @@ public class FileDirectory {
      * @param entries file directory entries
      * @param reader  TIFF file byte reader
      */
-    public FileDirectory(SortedSet<FileDirectoryEntry> entries,
-                         ByteReader reader) {
+    public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader) {
         this(entries, reader, false);
     }
 
@@ -102,8 +101,7 @@ public class FileDirectory {
      * @param reader    TIFF file byte reader
      * @param cacheData true to cache tiles and strips
      */
-    public FileDirectory(SortedSet<FileDirectoryEntry> entries,
-                         ByteReader reader, boolean cacheData) {
+    public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader, boolean cacheData) {
         // Set the entries and the field tag type mapping
         this.entries = entries;
         for (FileDirectoryEntry entry : entries) {
@@ -120,53 +118,45 @@ public class FileDirectory {
 
         // Determine and validate the planar configuration
         Integer pc = getPlanarConfiguration();
-        planarConfiguration = pc != null ? pc
-                : TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY;
-        if (planarConfiguration != TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY
-                && planarConfiguration != TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
-            throw new TiffException(
-                    "Invalid planar configuration: " + planarConfiguration);
+        planarConfiguration = pc != null ? pc : TiffConstants.PlanarConfiguration.CHUNKY;
+        if (planarConfiguration != TiffConstants.PlanarConfiguration.CHUNKY && planarConfiguration != TiffConstants.PlanarConfiguration.PLANAR) {
+            throw new TiffException("Invalid planar configuration: " + planarConfiguration);
         }
 
         // Determine the decoder based upon the compression
         Integer compression = getCompression();
         if (compression == null) {
-            compression = TiffConstants.Compression.COMPRESSION_NO;
+            compression = TiffConstants.Compression.NO;
         }
         switch (compression) {
-            case TiffConstants.Compression.COMPRESSION_NO:
+            case TiffConstants.Compression.NO:
                 decoder = new RawCompression();
                 break;
-            case TiffConstants.Compression.COMPRESSION_CCITT_HUFFMAN:
-                decoder = new UnsupportedCompression(
-                        "CCITT Huffman compression not supported: " + compression);
+            case TiffConstants.Compression.CCITT_HUFFMAN:
+                decoder = new UnsupportedCompression("CCITT Huffman compression not supported: " + compression);
                 break;
-            case TiffConstants.Compression.COMPRESSION_T4:
-                decoder = new UnsupportedCompression(
-                        "T4-encoding compression not supported: " + compression);
+            case TiffConstants.Compression.T4:
+                decoder = new UnsupportedCompression("T4-encoding compression not supported: " + compression);
                 break;
-            case TiffConstants.Compression.COMPRESSION_T6:
-                decoder = new UnsupportedCompression(
-                        "T6-encoding compression not supported: " + compression);
+            case TiffConstants.Compression.T6:
+                decoder = new UnsupportedCompression("T6-encoding compression not supported: " + compression);
                 break;
-            case TiffConstants.Compression.COMPRESSION_LZW:
+            case TiffConstants.Compression.LZW:
                 decoder = new LZWCompression();
                 break;
-            case TiffConstants.Compression.COMPRESSION_JPEG_OLD:
-            case TiffConstants.Compression.COMPRESSION_JPEG_NEW:
-                decoder = new UnsupportedCompression(
-                        "JPEG compression not supported: " + compression);
+            case TiffConstants.Compression.JPEG_OLD:
+            case TiffConstants.Compression.JPEG_NEW:
+                decoder = new UnsupportedCompression("JPEG compression not supported: " + compression);
                 break;
-            case TiffConstants.Compression.COMPRESSION_DEFLATE:
-            case TiffConstants.Compression.COMPRESSION_PKZIP_DEFLATE:
+            case TiffConstants.Compression.DEFLATE:
+            case TiffConstants.Compression.PKZIP_DEFLATE:
                 decoder = new DeflateCompression();
                 break;
-            case TiffConstants.Compression.COMPRESSION_PACKBITS:
+            case TiffConstants.Compression.PACKBITS:
                 decoder = new PackbitsCompression();
                 break;
             default:
-                decoder = new UnsupportedCompression(
-                        "Unknown compression method identifier: " + compression);
+                decoder = new UnsupportedCompression("Unknown compression method identifier: " + compression);
         }
 
         // Determine the differencing predictor
@@ -195,8 +185,7 @@ public class FileDirectory {
      * @param entries file directory entries
      * @param rasters image rasters to write
      */
-    public FileDirectory(SortedSet<FileDirectoryEntry> entries,
-                         Rasters rasters) {
+    public FileDirectory(SortedSet<FileDirectoryEntry> entries, Rasters rasters) {
         this.entries = entries;
         for (FileDirectoryEntry entry : entries) {
             fieldTagTypeMapping.put(entry.getFieldTag(), entry);
@@ -364,8 +353,7 @@ public class FileDirectory {
      * @param bitsPerSample bits per sample
      */
     public void setBitsPerSample(List<Integer> bitsPerSample) {
-        setUnsignedIntegerListEntryValue(FieldTagType.BitsPerSample,
-                bitsPerSample);
+        setUnsignedIntegerListEntryValue(FieldTagType.BitsPerSample, bitsPerSample);
     }
 
     /**
@@ -419,8 +407,7 @@ public class FileDirectory {
      * @param photometricInterpretation photometric interpretation
      */
     public void setPhotometricInterpretation(int photometricInterpretation) {
-        setUnsignedIntegerEntryValue(FieldTagType.PhotometricInterpretation,
-                photometricInterpretation);
+        setUnsignedIntegerEntryValue(FieldTagType.PhotometricInterpretation, photometricInterpretation);
     }
 
     /**
@@ -438,8 +425,7 @@ public class FileDirectory {
      * @param stripOffsets strip offsets
      */
     public void setStripOffsets(List<Integer> stripOffsets) {
-        setUnsignedIntegerListEntryValue(FieldTagType.StripOffsets,
-                stripOffsets);
+        setUnsignedIntegerListEntryValue(FieldTagType.StripOffsets, stripOffsets);
     }
 
     /**
@@ -476,8 +462,7 @@ public class FileDirectory {
      * @since 2.0.0
      */
     public int getSamplesPerPixel() {
-        Integer samplesPerPixel = getIntegerEntryValue(
-                FieldTagType.SamplesPerPixel);
+        Integer samplesPerPixel = getIntegerEntryValue(FieldTagType.SamplesPerPixel);
         if (samplesPerPixel == null) {
             // if SamplesPerPixel tag is missing, use default value defined by
             // TIFF standard
@@ -492,8 +477,7 @@ public class FileDirectory {
      * @param samplesPerPixel samples per pixel
      */
     public void setSamplesPerPixel(int samplesPerPixel) {
-        setUnsignedIntegerEntryValue(FieldTagType.SamplesPerPixel,
-                samplesPerPixel);
+        setUnsignedIntegerEntryValue(FieldTagType.SamplesPerPixel, samplesPerPixel);
     }
 
     /**
@@ -538,8 +522,7 @@ public class FileDirectory {
      * @param stripByteCounts strip byte counts
      */
     public void setStripByteCounts(List<Integer> stripByteCounts) {
-        setUnsignedIntegerListEntryValue(FieldTagType.StripByteCounts,
-                stripByteCounts);
+        setUnsignedIntegerListEntryValue(FieldTagType.StripByteCounts, stripByteCounts);
     }
 
     /**
@@ -548,8 +531,7 @@ public class FileDirectory {
      * @param stripByteCounts strip byte counts
      */
     public void setStripByteCountsAsLongs(List<Long> stripByteCounts) {
-        setUnsignedLongListEntryValue(FieldTagType.StripByteCounts,
-                stripByteCounts);
+        setUnsignedLongListEntryValue(FieldTagType.StripByteCounts, stripByteCounts);
     }
 
     /**
@@ -639,8 +621,7 @@ public class FileDirectory {
      * @param planarConfiguration planar configuration
      */
     public void setPlanarConfiguration(int planarConfiguration) {
-        setUnsignedIntegerEntryValue(FieldTagType.PlanarConfiguration,
-                planarConfiguration);
+        setUnsignedIntegerEntryValue(FieldTagType.PlanarConfiguration, planarConfiguration);
     }
 
     /**
@@ -658,8 +639,7 @@ public class FileDirectory {
      * @param resolutionUnit resolution unit
      */
     public void setResolutionUnit(int resolutionUnit) {
-        setUnsignedIntegerEntryValue(FieldTagType.ResolutionUnit,
-                resolutionUnit);
+        setUnsignedIntegerEntryValue(FieldTagType.ResolutionUnit, resolutionUnit);
     }
 
     /**
@@ -735,8 +715,7 @@ public class FileDirectory {
      * @return tile width
      */
     public Number getTileWidth() {
-        return tiled ? getNumberEntryValue(FieldTagType.TileWidth)
-                : getImageWidth();
+        return tiled ? getNumberEntryValue(FieldTagType.TileWidth) : getImageWidth();
     }
 
     /**
@@ -763,8 +742,7 @@ public class FileDirectory {
      * @return tile height
      */
     public Number getTileHeight() {
-        return tiled ? getNumberEntryValue(FieldTagType.TileLength)
-                : getRowsPerStrip();
+        return tiled ? getNumberEntryValue(FieldTagType.TileLength) : getRowsPerStrip();
     }
 
     /**
@@ -827,8 +805,7 @@ public class FileDirectory {
      * @param tileByteCounts tile byte counts
      */
     public void setTileByteCounts(List<Integer> tileByteCounts) {
-        setUnsignedIntegerListEntryValue(FieldTagType.TileByteCounts,
-                tileByteCounts);
+        setUnsignedIntegerListEntryValue(FieldTagType.TileByteCounts, tileByteCounts);
     }
 
     /**
@@ -837,8 +814,7 @@ public class FileDirectory {
      * @param tileByteCounts tile byte counts
      */
     public void setTileByteCountsAsLongs(List<Long> tileByteCounts) {
-        setUnsignedLongListEntryValue(FieldTagType.TileByteCounts,
-                tileByteCounts);
+        setUnsignedLongListEntryValue(FieldTagType.TileByteCounts, tileByteCounts);
     }
 
     /**
@@ -874,8 +850,7 @@ public class FileDirectory {
      * @param sampleFormat sample format
      */
     public void setSampleFormat(List<Integer> sampleFormat) {
-        setUnsignedIntegerListEntryValue(FieldTagType.SampleFormat,
-                sampleFormat);
+        setUnsignedIntegerListEntryValue(FieldTagType.SampleFormat, sampleFormat);
     }
 
     /**
@@ -1038,8 +1013,7 @@ public class FileDirectory {
      * @param interleaveValues true to read results as interleaved
      * @return rasters
      */
-    public Rasters readRasters(ImageWindow window, boolean sampleValues,
-                               boolean interleaveValues) {
+    public Rasters readRasters(ImageWindow window, boolean sampleValues, boolean interleaveValues) {
         return readRasters(window, null, sampleValues, interleaveValues);
     }
 
@@ -1051,8 +1025,7 @@ public class FileDirectory {
      * @param interleaveValues true to read results as interleaved
      * @return rasters
      */
-    public Rasters readRasters(int[] samples, boolean sampleValues,
-                               boolean interleaveValues) {
+    public Rasters readRasters(int[] samples, boolean sampleValues, boolean interleaveValues) {
         ImageWindow window = new ImageWindow(this);
         return readRasters(window, samples, sampleValues, interleaveValues);
     }
@@ -1066,19 +1039,15 @@ public class FileDirectory {
      * @param interleaveValues true to read results as interleaved
      * @return rasters
      */
-    public Rasters readRasters(ImageWindow window, int[] samples,
-                               boolean sampleValues, boolean interleaveValues) {
+    public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues) {
 
         int width = getImageWidth().intValue();
         int height = getImageHeight().intValue();
 
         // Validate the image window
-        if (window.getMinX() < 0 || window.getMinY() < 0
-                || window.getMaxX() > width || window.getMaxY() > height) {
-            throw new TiffException("Window is out of the image bounds. Width: "
-                    + width + ", Height: " + height + ", Window: " + window);
-        } else if (window.getMinX() > window.getMaxX()
-                || window.getMinY() > window.getMaxY()) {
+        if (window.getMinX() < 0 || window.getMinY() < 0 || window.getMaxX() > width || window.getMaxY() > height) {
+            throw new TiffException("Window is out of the image bounds. Width: " + width + ", Height: " + height + ", Window: " + window);
+        } else if (window.getMinX() > window.getMaxX() || window.getMinY() > window.getMaxY()) {
             throw new TiffException("Invalid window range: " + window);
         }
 
@@ -1096,8 +1065,7 @@ public class FileDirectory {
         } else {
             for (int sample : samples) {
                 if (sample >= samplesPerPixel) {
-                    throw new TiffException(
-                            "Invalid sample index: " + sample);
+                    throw new TiffException("Invalid sample index: " + sample);
                 }
             }
         }
@@ -1119,13 +1087,10 @@ public class FileDirectory {
         if (sampleValues) {
             sample = new ByteBuffer[samplesPerPixel];
             for (int i = 0; i < sample.length; ++i) {
-                double numberOfBytes = (double) numPixels
-                        * Double.valueOf(bitsPerSample.get(i)) / 8;
+                double numberOfBytes = (double) numPixels * Double.valueOf(bitsPerSample.get(i)) / 8;
 
                 if (numberOfBytes > Integer.MAX_VALUE) {
-                    throw new TiffException(
-                            "Number of sample value bytes is above max byte buffer capacity: "
-                                    + numberOfBytes);
+                    throw new TiffException("Number of sample value bytes is above max byte buffer capacity: " + numberOfBytes);
                 }
 
                 sample[i] = ByteBuffer.allocateDirect((int) numberOfBytes);
@@ -1139,8 +1104,7 @@ public class FileDirectory {
         }
 
         // Create the rasters results
-        Rasters rasters = new Rasters(windowWidth, windowHeight, fieldTypes,
-                sample, interleave);
+        Rasters rasters = new Rasters(windowWidth, windowHeight, fieldTypes, sample, interleave);
 
         // Read the rasters
         readRaster(window, samples, rasters);
@@ -1155,8 +1119,7 @@ public class FileDirectory {
      * @param samples pixel samples to read
      * @param rasters rasters to populate
      */
-    private void readRaster(ImageWindow window, int[] samples,
-                            Rasters rasters) {
+    private void readRaster(ImageWindow window, int[] samples, Rasters rasters) {
 
         int tileWidth = getTileWidth().intValue();
         int tileHeight = getTileHeight().intValue();
@@ -1174,7 +1137,7 @@ public class FileDirectory {
         FieldType[] sampleFieldTypes = new FieldType[samples.length];
         for (int i = 0; i < samples.length; i++) {
             int sampleOffset = 0;
-            if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY) {
+            if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
                 sampleOffset = getBitsPerSample().subList(0, samples[i]).stream().mapToInt(Integer::intValue).sum() / 8;
             }
             srcSampleOffsets[i] = sampleOffset;
@@ -1191,46 +1154,32 @@ public class FileDirectory {
 
                 for (int sampleIndex = 0; sampleIndex < samples.length; sampleIndex++) {
                     int sample = samples[sampleIndex];
-                    if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
+                    if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR) {
                         bytesPerPixel = getSampleByteSize(sample);
                     }
 
                     byte[] block = getTileOrStrip(xTile, yTile, sample);
-                    ByteReader blockReader = new ByteReader(block,
-                            reader.getByteOrder());
+                    ByteReader blockReader = new ByteReader(block, reader.getByteOrder());
 
-                    for (int y = Math.max(0, window.getMinY()
-                            - firstLine); y < Math.min(tileHeight, tileHeight
-                            - (lastLine - window.getMaxY())); y++) {
+                    for (int y = Math.max(0, window.getMinY() - firstLine); y < Math.min(tileHeight, tileHeight - (lastLine - window.getMaxY())); y++) {
 
-                        for (int x = Math.max(0, window.getMinX()
-                                - firstCol); x < Math.min(tileWidth, tileWidth
-                                - (lastCol - window.getMaxX())); x++) {
+                        for (int x = Math.max(0, window.getMinX() - firstCol); x < Math.min(tileWidth, tileWidth - (lastCol - window.getMaxX())); x++) {
 
-                            int pixelOffset = (y * tileWidth + x)
-                                    * bytesPerPixel;
-                            int valueOffset = pixelOffset
-                                    + srcSampleOffsets[sampleIndex];
+                            int pixelOffset = (y * tileWidth + x) * bytesPerPixel;
+                            int valueOffset = pixelOffset + srcSampleOffsets[sampleIndex];
                             blockReader.setNextByte(valueOffset);
 
                             // Read the value
-                            Number value = readValue(blockReader,
-                                    sampleFieldTypes[sampleIndex]);
+                            Number value = readValue(blockReader, sampleFieldTypes[sampleIndex]);
 
                             if (rasters.hasInterleaveValues()) {
-                                int windowCoordinate = (y + firstLine
-                                        - window.getMinY()) * windowWidth
-                                        + (x + firstCol - window.getMinX());
-                                rasters.addToInterleave(sampleIndex,
-                                        windowCoordinate, value);
+                                int windowCoordinate = (y + firstLine - window.getMinY()) * windowWidth + (x + firstCol - window.getMinX());
+                                rasters.addToInterleave(sampleIndex, windowCoordinate, value);
                             }
 
                             if (rasters.hasSampleValues()) {
-                                int windowCoordinate = (y + firstLine
-                                        - window.getMinY()) * windowWidth + x
-                                        + firstCol - window.getMinX();
-                                rasters.addToSample(sampleIndex,
-                                        windowCoordinate, value);
+                                int windowCoordinate = (y + firstLine - window.getMinY()) * windowWidth + x + firstCol - window.getMinX();
+                                rasters.addToSample(sampleIndex, windowCoordinate, value);
                             }
                         }
 
@@ -1260,11 +1209,7 @@ public class FileDirectory {
     public FieldType getFieldTypeForSample(int sampleIndex) {
 
         List<Integer> sampleFormatList = getSampleFormat();
-        int sampleFormat = sampleFormatList == null
-                ? TiffConstants.SampleFormat.SAMPLE_FORMAT_UNSIGNED_INT
-                : sampleFormatList
-                .get(sampleIndex < sampleFormatList.size() ? sampleIndex
-                        : 0);
+        int sampleFormat = sampleFormatList == null ? TiffConstants.SampleFormat.UNSIGNED_INT : sampleFormatList.get(sampleIndex < sampleFormatList.size() ? sampleIndex : 0);
         int bitsPerSample = getBitsPerSample().get(sampleIndex);
 
         return FieldType.getFieldType(sampleFormat, bitsPerSample);
@@ -1290,11 +1235,10 @@ public class FileDirectory {
         int numTilesPerCol = (imageHeight + tileHeight - 1) / tileHeight;
 
         int index = 0;
-        if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_CHUNKY) {
+        if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
             index = y * numTilesPerRow + x;
-        } else if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR_CONFIGURATION_PLANAR) {
-            index = sample * numTilesPerRow * numTilesPerCol
-                    + y * numTilesPerRow + x;
+        } else if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR) {
+            index = sample * numTilesPerRow * numTilesPerCol + y * numTilesPerRow + x;
         }
 
         // Attempt to pull from the cache
@@ -1322,9 +1266,7 @@ public class FileDirectory {
             tileOrStrip = decoder.decode(bytes, reader.getByteOrder());
 
             if (predictor != null) {
-                tileOrStrip = Predictor.decode(tileOrStrip, predictor,
-                        tileWidth, tileHeight, getBitsPerSample(),
-                        planarConfiguration);
+                tileOrStrip = Predictor.decode(tileOrStrip, predictor, tileWidth, tileHeight, getBitsPerSample(), planarConfiguration);
             }
 
             // Cache the data
@@ -1348,13 +1290,11 @@ public class FileDirectory {
     private int getSampleByteSize(int sampleIndex) {
         List<Integer> bitsPerSample = getBitsPerSample();
         if (sampleIndex >= bitsPerSample.size()) {
-            throw new TiffException(
-                    "Sample index " + sampleIndex + " is out of range");
+            throw new TiffException("Sample index " + sampleIndex + " is out of range");
         }
         int bits = bitsPerSample.get(sampleIndex);
         if ((bits % 8) != 0) {
-            throw new TiffException(
-                    "Sample bit-width of " + bits + " is not supported");
+            throw new TiffException("Sample bit-width of " + bits + " is not supported");
         }
         return (bits / 8);
     }
@@ -1372,13 +1312,9 @@ public class FileDirectory {
         for (int i = 0; i < bitsPerSamples.size(); i++) {
             int bits = bitsPerSamples.get(i);
             if ((bits % 8) != 0) {
-                throw new TiffException(
-                        "Sample bit-width of " + bits + " is not supported");
+                throw new TiffException("Sample bit-width of " + bits + " is not supported");
             } else if (bits != bitsPerSamples.getFirst()) {
-                throw new TiffException(
-                        "Differing size of samples in a pixel are not supported. sample 0 = "
-                                + bitsPerSamples.getFirst() + ", sample " + i
-                                + " = " + bits);
+                throw new TiffException("Differing size of samples in a pixel are not supported. sample 0 = " + bitsPerSamples.getFirst() + ", sample " + i + " = " + bits);
             }
             bitsPerSample += bits;
         }
@@ -1403,8 +1339,7 @@ public class FileDirectory {
      * @param value        unsigned integer value (16 bit)
      * @since 2.0.0
      */
-    public void setUnsignedIntegerEntryValue(FieldTagType fieldTagType,
-                                             int value) {
+    public void setUnsignedIntegerEntryValue(FieldTagType fieldTagType, int value) {
         setEntryValue(fieldTagType, FieldType.SHORT, 1, value);
     }
 
@@ -1426,8 +1361,7 @@ public class FileDirectory {
      * @param value        unsigned long value (32 bit)
      * @since 2.0.0
      */
-    public void setUnsignedLongEntryValue(FieldTagType fieldTagType,
-                                          long value) {
+    public void setUnsignedLongEntryValue(FieldTagType fieldTagType, long value) {
         setEntryValue(fieldTagType, FieldType.LONG, 1, value);
     }
 
@@ -1457,8 +1391,7 @@ public class FileDirectory {
     public void setStringEntryValue(FieldTagType fieldTagType, String value) {
         List<String> values = new ArrayList<>();
         values.add(value);
-        setEntryValue(fieldTagType, FieldType.ASCII, value.length() + 1,
-                values);
+        setEntryValue(fieldTagType, FieldType.ASCII, value.length() + 1, values);
     }
 
     /**
@@ -1490,8 +1423,7 @@ public class FileDirectory {
      * @param value        double list value
      * @since 2.0.5
      */
-    public void setDoubleListEntryValue(FieldTagType fieldTagType,
-                                        List<Double> value) {
+    public void setDoubleListEntryValue(FieldTagType fieldTagType, List<Double> value) {
         setEntryValue(fieldTagType, FieldType.DOUBLE, value.size(), value);
     }
 
@@ -1502,8 +1434,7 @@ public class FileDirectory {
      * @param value        integer list value
      * @since 2.0.0
      */
-    public void setUnsignedIntegerListEntryValue(FieldTagType fieldTagType,
-                                                 List<Integer> value) {
+    public void setUnsignedIntegerListEntryValue(FieldTagType fieldTagType, List<Integer> value) {
         setEntryValue(fieldTagType, FieldType.SHORT, value.size(), value);
     }
 
@@ -1552,8 +1483,7 @@ public class FileDirectory {
      * @param value        long list value
      * @since 2.0.0
      */
-    public void setUnsignedLongListEntryValue(FieldTagType fieldTagType,
-                                              List<Long> value) {
+    public void setUnsignedLongListEntryValue(FieldTagType fieldTagType, List<Long> value) {
         setEntryValue(fieldTagType, FieldType.LONG, value.size(), value);
     }
 
@@ -1595,10 +1525,8 @@ public class FileDirectory {
      * @param typeCount    type count
      * @param values       entry values
      */
-    private void setEntryValue(FieldTagType fieldTagType, FieldType fieldType,
-                               long typeCount, Object values) {
-        FileDirectoryEntry entry = new FileDirectoryEntry(fieldTagType,
-                fieldType, typeCount, values);
+    private void setEntryValue(FieldTagType fieldTagType, FieldType fieldType, long typeCount, Object values) {
+        FileDirectoryEntry entry = new FileDirectoryEntry(fieldTagType, fieldType, typeCount, values);
         addEntry(entry);
     }
 
@@ -1644,9 +1572,7 @@ public class FileDirectory {
      * @return size in bytes
      */
     public long size() {
-        return TiffConstants.IFD_HEADER_BYTES
-                + ((long) entries.size() * TiffConstants.IFD_ENTRY_BYTES)
-                + TiffConstants.IFD_OFFSET_BYTES;
+        return TiffConstants.IFD_HEADER_BYTES + ((long) entries.size() * TiffConstants.IFD_ENTRY_BYTES) + TiffConstants.IFD_OFFSET_BYTES;
     }
 
     /**
@@ -1656,8 +1582,7 @@ public class FileDirectory {
      * @return size in bytes
      */
     public long sizeWithValues() {
-        long size = TiffConstants.IFD_HEADER_BYTES
-                + TiffConstants.IFD_OFFSET_BYTES;
+        long size = TiffConstants.IFD_HEADER_BYTES + TiffConstants.IFD_OFFSET_BYTES;
         for (FileDirectoryEntry entry : entries) {
             size += entry.sizeWithValues();
         }

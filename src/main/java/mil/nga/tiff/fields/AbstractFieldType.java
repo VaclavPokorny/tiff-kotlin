@@ -20,7 +20,7 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
 
     public AbstractFieldType(int bytes) {
         this.bytes = bytes;
-        this.sampleFormat = TiffConstants.SampleFormat.SAMPLE_FORMAT_UNDEFINED;
+        this.sampleFormat = TiffConstants.SampleFormat.UNDEFINED;
     }
 
     public AbstractFieldType(int bytes, int sampleFormat) {
@@ -43,7 +43,7 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
      * @since 2.0.0
      */
     public int getSampleFormat() {
-        if (sampleFormat == TiffConstants.SampleFormat.SAMPLE_FORMAT_UNDEFINED) {
+        if (sampleFormat == TiffConstants.SampleFormat.UNDEFINED) {
             throw new TiffException("Unsupported sample format");
         }
         return sampleFormat;
