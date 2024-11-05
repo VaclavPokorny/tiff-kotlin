@@ -1,17 +1,13 @@
-package mil.nga.tiff;
+package mil.nga.tiff.internal;
 
+import mil.nga.tiff.FieldTagType;
+import mil.nga.tiff.FieldType;
 import mil.nga.tiff.compression.CompressionDecoder;
-import mil.nga.tiff.compression.DeflateCompression;
-import mil.nga.tiff.compression.LZWCompression;
-import mil.nga.tiff.compression.PackbitsCompression;
-import mil.nga.tiff.compression.Predictor;
-import mil.nga.tiff.compression.RawCompression;
-import mil.nga.tiff.compression.UnsupportedCompression;
 import mil.nga.tiff.io.ByteReader;
+import mil.nga.tiff.util.Compression;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +18,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * File Directory, represents all directory entries and can be used to read the
+ * File Directory, represents all internal entries and can be used to read the
  * image raster
  *
  * @author osbornb
@@ -30,7 +26,7 @@ import java.util.TreeSet;
 public class FileDirectory {
 
     /**
-     * File directory entries in sorted tag id order
+     * File internal entries in sorted tag id order
      */
     private final SortedSet<FileDirectoryEntry> entries;
 
@@ -65,29 +61,18 @@ public class FileDirectory {
     private CompressionDecoder decoder;
 
     /**
-     * Cache
-     */
-    private Map<Integer, byte[]> cache = null;
-
-    /**
      * Rasters to write to the TIFF file
      */
     private Rasters writeRasters = null;
 
-    /**
-     * Last block index, index of single block cache
-     */
-    private int lastBlockIndex = -1;
 
-    /**
-     * Last block, single block cache when caching is not enabled
-     */
-    private byte[] lastBlock;
+    private final TileOrStripProcessor tileOrStripProcessor = new TileOrStripProcessor(this);
+    private final FileDirectoryRasterReader rasterReader = new FileDirectoryRasterReader(this, tileOrStripProcessor);
 
     /**
      * Constructor, for reading TIFF files
      *
-     * @param entries file directory entries
+     * @param entries file internal entries
      * @param reader  TIFF file byte reader
      */
     public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader) {
@@ -97,7 +82,7 @@ public class FileDirectory {
     /**
      * Constructor, for reading TIFF files
      *
-     * @param entries   file directory entries
+     * @param entries   file internal entries
      * @param reader    TIFF file byte reader
      * @param cacheData true to cache tiles and strips
      */
@@ -105,7 +90,7 @@ public class FileDirectory {
         // Set the entries and the field tag type mapping
         this.entries = entries;
         for (FileDirectoryEntry entry : entries) {
-            fieldTagTypeMapping.put(entry.getFieldTag(), entry);
+            fieldTagTypeMapping.put(entry.fieldTag(), entry);
         }
 
         this.reader = reader;
@@ -124,40 +109,7 @@ public class FileDirectory {
         }
 
         // Determine the decoder based upon the compression
-        Integer compression = getCompression();
-        if (compression == null) {
-            compression = TiffConstants.Compression.NO;
-        }
-        switch (compression) {
-            case TiffConstants.Compression.NO:
-                decoder = new RawCompression();
-                break;
-            case TiffConstants.Compression.CCITT_HUFFMAN:
-                decoder = new UnsupportedCompression("CCITT Huffman compression not supported: " + compression);
-                break;
-            case TiffConstants.Compression.T4:
-                decoder = new UnsupportedCompression("T4-encoding compression not supported: " + compression);
-                break;
-            case TiffConstants.Compression.T6:
-                decoder = new UnsupportedCompression("T6-encoding compression not supported: " + compression);
-                break;
-            case TiffConstants.Compression.LZW:
-                decoder = new LZWCompression();
-                break;
-            case TiffConstants.Compression.JPEG_OLD:
-            case TiffConstants.Compression.JPEG_NEW:
-                decoder = new UnsupportedCompression("JPEG compression not supported: " + compression);
-                break;
-            case TiffConstants.Compression.DEFLATE:
-            case TiffConstants.Compression.PKZIP_DEFLATE:
-                decoder = new DeflateCompression();
-                break;
-            case TiffConstants.Compression.PACKBITS:
-                decoder = new PackbitsCompression();
-                break;
-            default:
-                decoder = new UnsupportedCompression("Unknown compression method identifier: " + compression);
-        }
+        decoder = Compression.getDecoder(getCompression());
 
         // Determine the differencing predictor
         predictor = getPredictor();
@@ -182,13 +134,13 @@ public class FileDirectory {
     /**
      * Constructor, for writing TIFF files
      *
-     * @param entries file directory entries
+     * @param entries file internal entries
      * @param rasters image rasters to write
      */
     public FileDirectory(SortedSet<FileDirectoryEntry> entries, Rasters rasters) {
         this.entries = entries;
         for (FileDirectoryEntry entry : entries) {
-            fieldTagTypeMapping.put(entry.getFieldTag(), entry);
+            fieldTagTypeMapping.put(entry.fieldTag(), entry);
         }
         this.writeRasters = rasters;
     }
@@ -196,12 +148,12 @@ public class FileDirectory {
     /**
      * Add an entry
      *
-     * @param entry file directory entry
+     * @param entry file internal entry
      */
     public void addEntry(FileDirectoryEntry entry) {
         entries.remove(entry);
         entries.add(entry);
-        fieldTagTypeMapping.put(entry.getFieldTag(), entry);
+        fieldTagTypeMapping.put(entry.fieldTag(), entry);
     }
 
     /**
@@ -211,13 +163,7 @@ public class FileDirectory {
      * @param cacheData true to cache tiles and strips
      */
     public void setCache(boolean cacheData) {
-        if (cacheData) {
-            if (cache == null) {
-                cache = new HashMap<>();
-            }
-        } else {
-            cache = null;
-        }
+        this.tileOrStripProcessor.setCache(cacheData);
     }
 
     /**
@@ -257,26 +203,26 @@ public class FileDirectory {
     }
 
     /**
-     * Get a file directory entry from the field tag type
+     * Get a file internal entry from the field tag type
      *
      * @param fieldTagType field tag type
-     * @return file directory entry
+     * @return file internal entry
      */
     public FileDirectoryEntry get(FieldTagType fieldTagType) {
         return fieldTagTypeMapping.get(fieldTagType);
     }
 
     /**
-     * Get the file directory entries
+     * Get the file internal entries
      *
-     * @return file directory entries
+     * @return file internal entries
      */
     public Set<FileDirectoryEntry> getEntries() {
         return Collections.unmodifiableSet(entries);
     }
 
     /**
-     * Get the field tag type to file directory entry mapping
+     * Get the field tag type to file internal entry mapping
      *
      * @return field tag type mapping
      */
@@ -1040,285 +986,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues) {
-
-        int width = getImageWidth().intValue();
-        int height = getImageHeight().intValue();
-
-        // Validate the image window
-        if (window.getMinX() < 0 || window.getMinY() < 0 || window.getMaxX() > width || window.getMaxY() > height) {
-            throw new TiffException("Window is out of the image bounds. Width: " + width + ", Height: " + height + ", Window: " + window);
-        } else if (window.getMinX() > window.getMaxX() || window.getMinY() > window.getMaxY()) {
-            throw new TiffException("Invalid window range: " + window);
-        }
-
-        int windowWidth = window.getMaxX() - window.getMinX();
-        int windowHeight = window.getMaxY() - window.getMinY();
-        int numPixels = windowWidth * windowHeight;
-
-        // Set or validate the samples
-        int samplesPerPixel = getSamplesPerPixel();
-        if (samples == null) {
-            samples = new int[samplesPerPixel];
-            for (int i = 0; i < samples.length; i++) {
-                samples[i] = i;
-            }
-        } else {
-            for (int sample : samples) {
-                if (sample >= samplesPerPixel) {
-                    throw new TiffException("Invalid sample index: " + sample);
-                }
-            }
-        }
-
-        // Create the interleaved result buffer
-        List<Integer> bitsPerSample = getBitsPerSample();
-        int bytesPerPixel = 0;
-        for (int i = 0; i < samplesPerPixel; ++i) {
-            bytesPerPixel += bitsPerSample.get(i) / 8;
-        }
-        ByteBuffer interleave = null;
-        if (interleaveValues) {
-            interleave = ByteBuffer.allocateDirect(numPixels * bytesPerPixel);
-            interleave.order(reader.getByteOrder());
-        }
-
-        // Create the sample indexed result buffer array
-        ByteBuffer[] sample = null;
-        if (sampleValues) {
-            sample = new ByteBuffer[samplesPerPixel];
-            for (int i = 0; i < sample.length; ++i) {
-                double numberOfBytes = (double) numPixels * Double.valueOf(bitsPerSample.get(i)) / 8;
-
-                if (numberOfBytes > Integer.MAX_VALUE) {
-                    throw new TiffException("Number of sample value bytes is above max byte buffer capacity: " + numberOfBytes);
-                }
-
-                sample[i] = ByteBuffer.allocateDirect((int) numberOfBytes);
-                sample[i].order(reader.getByteOrder());
-            }
-        }
-
-        FieldType[] fieldTypes = new FieldType[samples.length];
-        for (int i = 0; i < samples.length; i++) {
-            fieldTypes[i] = getFieldTypeForSample(samples[i]);
-        }
-
-        // Create the rasters results
-        Rasters rasters = new Rasters(windowWidth, windowHeight, fieldTypes, sample, interleave);
-
-        // Read the rasters
-        readRaster(window, samples, rasters);
-
-        return rasters;
-    }
-
-    /**
-     * Read and populate the rasters
-     *
-     * @param window  image window
-     * @param samples pixel samples to read
-     * @param rasters rasters to populate
-     */
-    private void readRaster(ImageWindow window, int[] samples, Rasters rasters) {
-
-        int tileWidth = getTileWidth().intValue();
-        int tileHeight = getTileHeight().intValue();
-
-        int minXTile = window.getMinX() / tileWidth;
-        int maxXTile = (window.getMaxX() + tileWidth - 1) / tileWidth;
-        int minYTile = window.getMinY() / tileHeight;
-        int maxYTile = (window.getMaxY() + tileHeight - 1) / tileHeight;
-
-        int windowWidth = window.getMaxX() - window.getMinX();
-
-        int bytesPerPixel = getBytesPerPixel();
-
-        int[] srcSampleOffsets = new int[samples.length];
-        FieldType[] sampleFieldTypes = new FieldType[samples.length];
-        for (int i = 0; i < samples.length; i++) {
-            int sampleOffset = 0;
-            if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
-                sampleOffset = getBitsPerSample().subList(0, samples[i]).stream().mapToInt(Integer::intValue).sum() / 8;
-            }
-            srcSampleOffsets[i] = sampleOffset;
-            sampleFieldTypes[i] = getFieldTypeForSample(samples[i]);
-        }
-
-        for (int yTile = minYTile; yTile < maxYTile; yTile++) {
-            for (int xTile = minXTile; xTile < maxXTile; xTile++) {
-
-                int firstLine = yTile * tileHeight;
-                int firstCol = xTile * tileWidth;
-                int lastLine = (yTile + 1) * tileHeight;
-                int lastCol = (xTile + 1) * tileWidth;
-
-                for (int sampleIndex = 0; sampleIndex < samples.length; sampleIndex++) {
-                    int sample = samples[sampleIndex];
-                    if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR) {
-                        bytesPerPixel = getSampleByteSize(sample);
-                    }
-
-                    byte[] block = getTileOrStrip(xTile, yTile, sample);
-                    ByteReader blockReader = new ByteReader(block, reader.getByteOrder());
-
-                    for (int y = Math.max(0, window.getMinY() - firstLine); y < Math.min(tileHeight, tileHeight - (lastLine - window.getMaxY())); y++) {
-
-                        for (int x = Math.max(0, window.getMinX() - firstCol); x < Math.min(tileWidth, tileWidth - (lastCol - window.getMaxX())); x++) {
-
-                            int pixelOffset = (y * tileWidth + x) * bytesPerPixel;
-                            int valueOffset = pixelOffset + srcSampleOffsets[sampleIndex];
-                            blockReader.setNextByte(valueOffset);
-
-                            // Read the value
-                            Number value = readValue(blockReader, sampleFieldTypes[sampleIndex]);
-
-                            if (rasters.hasInterleaveValues()) {
-                                int windowCoordinate = (y + firstLine - window.getMinY()) * windowWidth + (x + firstCol - window.getMinX());
-                                rasters.addToInterleave(sampleIndex, windowCoordinate, value);
-                            }
-
-                            if (rasters.hasSampleValues()) {
-                                int windowCoordinate = (y + firstLine - window.getMinY()) * windowWidth + x + firstCol - window.getMinX();
-                                rasters.addToSample(sampleIndex, windowCoordinate, value);
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Read the value from the reader according to the field type
-     *
-     * @param reader    byte reader
-     * @param fieldType field type
-     * @return value
-     */
-    private Number readValue(ByteReader reader, FieldType fieldType) {
-        return fieldType.readValue(reader);
-    }
-
-    /**
-     * Get the field type for the sample
-     *
-     * @param sampleIndex sample index
-     * @return field type
-     */
-    public FieldType getFieldTypeForSample(int sampleIndex) {
-
-        List<Integer> sampleFormatList = getSampleFormat();
-        int sampleFormat = sampleFormatList == null ? TiffConstants.SampleFormat.UNSIGNED_INT : sampleFormatList.get(sampleIndex < sampleFormatList.size() ? sampleIndex : 0);
-        int bitsPerSample = getBitsPerSample().get(sampleIndex);
-
-        return FieldType.getFieldType(sampleFormat, bitsPerSample);
-    }
-
-    /**
-     * Get the tile or strip for the sample coordinate
-     *
-     * @param x      x coordinate
-     * @param y      y coordinate
-     * @param sample sample index
-     * @return bytes
-     */
-    private byte[] getTileOrStrip(int x, int y, int sample) {
-
-        byte[] tileOrStrip;
-
-        int imageWidth = getImageWidth().intValue();
-        int imageHeight = getImageHeight().intValue();
-        int tileWidth = getTileWidth().intValue();
-        int tileHeight = getTileHeight().intValue();
-        int numTilesPerRow = (imageWidth + tileWidth - 1) / tileWidth;
-        int numTilesPerCol = (imageHeight + tileHeight - 1) / tileHeight;
-
-        int index = 0;
-        if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
-            index = y * numTilesPerRow + x;
-        } else if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR) {
-            index = sample * numTilesPerRow * numTilesPerCol + y * numTilesPerRow + x;
-        }
-
-        // Attempt to pull from the cache
-        if (cache != null && cache.containsKey(index)) {
-            tileOrStrip = cache.get(index);
-        } else if (lastBlockIndex == index && lastBlock != null) {
-            tileOrStrip = lastBlock;
-        } else {
-
-            // Read and decode the block
-
-            long offset;
-            int byteCount;
-
-            if (tiled) {
-                offset = getTileOffsets().get(index);
-                byteCount = getTileByteCounts().get(index).intValue();
-            } else {
-                offset = getStripOffsets().get(index).longValue();
-                byteCount = getStripByteCounts().get(index).intValue();
-            }
-
-            reader.setNextByte(offset);
-            byte[] bytes = reader.readBytes(byteCount);
-            tileOrStrip = decoder.decode(bytes, reader.getByteOrder());
-
-            if (predictor != null) {
-                tileOrStrip = Predictor.decode(tileOrStrip, predictor, tileWidth, tileHeight, getBitsPerSample(), planarConfiguration);
-            }
-
-            // Cache the data
-            if (cache != null) {
-                cache.put(index, tileOrStrip);
-            } else {
-                lastBlockIndex = index;
-                lastBlock = tileOrStrip;
-            }
-        }
-
-        return tileOrStrip;
-    }
-
-    /**
-     * Get the sample byte size
-     *
-     * @param sampleIndex sample index
-     * @return byte size
-     */
-    private int getSampleByteSize(int sampleIndex) {
-        List<Integer> bitsPerSample = getBitsPerSample();
-        if (sampleIndex >= bitsPerSample.size()) {
-            throw new TiffException("Sample index " + sampleIndex + " is out of range");
-        }
-        int bits = bitsPerSample.get(sampleIndex);
-        if ((bits % 8) != 0) {
-            throw new TiffException("Sample bit-width of " + bits + " is not supported");
-        }
-        return (bits / 8);
-    }
-
-    /**
-     * Calculates the number of bytes for each pixel across all samples. Only
-     * full bytes are supported, an exception is thrown when this is not the
-     * case.
-     *
-     * @return the bytes per pixel
-     */
-    private int getBytesPerPixel() {
-        int bitsPerSample = 0;
-        List<Integer> bitsPerSamples = getBitsPerSample();
-        for (int i = 0; i < bitsPerSamples.size(); i++) {
-            int bits = bitsPerSamples.get(i);
-            if ((bits % 8) != 0) {
-                throw new TiffException("Sample bit-width of " + bits + " is not supported");
-            } else if (bits != bitsPerSamples.getFirst()) {
-                throw new TiffException("Differing size of samples in a pixel are not supported. sample 0 = " + bitsPerSamples.getFirst() + ", sample " + i + " = " + bits);
-            }
-            bitsPerSample += bits;
-        }
-        return bitsPerSample / 8;
+        return rasterReader.readRasters(window, samples, sampleValues, interleaveValues, reader, planarConfiguration, tiled, predictor);
     }
 
     /**
@@ -1512,7 +1180,7 @@ public class FileDirectory {
         T value = null;
         FileDirectoryEntry entry = fieldTagTypeMapping.get(fieldTagType);
         if (entry != null) {
-            value = (T) entry.getValues();
+            value = (T) entry.values();
         }
         return value;
     }
@@ -1576,7 +1244,7 @@ public class FileDirectory {
     }
 
     /**
-     * Size in bytes of the image file directory including entry values (not
+     * Size in bytes of the image file internal including entry values (not
      * contiguous bytes)
      *
      * @return size in bytes

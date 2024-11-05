@@ -10,9 +10,9 @@ import java.nio.ByteBuffer;
 /**
  * 16-bit (2-byte) unsigned integer
  */
-public final class ShortField extends AbstractRasterFieldType {
-    public ShortField() {
-        super(2, TiffConstants.SampleFormat.UNSIGNED_INT);
+public final class UnsignedShortField extends AbstractShortField {
+    public UnsignedShortField() {
+        super(TiffConstants.SampleFormat.UNSIGNED_INT);
     }
 
     @Override
@@ -23,16 +23,6 @@ public final class ShortField extends AbstractRasterFieldType {
     @Override
     public Number readSample(ByteBuffer buffer) {
         return buffer.getShort() & 0xffff;
-    }
-
-    @Override
-    public void writeSample(ByteBuffer buffer, Number value) {
-        buffer.putShort(value.shortValue());
-    }
-
-    @Override
-    public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
-        outBuffer.putShort(inBuffer.getShort());
     }
 
     @Override

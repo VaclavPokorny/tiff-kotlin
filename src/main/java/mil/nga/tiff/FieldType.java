@@ -1,13 +1,14 @@
 package mil.nga.tiff;
 
+import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.fields.ASCIIField;
 import mil.nga.tiff.fields.AbstractFieldType;
-import mil.nga.tiff.fields.ByteField;
+import mil.nga.tiff.fields.UnsignedByteField;
 import mil.nga.tiff.fields.DoubleField;
 import mil.nga.tiff.fields.FloatField;
-import mil.nga.tiff.fields.LongField;
-import mil.nga.tiff.fields.RationalField;
-import mil.nga.tiff.fields.ShortField;
+import mil.nga.tiff.fields.UnsignedLongField;
+import mil.nga.tiff.fields.UnsignedRationalField;
+import mil.nga.tiff.fields.UnsignedShortField;
 import mil.nga.tiff.fields.SignedByteField;
 import mil.nga.tiff.fields.SignedLongField;
 import mil.nga.tiff.fields.SignedRationalField;
@@ -32,7 +33,7 @@ public enum FieldType {
     /**
      * 8-bit unsigned integer
      */
-    BYTE(new ByteField()),
+    BYTE(new UnsignedByteField()),
 
     /**
      * 8-bit byte that contains a 7-bit ASCII code; the last byte must be NUL
@@ -43,18 +44,18 @@ public enum FieldType {
     /**
      * 16-bit (2-byte) unsigned integer
      */
-    SHORT(new ShortField()),
+    SHORT(new UnsignedShortField()),
 
     /**
      * 32-bit (4-byte) unsigned integer
      */
-    LONG(new LongField()),
+    LONG(new UnsignedLongField()),
 
     /**
      * Two LONGs: the first represents the numerator of a fraction; the second,
      * the denominator
      */
-    RATIONAL(new RationalField()),
+    RATIONAL(new UnsignedRationalField()),
 
     /**
      * An 8-bit signed (twos-complement) integer
@@ -146,7 +147,11 @@ public enum FieldType {
      * @since 2.0.0
      */
     public static FieldType getFieldType(int sampleFormat, int bitsPerSample) {
-        return Arrays.stream(values()).filter(o -> o.fieldType.hasSampleFormat(sampleFormat)).filter(o -> o.fieldType.hasBitsPerSample(bitsPerSample)).findAny().orElseThrow(() -> new TiffException("Unsupported field type for sample format: " + sampleFormat + ", bits per sample: " + bitsPerSample));
+        return Arrays.stream(values())
+            .filter(o -> o.fieldType.hasSampleFormat(sampleFormat))
+            .filter(o -> o.fieldType.hasBitsPerSample(bitsPerSample))
+            .findAny()
+            .orElseThrow(() -> new TiffException("Unsupported field type for sample format: " + sampleFormat + ", bits per sample: " + bitsPerSample));
     }
 
     public static int getSampleFormat(FieldType fieldType) {

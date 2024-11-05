@@ -10,9 +10,9 @@ import java.nio.ByteBuffer;
 /**
  * A 32-bit (4-byte) signed (twos-complement) integer
  */
-public final class SignedLongField extends AbstractRasterFieldType {
+public final class SignedLongField extends AbstractLongField {
     public SignedLongField() {
-        super(4, TiffConstants.SampleFormat.SIGNED_INT);
+        super(TiffConstants.SampleFormat.SIGNED_INT);
     }
 
     @Override
@@ -23,16 +23,6 @@ public final class SignedLongField extends AbstractRasterFieldType {
     @Override
     public Number readSample(ByteBuffer buffer) {
         return buffer.getInt();
-    }
-
-    @Override
-    public void writeSample(ByteBuffer buffer, Number value) {
-        buffer.putInt(value.intValue());
-    }
-
-    @Override
-    public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
-        outBuffer.putInt(inBuffer.getInt());
     }
 
     @Override

@@ -1,5 +1,6 @@
-package mil.nga.tiff;
+package mil.nga.tiff.internal;
 
+import mil.nga.tiff.FieldType;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 

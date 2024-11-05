@@ -1,5 +1,6 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.internal.Rasters
 import java.io.File
 import java.io.IOException
 
@@ -43,15 +44,15 @@ object TiffFileTester {
             for (entry in fileDirectory.entries) {
                 println()
                 println(
-                    (entry.fieldTag.toString() + " ("
-                            + entry.fieldTag.id + ")")
+                    (entry.fieldTag().toString() + " ("
+                            + entry.fieldTag().id + ")")
                 )
                 println(
-                    (entry.fieldType.toString() + " ("
-                            + entry.fieldType.bytes + " bytes)")
+                    (entry.fieldType().toString() + " ("
+                            + entry.fieldType().bytes + " bytes)")
                 )
-                println("Count: " + entry.typeCount)
-                println("Values: " + entry.values)
+                println("Count: " + entry.typeCount())
+                println("Values: " + entry.values())
             }
 
             val rasters = fileDirectory.readRasters()

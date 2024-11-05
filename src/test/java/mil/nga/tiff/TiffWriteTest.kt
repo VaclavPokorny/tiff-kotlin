@@ -1,5 +1,9 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.internal.FileDirectory
+import mil.nga.tiff.internal.Rasters
+import mil.nga.tiff.internal.TIFFImage
+import mil.nga.tiff.util.Compression
 import mil.nga.tiff.util.TiffConstants
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -30,7 +34,7 @@ class TiffWriteTest {
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
         fileDirectory.writeRasters = rasters
-        fileDirectory.compression = TiffConstants.Compression.NO
+        fileDirectory.compression = Compression.NO
         fileDirectory.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY
         val rowsPerStrip = rasters
             .calculateRowsPerStrip(fileDirectory.planarConfiguration)
@@ -67,7 +71,7 @@ class TiffWriteTest {
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
         fileDirectory.writeRasters = rasters
-        fileDirectory.compression = TiffConstants.Compression.NO
+        fileDirectory.compression = Compression.NO
         fileDirectory.planarConfiguration = TiffConstants.PlanarConfiguration.PLANAR
         val rowsPerStrip = rasters
             .calculateRowsPerStrip(fileDirectory.planarConfiguration)
@@ -131,7 +135,7 @@ class TiffWriteTest {
         fileDirs.photometricInterpretation =
             TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY
-        fileDirs.compression = TiffConstants.Compression.NO
+        fileDirs.compression = Compression.NO
         fileDirs.writeRasters = newRaster
 
         for (y in 0 until inpHeight) {
@@ -189,7 +193,7 @@ class TiffWriteTest {
             fileDirectory.planarConfiguration
         )
         Assertions.assertEquals(
-            TiffConstants.Compression.NO,
+            Compression.NO,
             fileDirectory.compression
         )
 

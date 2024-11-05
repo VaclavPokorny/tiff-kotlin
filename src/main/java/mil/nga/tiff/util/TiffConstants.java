@@ -47,19 +47,6 @@ public class TiffConstants {
 	 */
 	public static final int DEFAULT_MAX_BYTES_PER_STRIP = 8000;
 
-    public static class Compression {
-        public static final int NO = 1;
-        public static final int CCITT_HUFFMAN = 2;
-        public static final int T4 = 3;
-        public static final int T6 = 4;
-        public static final int LZW = 5;
-        public static final int JPEG_OLD = 6;
-        public static final int JPEG_NEW = 7;
-        public static final int DEFLATE = 8;
-        public static final int PKZIP_DEFLATE = 32946; // PKZIP-style Deflate encoding (Obsolete).
-        public static final int PACKBITS = 32773;
-    }
-
     public static class ExtraSamples {
         public static final int UNSPECIFIED = 0;
         public static final int ASSOCIATED_ALPHA = 1;

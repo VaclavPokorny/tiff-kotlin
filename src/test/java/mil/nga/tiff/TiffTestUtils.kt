@@ -1,5 +1,9 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.internal.FileDirectory
+import mil.nga.tiff.internal.ImageWindow
+import mil.nga.tiff.internal.Rasters
+import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.util.TiffException
 import org.junit.jupiter.api.Assertions
 import java.io.File
@@ -93,10 +97,10 @@ object TiffTestUtils {
     }
 
     /**
-     * Compare the metadata between a file directory and rasters
+     * Compare the metadata between a file internal and rasters
      *
      * @param fileDirectory
-     * file directory
+     * file internal
      * @param rasters
      * rasters
      */
@@ -228,11 +232,11 @@ object TiffTestUtils {
      * Compare rasters pixel values
      *
      * @param fileDirectory1
-     * file directory 1
+     * file internal 1
      * @param rasters1
      * rasters 1
      * @param fileDirectory2
-     * file directory 2
+     * file internal 2
      * @param rasters2
      * rasters 2
      * @param exactType

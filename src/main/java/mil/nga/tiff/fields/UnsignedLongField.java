@@ -10,9 +10,9 @@ import java.nio.ByteBuffer;
 /**
  * 32-bit (4-byte) unsigned integer
  */
-public final class LongField extends AbstractRasterFieldType {
-    public LongField() {
-        super(4, TiffConstants.SampleFormat.UNSIGNED_INT);
+public final class UnsignedLongField extends AbstractLongField {
+    public UnsignedLongField() {
+        super(TiffConstants.SampleFormat.UNSIGNED_INT);
     }
 
     @Override
@@ -23,16 +23,6 @@ public final class LongField extends AbstractRasterFieldType {
     @Override
     public Number readSample(ByteBuffer buffer) {
         return buffer.getInt() & 0xffffffffL;
-    }
-
-    @Override
-    public void writeSample(ByteBuffer buffer, Number value) {
-        buffer.putInt(value.intValue());
-    }
-
-    @Override
-    public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
-        outBuffer.putInt(inBuffer.getInt());
     }
 
     @Override

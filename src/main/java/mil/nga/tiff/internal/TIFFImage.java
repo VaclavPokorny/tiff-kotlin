@@ -1,4 +1,4 @@
-package mil.nga.tiff;
+package mil.nga.tiff.internal;
 
 import mil.nga.tiff.util.TiffConstants;
 
@@ -26,10 +26,10 @@ public class TIFFImage {
 	}
 
 	/**
-	 * Constructor, single file directory
+	 * Constructor, single file internal
 	 * 
 	 * @param fileDirectory
-	 *            file directory
+	 *            file internal
 	 */
 	public TIFFImage(FileDirectory fileDirectory) {
 		this.fileDirectories.add(fileDirectory);
@@ -46,10 +46,10 @@ public class TIFFImage {
 	}
 
 	/**
-	 * Add a file directory
+	 * Add a file internal
 	 * 
 	 * @param fileDirectory
-	 *            file directory
+	 *            file internal
 	 */
 	public void add(FileDirectory fileDirectory) {
 		fileDirectories.add(fileDirectory);
@@ -65,20 +65,20 @@ public class TIFFImage {
 	}
 
 	/**
-	 * Get the default, first, or only file directory
+	 * Get the default, first, or only file internal
 	 * 
-	 * @return file directory
+	 * @return file internal
 	 */
 	public FileDirectory getFileDirectory() {
 		return getFileDirectory(0);
 	}
 
 	/**
-	 * Get the file directory at the index
+	 * Get the file internal at the index
 	 * 
 	 * @param index
 	 *            index
-	 * @return file directory
+	 * @return file internal
 	 */
 	public FileDirectory getFileDirectory(int index) {
 		return fileDirectories.get(index);

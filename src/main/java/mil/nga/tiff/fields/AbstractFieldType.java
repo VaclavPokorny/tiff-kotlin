@@ -1,6 +1,6 @@
 package mil.nga.tiff.fields;
 
-import mil.nga.tiff.FileDirectoryEntry;
+import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffConstants;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, ASCIIField, RationalField, UndefinedField, SignedRationalField {
+abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, ASCIIField, UndefinedField, AbstractRationalField {
 
     /**
      * Number of bytes per field value
@@ -74,7 +74,7 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
     }
 
     /**
-     * Get the directory entry values
+     * Get the internal entry values
      *
      * @param reader    byte reader
      * @param typeCount type count
@@ -83,10 +83,10 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
     abstract public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount);
 
     /**
-     * Write file directory entry values
+     * Write file internal entry values
      *
      * @param writer byte writer
-     * @param entry  file directory entry
+     * @param entry  file internal entry
      * @return bytes written
      * @throws IOException IO exception
      */

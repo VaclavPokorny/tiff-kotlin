@@ -9,9 +9,9 @@ import java.nio.ByteBuffer;
 /**
  * 8-bit unsigned integer
  */
-public final class ByteField extends AbstractRasterFieldType {
-    public ByteField() {
-        super(1, TiffConstants.SampleFormat.UNSIGNED_INT);
+public final class UnsignedByteField extends AbstractByteField {
+    public UnsignedByteField() {
+        super(TiffConstants.SampleFormat.UNSIGNED_INT);
     }
 
     @Override
@@ -22,16 +22,6 @@ public final class ByteField extends AbstractRasterFieldType {
     @Override
     public Number readSample(ByteBuffer buffer) {
         return (short) (buffer.get() & 0xff);
-    }
-
-    @Override
-    public void writeSample(ByteBuffer buffer, Number value) {
-        buffer.put(value.byteValue());
-    }
-
-    @Override
-    public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
-        outBuffer.put(inBuffer.get());
     }
 
     @Override

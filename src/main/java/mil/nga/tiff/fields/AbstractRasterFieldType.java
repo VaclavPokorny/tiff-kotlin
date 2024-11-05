@@ -1,15 +1,18 @@
 package mil.nga.tiff.fields;
 
-import mil.nga.tiff.FileDirectoryEntry;
+import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
-abstract public sealed class AbstractRasterFieldType extends AbstractFieldType permits ByteField, ShortField, LongField, SignedByteField, SignedShortField, SignedLongField, FloatField, DoubleField {
+abstract public sealed class AbstractRasterFieldType extends AbstractFieldType permits AbstractByteField, AbstractShortField, AbstractLongField, FloatField, DoubleField {
 
     public AbstractRasterFieldType(int bytes) {
         super(bytes);
@@ -71,11 +74,11 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
     @Override
     public int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
         List<Object> valuesList;
-        if (entry.getTypeCount() == 1 && !entry.getFieldTag().isArray()) {
+        if (entry.typeCount() == 1 && !entry.fieldTag().isArray()) {
             valuesList = new ArrayList<>();
-            valuesList.add(entry.getValues());
+            valuesList.add(entry.values());
         } else {
-            valuesList = (List<Object>) entry.getValues();
+            valuesList = (List<Object>) entry.values();
         }
 
         int bytesWritten = 0;
@@ -97,5 +100,19 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
      *            value
      */
     abstract protected void writeValue(ByteWriter writer, Object value) throws IOException;
+
+    @SuppressWarnings("unchecked")
+    public static Iterable<AbstractRasterFieldType> allTypes() {
+        return Arrays.stream((Class<AbstractRasterFieldType>[]) AbstractRasterFieldType.class.getPermittedSubclasses())
+            .filter(o -> !Modifier.isAbstract(o.getModifiers()))
+            .flatMap(subclass -> {
+                try {
+                    return Stream.of(subclass.getDeclaredConstructor().newInstance());
+                } catch (ReflectiveOperationException ignore) {
+                    return Stream.empty();
+                }
+            })
+            .toList();
+    }
 
 }

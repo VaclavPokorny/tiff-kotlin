@@ -1,5 +1,9 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.internal.FileDirectory
+import mil.nga.tiff.internal.Rasters
+import mil.nga.tiff.internal.TIFFImage
+import mil.nga.tiff.util.Compression
 import mil.nga.tiff.util.TiffConstants
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -71,7 +75,7 @@ class ReadmeTest {
         directory.setImageWidth(width)
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)
-        directory.compression = TiffConstants.Compression.NO
+        directory.compression = Compression.NO
         directory.photometricInterpretation =
             TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
         directory.samplesPerPixel = samplesPerPixel
