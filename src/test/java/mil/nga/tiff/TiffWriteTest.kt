@@ -16,17 +16,11 @@ import kotlin.math.pow
  * @author osbornb
  */
 class TiffWriteTest {
-    /**
-     * Test writing and reading a stripped TIFF file
-     *
-     * @throws IOException
-     * upon error
-     */
+
     @Test
     @Throws(IOException::class)
-    fun testWriteStrippedChunky() {
-        val strippedFile = TiffTestUtils
-            .getTestFile(TiffTestConstants.FILE_STRIPPED)
+    fun `Test writing and reading a stripped chunky file`() {
+        val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
         val strippedTiff = TiffReader.readTiff(strippedFile)
 
         val fileDirectory = strippedTiff.fileDirectory
@@ -36,8 +30,7 @@ class TiffWriteTest {
         fileDirectory.writeRasters = rasters
         fileDirectory.compression = Compression.NO
         fileDirectory.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY
-        val rowsPerStrip = rasters
-            .calculateRowsPerStrip(fileDirectory.planarConfiguration)
+        val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
         val tiffBytes = TiffWriter.writeTiffToBytes(strippedTiff)
 
@@ -48,22 +41,14 @@ class TiffWriteTest {
 
         TiffTestUtils.compareRastersSampleValues(rasters, rasters2)
         TiffTestUtils.compareRastersInterleaveValues(
-            rastersInterleaved,
-            rasters2Interleaved
+            rastersInterleaved, rasters2Interleaved
         )
     }
 
-    /**
-     * Test writing and reading a stripped TIFF file
-     *
-     * @throws IOException
-     * upon error
-     */
     @Test
     @Throws(IOException::class)
-    fun testWriteStrippedPlanar() {
-        val strippedFile = TiffTestUtils
-            .getTestFile(TiffTestConstants.FILE_STRIPPED)
+    fun `Test writing and reading a stripped planar file`() {
+        val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
         val strippedTiff = TiffReader.readTiff(strippedFile)
 
         val fileDirectory = strippedTiff.fileDirectory
@@ -73,8 +58,7 @@ class TiffWriteTest {
         fileDirectory.writeRasters = rasters
         fileDirectory.compression = Compression.NO
         fileDirectory.planarConfiguration = TiffConstants.PlanarConfiguration.PLANAR
-        val rowsPerStrip = rasters
-            .calculateRowsPerStrip(fileDirectory.planarConfiguration)
+        val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
         val tiffBytes = TiffWriter.writeTiffToBytes(strippedTiff)
 
@@ -85,20 +69,13 @@ class TiffWriteTest {
 
         TiffTestUtils.compareRastersSampleValues(rasters, rasters2)
         TiffTestUtils.compareRastersInterleaveValues(
-            rastersInterleaved,
-            rasters2Interleaved
+            rastersInterleaved, rasters2Interleaved
         )
     }
 
-    /**
-     * Test writing and reading and custom tiff
-     *
-     * @throws IOException
-     * upon error
-     */
     @Test
     @Throws(IOException::class)
-    fun testWriteCustom() {
+    fun `Test writing and reading and custom TIFF`() {
         val inpWidth = 18
         val inpHeight = 11
         val bitsPerSample = 16
@@ -109,14 +86,12 @@ class TiffWriteTest {
         val inpPixVals = IntArray(inpHeight * inpWidth)
         for (y in 0 until inpHeight) {
             for (x in 0 until inpWidth) {
-                inpPixVals[y * inpWidth + x] = (Math.random()
-                        * 2.0.pow(bitsPerSample.toDouble())).toInt()
+                inpPixVals[y * inpWidth + x] = (Math.random() * 2.0.pow(bitsPerSample.toDouble())).toInt()
             }
         }
 
         val newRaster = Rasters(
-            inpWidth, inpHeight, samplesPerPixel,
-            bitsPerSample, TiffConstants.SampleFormat.UNSIGNED_INT
+            inpWidth, inpHeight, samplesPerPixel, bitsPerSample, TiffConstants.SampleFormat.UNSIGNED_INT
         )
         val fileDirs = FileDirectory()
 
@@ -132,8 +107,7 @@ class TiffWriteTest {
         fileDirs.resolutionUnit = TiffConstants.ResolutionUnit.INCH
         fileDirs.setXResolution(xResolution)
         fileDirs.setYResolution(yResolution)
-        fileDirs.photometricInterpretation =
-            TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
+        fileDirs.photometricInterpretation = TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY
         fileDirs.compression = Compression.NO
         fileDirs.writeRasters = newRaster
@@ -141,8 +115,7 @@ class TiffWriteTest {
         for (y in 0 until inpHeight) {
             for (x in 0 until inpWidth) {
                 newRaster.setFirstPixelSample(
-                    x, y,
-                    inpPixVals[y * inpWidth + x]
+                    x, y, inpPixVals[y * inpWidth + x]
                 )
             }
         }
@@ -162,19 +135,16 @@ class TiffWriteTest {
         Assertions.assertEquals(1, bitsPerSamp.size)
         Assertions.assertEquals(bitsPerSample, bitsPerSamp[0])
         Assertions.assertEquals(
-            samplesPerPixel,
-            fileDirectory.samplesPerPixel
+            samplesPerPixel, fileDirectory.samplesPerPixel
         )
         val sampleFormat = fileDirectory.sampleFormat
         Assertions.assertEquals(1, sampleFormat.size)
         Assertions.assertEquals(
-            TiffConstants.SampleFormat.UNSIGNED_INT,
-            sampleFormat[0]
+            TiffConstants.SampleFormat.UNSIGNED_INT, sampleFormat[0]
         )
         Assertions.assertEquals(rowsPerStrip, fileDirectory.rowsPerStrip)
         Assertions.assertEquals(
-            TiffConstants.ResolutionUnit.INCH,
-            fileDirectory.resolutionUnit
+            TiffConstants.ResolutionUnit.INCH, fileDirectory.resolutionUnit
         )
         val xRes = fileDirectory.xResolution
         Assertions.assertEquals(2, xRes.size)
@@ -185,16 +155,13 @@ class TiffWriteTest {
         Assertions.assertEquals(yResolution, yRes[0])
         Assertions.assertEquals(1, yRes[1])
         Assertions.assertEquals(
-            TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO,
-            fileDirectory.photometricInterpretation
+            TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO, fileDirectory.photometricInterpretation
         )
         Assertions.assertEquals(
-            TiffConstants.PlanarConfiguration.CHUNKY,
-            fileDirectory.planarConfiguration
+            TiffConstants.PlanarConfiguration.CHUNKY, fileDirectory.planarConfiguration
         )
         Assertions.assertEquals(
-            Compression.NO,
-            fileDirectory.compression
+            Compression.NO, fileDirectory.compression
         )
 
         val rasters = fileDirectory.readRasters()
@@ -208,8 +175,7 @@ class TiffWriteTest {
         val sf = rasters.sampleFormat
         Assertions.assertEquals(1, sf.size)
         Assertions.assertEquals(
-            TiffConstants.SampleFormat.UNSIGNED_INT,
-            sf[0]
+            TiffConstants.SampleFormat.UNSIGNED_INT, sf[0]
         )
         val fieldTypes = rasters.fieldTypes
         Assertions.assertEquals(1, fieldTypes.size)
@@ -218,8 +184,7 @@ class TiffWriteTest {
         for (y in 0 until inpHeight) {
             for (x in 0 until inpWidth) {
                 Assertions.assertEquals(
-                    inpPixVals[y * inpWidth + x],
-                    rasters.getPixelSample(0, x, y)
+                    inpPixVals[y * inpWidth + x], rasters.getPixelSample(0, x, y)
                 )
             }
         }

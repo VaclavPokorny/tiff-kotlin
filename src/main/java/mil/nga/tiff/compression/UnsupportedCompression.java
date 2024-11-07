@@ -6,45 +6,35 @@ import java.nio.ByteOrder;
 
 /**
  * Unsupported compression
- * 
+ *
  * @author michaelknigge
  */
 public class UnsupportedCompression implements CompressionDecoder, CompressionEncoder {
 
-	private final String message;
+    private final String message;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param message
-	 *            message of the TiffException
-	 * @since 2.0.1
-	 */
-	public UnsupportedCompression(final String message) {
-		this.message = message;
-	}
+    /**
+     * Constructor
+     *
+     * @param message message of the TiffException
+     * @since 2.0.1
+     */
+    public UnsupportedCompression(final String message) {
+        this.message = message;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public byte[] decode(byte[] bytes, ByteOrder byteOrder) {
-		throw new TiffException(this.message);
-	}
+    @Override
+    public byte[] decode(byte[] bytes, ByteOrder byteOrder) {
+        throw new TiffException(this.message);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean rowEncoding() {
-		return false;
-	}
+    @Override
+    public boolean rowEncoding() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public byte[] encode(byte[] bytes, ByteOrder byteOrder) {
-		throw new TiffException(this.message);
-	}
+    @Override
+    public byte[] encode(byte[] bytes, ByteOrder byteOrder) {
+        throw new TiffException(this.message);
+    }
 }

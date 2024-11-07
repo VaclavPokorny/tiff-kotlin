@@ -17,9 +17,6 @@ import java.util.zip.Inflater;
  */
 public class DeflateCompression implements CompressionDecoder, CompressionEncoder {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] decode(byte[] bytes, ByteOrder byteOrder) {
         try {
@@ -41,17 +38,11 @@ public class DeflateCompression implements CompressionDecoder, CompressionEncode
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean rowEncoding() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] encode(byte[] bytes, ByteOrder byteOrder) {
         try {

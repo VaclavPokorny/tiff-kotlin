@@ -10,13 +10,12 @@ import java.io.IOException
  * @author osbornb
  */
 object TiffFileTester {
+
     /**
      * Main method, provide a single file path argument
      *
-     * @param args
-     * arguments
-     * @throws IOException
-     * upon error
+     * @param args arguments
+     * @throws IOException upon error
      */
     @Throws(IOException::class)
     @JvmStatic
@@ -44,12 +43,10 @@ object TiffFileTester {
             for (entry in fileDirectory.entries) {
                 println()
                 println(
-                    (entry.fieldTag().toString() + " ("
-                            + entry.fieldTag().id + ")")
+                    (entry.fieldTag().toString() + " (" + entry.fieldTag().id + ")")
                 )
                 println(
-                    (entry.fieldType().toString() + " ("
-                            + entry.fieldType().bytes + " bytes)")
+                    (entry.fieldType().toString() + " (" + entry.fieldType().bytes + " bytes)")
                 )
                 println("Count: " + entry.typeCount())
                 println("Values: " + entry.values())
@@ -70,12 +67,10 @@ object TiffFileTester {
             println()
             printPixel(rasters, 0, 0)
             printPixel(
-                rasters, (rasters.width / 2.0).toInt(),
-                (rasters.height / 2.0).toInt()
+                rasters, (rasters.width / 2.0).toInt(), (rasters.height / 2.0).toInt()
             )
             printPixel(
-                rasters, rasters.width - 1,
-                rasters.height - 1
+                rasters, rasters.width - 1, rasters.height - 1
             )
 
             println()
@@ -85,12 +80,9 @@ object TiffFileTester {
     /**
      * Print a pixel from the rasters
      *
-     * @param rasters
-     * rasters
-     * @param x
-     * x coordinate
-     * @param y
-     * y coordinate
+     * @param rasters rasters
+     * @param x x coordinate
+     * @param y y coordinate
      */
     private fun printPixel(rasters: Rasters, x: Int, y: Int) {
         print("Pixel x = $x, y = $y: [")

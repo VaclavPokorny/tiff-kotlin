@@ -14,11 +14,11 @@ import java.io.IOException
  * @author osbornb
  */
 class ReadmeTest {
+
     /**
      * Test read
      *
-     * @throws IOException
-     * upon error
+     * @throws IOException upon error
      */
     @Test
     @Throws(IOException::class)
@@ -29,10 +29,8 @@ class ReadmeTest {
     /**
      * Test read
      *
-     * @param input
-     * input bytes
-     * @throws IOException
-     * upon error
+     * @param input input bytes
+     * @throws IOException upon error
      */
     @Throws(IOException::class)
     fun testRead(input: ByteArray?) {
@@ -63,8 +61,7 @@ class ReadmeTest {
         val bitsPerSample = fieldType.bits
 
         val rasters = Rasters(
-            width, height, samplesPerPixel,
-            fieldType
+            width, height, samplesPerPixel, fieldType
         )
 
         val rowsPerStrip = rasters.calculateRowsPerStrip(
@@ -76,8 +73,7 @@ class ReadmeTest {
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)
         directory.compression = Compression.NO
-        directory.photometricInterpretation =
-            TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
+        directory.photometricInterpretation = TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
         directory.samplesPerPixel = samplesPerPixel
         directory.setRowsPerStrip(rowsPerStrip)
         directory.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY

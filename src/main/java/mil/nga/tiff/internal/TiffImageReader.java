@@ -28,7 +28,7 @@ public class TiffImageReader {
     /**
      * Read a TIFF from the byte reader
      *
-     * @param cache  true to cache tiles and strips
+     * @param cache true to cache tiles and strips
      * @return TIFF image
      */
     public TIFFImage readTiff(boolean cache) {

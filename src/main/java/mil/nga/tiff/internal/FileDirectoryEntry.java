@@ -39,25 +39,16 @@ public record FileDirectoryEntry(FieldTagType fieldTag, FieldType fieldType, lon
         return size;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int compareTo(FileDirectoryEntry other) {
         return fieldTag.getId() - other.fieldTag().getId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return fieldTag.getId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

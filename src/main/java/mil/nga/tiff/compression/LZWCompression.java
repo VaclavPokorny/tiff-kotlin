@@ -57,9 +57,6 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
      */
     private int position;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] decode(byte[] bytes, ByteOrder byteOrder) {
 
@@ -257,17 +254,11 @@ public class LZWCompression implements CompressionDecoder, CompressionEncoder {
         return chunks;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean rowEncoding() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] encode(byte[] bytes, ByteOrder byteOrder) {
         throw new TiffException("LZW encoder is not yet implemented");

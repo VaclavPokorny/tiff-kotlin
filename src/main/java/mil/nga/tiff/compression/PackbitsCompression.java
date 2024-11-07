@@ -8,56 +8,46 @@ import java.nio.ByteOrder;
 
 /**
  * Packbits Compression
- * 
+ *
  * @author osbornb
  */
-public class PackbitsCompression implements CompressionDecoder,
-		CompressionEncoder {
+public class PackbitsCompression implements CompressionDecoder, CompressionEncoder {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public byte[] decode(byte[] bytes, ByteOrder byteOrder) {
+    @Override
+    public byte[] decode(byte[] bytes, ByteOrder byteOrder) {
 
-		ByteReader reader = new ByteReader(bytes, byteOrder);
+        ByteReader reader = new ByteReader(bytes, byteOrder);
 
-		ByteArrayOutputStream decodedStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream decodedStream = new ByteArrayOutputStream();
 
-		while (reader.hasByte()) {
-			int header = reader.readByte();
-			if (header != -128) {
-				if (header < 0) {
-					int next = reader.readUnsignedByte();
-					header = -header;
-					for (int i = 0; i <= header; i++) {
-						decodedStream.write(next);
-					}
-				} else {
-					for (int i = 0; i <= header; i++) {
-						decodedStream.write(reader.readUnsignedByte());
-					}
-				}
-			}
-		}
+        while (reader.hasByte()) {
+            int header = reader.readByte();
+            if (header != -128) {
+                if (header < 0) {
+                    int next = reader.readUnsignedByte();
+                    header = -header;
+                    for (int i = 0; i <= header; i++) {
+                        decodedStream.write(next);
+                    }
+                } else {
+                    for (int i = 0; i <= header; i++) {
+                        decodedStream.write(reader.readUnsignedByte());
+                    }
+                }
+            }
+        }
 
         return decodedStream.toByteArray();
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean rowEncoding() {
-		return true;
-	}
+    @Override
+    public boolean rowEncoding() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public byte[] encode(byte[] bytes, ByteOrder byteOrder) {
-		throw new TiffException("Packbits encoder is not yet implemented");
-	}
+    @Override
+    public byte[] encode(byte[] bytes, ByteOrder byteOrder) {
+        throw new TiffException("Packbits encoder is not yet implemented");
+    }
 
 }
