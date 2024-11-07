@@ -28,7 +28,7 @@ class TiffWriteTest {
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
         fileDirectory.writeRasters = rasters
-        fileDirectory.compression = Compression.NO
+        fileDirectory.compression = Compression.NO.id
         fileDirectory.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY
         val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
@@ -56,7 +56,7 @@ class TiffWriteTest {
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
         fileDirectory.writeRasters = rasters
-        fileDirectory.compression = Compression.NO
+        fileDirectory.compression = Compression.NO.id
         fileDirectory.planarConfiguration = TiffConstants.PlanarConfiguration.PLANAR
         val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
@@ -109,7 +109,7 @@ class TiffWriteTest {
         fileDirs.setYResolution(yResolution)
         fileDirs.photometricInterpretation = TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY
-        fileDirs.compression = Compression.NO
+        fileDirs.compression = Compression.NO.id
         fileDirs.writeRasters = newRaster
 
         for (y in 0 until inpHeight) {
@@ -161,7 +161,7 @@ class TiffWriteTest {
             TiffConstants.PlanarConfiguration.CHUNKY, fileDirectory.planarConfiguration
         )
         Assertions.assertEquals(
-            Compression.NO, fileDirectory.compression
+            Compression.NO.id, fileDirectory.compression
         )
 
         val rasters = fileDirectory.readRasters()

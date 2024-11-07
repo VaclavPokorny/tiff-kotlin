@@ -72,7 +72,7 @@ class ReadmeTest {
         directory.setImageWidth(width)
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)
-        directory.compression = Compression.NO
+        directory.compression = Compression.NO.id
         directory.photometricInterpretation = TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
         directory.samplesPerPixel = samplesPerPixel
         directory.setRowsPerStrip(rowsPerStrip)
