@@ -1,9 +1,9 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.FieldType;
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.io.ByteReader;
-import mil.nga.tiff.util.PlanarConfiguration;
-import mil.nga.tiff.util.SampleFormat;
+import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
+import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.util.TiffException;
 
 import java.nio.ByteBuffer;
@@ -143,7 +143,7 @@ public class FileDirectoryRasterReader {
                             blockReader.setNextByte(valueOffset);
 
                             // Read the value
-                            Number value = sampleFieldTypes[sampleIndex].readValue(blockReader);
+                            Number value = sampleFieldTypes[sampleIndex].getDefinition().readValue(blockReader);
 
                             if (rasters.hasInterleaveValues()) {
                                 int windowCoordinate = (y + firstLine - window.minY()) * window.width() + (x + firstCol - window.minX());
@@ -218,7 +218,7 @@ public class FileDirectoryRasterReader {
             sampleFormat = sampleFormatList.get(listId);
         }
         int bitsPerSample = directory.getBitsPerSample().get(sampleIndex);
-        return FieldType.getFieldType(sampleFormat, bitsPerSample);
+        return FieldType.findBySampleParams(sampleFormat, bitsPerSample);
     }
 
 }

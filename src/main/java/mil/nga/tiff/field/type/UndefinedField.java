@@ -1,4 +1,4 @@
-package mil.nga.tiff.fields;
+package mil.nga.tiff.field.type;
 
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
@@ -30,7 +30,7 @@ public final class UndefinedField extends AbstractFieldType {
 
     @SuppressWarnings("unchecked")
     @Override
-    public int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
+    public int writeDirectoryEntryValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
         List<Object> valuesList;
         if (entry.typeCount() == 1 && !entry.fieldTag().isArray()) {
             valuesList = new ArrayList<>();

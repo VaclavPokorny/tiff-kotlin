@@ -1,4 +1,4 @@
-package mil.nga.tiff.fields;
+package mil.nga.tiff.field.type;
 
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
@@ -31,7 +31,7 @@ abstract sealed class AbstractRationalField extends AbstractFieldType permits Un
 
     @SuppressWarnings("unchecked")
     @Override
-    final public int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
+    final public int writeDirectoryEntryValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
         List<Object> valuesList;
         valuesList = (List<Object>) entry.values();
 

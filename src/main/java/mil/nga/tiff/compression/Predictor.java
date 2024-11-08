@@ -2,8 +2,8 @@ package mil.nga.tiff.compression;
 
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.DifferencingPredictor;
-import mil.nga.tiff.util.PlanarConfiguration;
+import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
+import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;

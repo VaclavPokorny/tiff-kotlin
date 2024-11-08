@@ -2,7 +2,7 @@ package mil.nga.tiff.internal;
 
 import mil.nga.tiff.compression.Predictor;
 import mil.nga.tiff.io.ByteReader;
-import mil.nga.tiff.util.PlanarConfiguration;
+import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;

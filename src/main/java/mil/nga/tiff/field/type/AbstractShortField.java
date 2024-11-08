@@ -1,6 +1,6 @@
-package mil.nga.tiff.fields;
+package mil.nga.tiff.field.type;
 
-import mil.nga.tiff.util.SampleFormat;
+import mil.nga.tiff.field.type.enumeration.SampleFormat;
 
 import java.nio.ByteBuffer;
 

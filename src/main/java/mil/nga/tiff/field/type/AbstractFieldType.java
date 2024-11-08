@@ -1,9 +1,9 @@
-package mil.nga.tiff.fields;
+package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.SampleFormat;
 import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
@@ -42,11 +42,11 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
      * @return sample format
      * @since 2.0.0
      */
-    public int getSampleFormat() {
+    public SampleFormat getSampleFormat() {
         if (sampleFormat == SampleFormat.UNDEFINED) {
             throw new TiffException("Unsupported sample format");
         }
-        return sampleFormat.getId();
+        return sampleFormat;
     }
 
     public int getBytes() {
@@ -90,6 +90,6 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
      * @return bytes written
      * @throws IOException IO exception
      */
-    abstract public int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException;
+    abstract public int writeDirectoryEntryValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException;
 
 }

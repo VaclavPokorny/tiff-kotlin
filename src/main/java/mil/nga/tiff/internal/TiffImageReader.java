@@ -1,7 +1,7 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.FieldTagType;
-import mil.nga.tiff.FieldType;
+import mil.nga.tiff.field.FieldTagType;
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
@@ -97,7 +97,7 @@ public class TiffImageReader {
                 FieldTagType fieldTag = FieldTagType.getById(fieldTagValue);
 
                 int fieldTypeValue = reader.readUnsignedShort();
-                FieldType fieldType = FieldType.getFieldType(fieldTypeValue);
+                FieldType fieldType = FieldType.findById(fieldTypeValue);
                 if (fieldType == null) {
                     throw new TiffException("Unknown field type value " + fieldTypeValue);
                 }
@@ -142,13 +142,13 @@ public class TiffImageReader {
     private Object readFieldValues(FieldTagType fieldTag, FieldType fieldType, long typeCount) {
 
         // If the value is larger and not stored inline, determine the offset
-        if (fieldType.getBytes() * typeCount > 4) {
+        if (fieldType.getDefinition().getBytes() * typeCount > 4) {
             long valueOffset = reader.readUnsignedInt();
             reader.setNextByte(valueOffset);
         }
 
         // Read the internal entry values
-        List<Object> valuesList = fieldType.getDirectoryEntryValues(reader, typeCount);
+        List<Object> valuesList = fieldType.getDefinition().getDirectoryEntryValues(reader, typeCount);
 
         // Get the single or array values
         Object values;

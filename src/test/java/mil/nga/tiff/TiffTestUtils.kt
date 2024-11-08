@@ -121,7 +121,7 @@ object TiffTestUtils {
 
         for (i in rasters1.sampleValues.indices) {
             Assertions.assertEquals(
-                rasters1.sampleValues[i].capacity() / rasters1.fieldTypes[i].bytes, rasters2.sampleValues[i].capacity() / rasters2.fieldTypes[i].bytes
+                rasters1.sampleValues[i].capacity() / rasters1.fieldTypes[i].definition.bytes, rasters2.sampleValues[i].capacity() / rasters2.fieldTypes[i].definition.bytes
             )
 
             for (x in 0 until rasters1.width) {

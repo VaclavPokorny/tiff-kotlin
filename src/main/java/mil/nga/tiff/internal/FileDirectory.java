@@ -1,14 +1,14 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.FieldTagType;
-import mil.nga.tiff.FieldType;
+import mil.nga.tiff.field.FieldTagType;
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.compression.CompressionDecoder;
 import mil.nga.tiff.io.ByteReader;
-import mil.nga.tiff.util.Compression;
-import mil.nga.tiff.util.PhotometricInterpretation;
-import mil.nga.tiff.util.PlanarConfiguration;
-import mil.nga.tiff.util.ResolutionUnit;
-import mil.nga.tiff.util.SampleFormat;
+import mil.nga.tiff.field.type.enumeration.Compression;
+import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation;
+import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
+import mil.nga.tiff.field.type.enumeration.ResolutionUnit;
+import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 

@@ -1,7 +1,7 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.FieldTagType;
-import mil.nga.tiff.FieldType;
+import mil.nga.tiff.field.FieldTagType;
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.util.TiffConstants;
 
 /**
@@ -32,7 +32,7 @@ public record FileDirectoryEntry(FieldTagType fieldTag, FieldType fieldType, lon
      */
     public long sizeOfValues() {
         long size = 0;
-        long valueBytes = fieldType.getBytes() * typeCount;
+        long valueBytes = fieldType.getDefinition().getBytes() * typeCount;
         if (valueBytes > 4) {
             size = valueBytes;
         }

@@ -1,7 +1,8 @@
-package mil.nga.tiff.util;
+package mil.nga.tiff.field.type.enumeration;
+
+import mil.nga.tiff.util.TiffException;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 public enum GrayResponse {
     TENTHS(1),

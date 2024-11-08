@@ -1,8 +1,8 @@
-package mil.nga.tiff.fields;
+package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.SampleFormat;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

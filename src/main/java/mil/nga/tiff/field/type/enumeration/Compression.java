@@ -1,4 +1,4 @@
-package mil.nga.tiff.util;
+package mil.nga.tiff.field.type.enumeration;
 
 import mil.nga.tiff.compression.CompressionDecoder;
 import mil.nga.tiff.compression.CompressionEncoder;
@@ -7,6 +7,7 @@ import mil.nga.tiff.compression.LZWCompression;
 import mil.nga.tiff.compression.PackbitsCompression;
 import mil.nga.tiff.compression.RawCompression;
 import mil.nga.tiff.compression.UnsupportedCompression;
+import mil.nga.tiff.util.TiffException;
 
 import java.util.Arrays;
 

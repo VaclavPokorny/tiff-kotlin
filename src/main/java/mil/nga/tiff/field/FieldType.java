@@ -1,28 +1,22 @@
-package mil.nga.tiff;
+package mil.nga.tiff.field;
 
-import mil.nga.tiff.internal.FileDirectoryEntry;
-import mil.nga.tiff.fields.ASCIIField;
-import mil.nga.tiff.fields.AbstractFieldType;
-import mil.nga.tiff.fields.UnsignedByteField;
-import mil.nga.tiff.fields.DoubleField;
-import mil.nga.tiff.fields.FloatField;
-import mil.nga.tiff.fields.UnsignedLongField;
-import mil.nga.tiff.fields.UnsignedRationalField;
-import mil.nga.tiff.fields.UnsignedShortField;
-import mil.nga.tiff.fields.SignedByteField;
-import mil.nga.tiff.fields.SignedLongField;
-import mil.nga.tiff.fields.SignedRationalField;
-import mil.nga.tiff.fields.SignedShortField;
-import mil.nga.tiff.fields.UndefinedField;
-import mil.nga.tiff.io.ByteReader;
-import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.SampleFormat;
+import mil.nga.tiff.field.type.ASCIIField;
+import mil.nga.tiff.field.type.AbstractFieldType;
+import mil.nga.tiff.field.type.DoubleField;
+import mil.nga.tiff.field.type.FloatField;
+import mil.nga.tiff.field.type.SignedByteField;
+import mil.nga.tiff.field.type.SignedLongField;
+import mil.nga.tiff.field.type.SignedRationalField;
+import mil.nga.tiff.field.type.SignedShortField;
+import mil.nga.tiff.field.type.UndefinedField;
+import mil.nga.tiff.field.type.UnsignedByteField;
+import mil.nga.tiff.field.type.UnsignedLongField;
+import mil.nga.tiff.field.type.UnsignedRationalField;
+import mil.nga.tiff.field.type.UnsignedShortField;
+import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.util.TiffException;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Field Types
@@ -34,70 +28,73 @@ public enum FieldType {
     /**
      * 8-bit unsigned integer
      */
-    BYTE(new UnsignedByteField()),
+    BYTE(1, new UnsignedByteField()),
 
     /**
      * 8-bit byte that contains a 7-bit ASCII code; the last byte must be NUL
      * (binary zero)
      */
-    ASCII(new ASCIIField()),
+    ASCII(2, new ASCIIField()),
 
     /**
      * 16-bit (2-byte) unsigned integer
      */
-    SHORT(new UnsignedShortField()),
+    SHORT(3, new UnsignedShortField()),
 
     /**
      * 32-bit (4-byte) unsigned integer
      */
-    LONG(new UnsignedLongField()),
+    LONG(4, new UnsignedLongField()),
 
     /**
      * Two LONGs: the first represents the numerator of a fraction; the second,
      * the denominator
      */
-    RATIONAL(new UnsignedRationalField()),
+    RATIONAL(5, new UnsignedRationalField()),
 
     /**
      * An 8-bit signed (twos-complement) integer
      */
-    SBYTE(new SignedByteField()),
+    SBYTE(6, new SignedByteField()),
 
     /**
      * An 8-bit byte that may contain anything, depending on the definition of
      * the field
      */
-    UNDEFINED(new UndefinedField()),
+    UNDEFINED(7, new UndefinedField()),
 
     /**
      * A 16-bit (2-byte) signed (twos-complement) integer
      */
-    SSHORT(new SignedShortField()),
+    SSHORT(8, new SignedShortField()),
 
     /**
      * A 32-bit (4-byte) signed (twos-complement) integer
      */
-    SLONG(new SignedLongField()),
+    SLONG(9, new SignedLongField()),
 
     /**
      * Two SLONG’s: the first represents the numerator of a fraction, the second
      * the denominator
      */
-    SRATIONAL(new SignedRationalField()),
+    SRATIONAL(10, new SignedRationalField()),
 
     /**
      * Single precision (4-byte) IEEE format
      */
-    FLOAT(new FloatField()),
+    FLOAT(11, new FloatField()),
 
     /**
      * Double precision (8-byte) IEEE format
      */
-    DOUBLE(new DoubleField());
+    DOUBLE(12, new DoubleField());
 
+
+    private final int value;
     private final AbstractFieldType fieldType;
 
-    FieldType(AbstractFieldType fieldType) {
+    FieldType(int value, AbstractFieldType fieldType) {
+        this.value = value;
         this.fieldType = fieldType;
     }
 
@@ -107,36 +104,29 @@ public enum FieldType {
      * @return field type value
      */
     public int getValue() {
-        return ordinal() + 1;
+        return value;
     }
 
     /**
-     * Get the number of bytes per value
+     * Get field definition
      *
-     * @return number of bytes
+     * @return definition
      */
-    public int getBytes() {
-        return fieldType.getBytes();
-    }
-
-    /**
-     * Get the number of bits per value
-     *
-     * @return number of bits
-     * @since 2.0.0
-     */
-    public int getBits() {
-        return fieldType.getBits();
+    public AbstractFieldType getDefinition() {
+        return fieldType;
     }
 
     /**
      * Get the field type
      *
-     * @param fieldType field type number
+     * @param id field type number
      * @return field type
      */
-    public static FieldType getFieldType(int fieldType) {
-        return FieldType.values()[fieldType - 1];
+    public static FieldType findById(int id) {
+        return Arrays.stream(values())
+            .filter(o -> o.value == id)
+            .findAny()
+            .orElseThrow(() -> new TiffException("Unsupported field type ID: " + id));
     }
 
     /**
@@ -147,40 +137,12 @@ public enum FieldType {
      * @return field type
      * @since 2.0.0
      */
-    public static FieldType getFieldType(SampleFormat sampleFormat, int bitsPerSample) {
+    public static FieldType findBySampleParams(SampleFormat sampleFormat, int bitsPerSample) {
         return Arrays.stream(values())
             .filter(o -> o.fieldType.hasSampleFormat(sampleFormat))
             .filter(o -> o.fieldType.hasBitsPerSample(bitsPerSample))
             .findAny()
             .orElseThrow(() -> new TiffException("Unsupported field type for sample format: " + sampleFormat + ", bits per sample: " + bitsPerSample));
-    }
-
-    public static int getSampleFormat(FieldType fieldType) {
-        return fieldType.fieldType.getSampleFormat();
-    }
-
-    public Number readValue(ByteReader reader) {
-        return fieldType.readValue(reader);
-    }
-
-    public Number readSample(ByteBuffer buffer) {
-        return fieldType.readSample(buffer);
-    }
-
-    public void writeSample(ByteBuffer buffer, Number value) {
-        fieldType.writeSample(buffer, value);
-    }
-
-    public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
-        fieldType.writeSample(outBuffer, inBuffer);
-    }
-
-    public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount) {
-        return fieldType.getDirectoryEntryValues(reader, typeCount);
-    }
-
-    public int writeDirectoryEntryValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
-        return fieldType.writeValues(writer, entry);
     }
 
 }

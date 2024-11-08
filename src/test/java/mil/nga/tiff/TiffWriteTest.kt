@@ -1,5 +1,8 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.field.*
+import mil.nga.tiff.field.FieldType
+import mil.nga.tiff.field.type.enumeration.*
 import mil.nga.tiff.internal.FileDirectory
 import mil.nga.tiff.internal.Rasters
 import mil.nga.tiff.internal.TIFFImage

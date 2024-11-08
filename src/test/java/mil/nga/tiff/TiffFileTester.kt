@@ -46,7 +46,7 @@ object TiffFileTester {
                     (entry.fieldTag().toString() + " (" + entry.fieldTag().id + ")")
                 )
                 println(
-                    (entry.fieldType().toString() + " (" + entry.fieldType().bytes + " bytes)")
+                    (entry.fieldType().toString() + " (" + entry.fieldType().definition.bytes + " bytes)")
                 )
                 println("Count: " + entry.typeCount())
                 println("Values: " + entry.values())

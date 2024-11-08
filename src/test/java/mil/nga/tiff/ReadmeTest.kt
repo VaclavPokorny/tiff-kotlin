@@ -1,5 +1,10 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.field.type.enumeration.Compression
+import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation
+import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
+import mil.nga.tiff.field.type.enumeration.SampleFormat
+import mil.nga.tiff.field.FieldType
 import mil.nga.tiff.internal.FileDirectory
 import mil.nga.tiff.internal.Rasters
 import mil.nga.tiff.internal.TIFFImage
@@ -57,7 +62,7 @@ class ReadmeTest {
         val height = 256
         val samplesPerPixel = 1
         val fieldType = FieldType.FLOAT
-        val bitsPerSample = fieldType.bits
+        val bitsPerSample = fieldType.definition.bits
 
         val rasters = Rasters(
             width, height, samplesPerPixel, fieldType

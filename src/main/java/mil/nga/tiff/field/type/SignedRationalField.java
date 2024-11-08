@@ -1,4 +1,4 @@
-package mil.nga.tiff.fields;
+package mil.nga.tiff.field.type;
 
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;

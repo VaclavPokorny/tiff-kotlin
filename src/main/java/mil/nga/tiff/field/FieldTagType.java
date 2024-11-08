@@ -1,4 +1,4 @@
-package mil.nga.tiff;
+package mil.nga.tiff.field;
 
 import java.util.HashMap;
 import java.util.Map;

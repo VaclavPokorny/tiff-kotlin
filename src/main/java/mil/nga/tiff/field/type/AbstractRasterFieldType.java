@@ -1,9 +1,9 @@
-package mil.nga.tiff.fields;
+package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.SampleFormat;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -73,7 +73,7 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
 
     @SuppressWarnings("unchecked")
     @Override
-    public int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
+    public int writeDirectoryEntryValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
         List<Object> valuesList;
         if (entry.typeCount() == 1 && !entry.fieldTag().isArray()) {
             valuesList = new ArrayList<>();
