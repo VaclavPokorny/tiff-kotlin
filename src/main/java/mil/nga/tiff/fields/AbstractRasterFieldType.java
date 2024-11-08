@@ -3,6 +3,7 @@ package mil.nga.tiff.fields;
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
+import mil.nga.tiff.util.SampleFormat;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -18,7 +19,7 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
         super(bytes);
     }
 
-    public AbstractRasterFieldType(int bytes, int sampleFormat) {
+    public AbstractRasterFieldType(int bytes, SampleFormat sampleFormat) {
         super(bytes, sampleFormat);
     }
 

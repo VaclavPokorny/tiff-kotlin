@@ -3,6 +3,7 @@ package mil.nga.tiff.internal;
 import mil.nga.tiff.compression.CompressionEncoder;
 import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.Compression;
+import mil.nga.tiff.util.PlanarConfiguration;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 
@@ -156,7 +157,7 @@ public class TiffImageWriter {
         int rowsPerStrip = fileDirectory.getRowsPerStrip().intValue();
         int imageHeight = fileDirectory.getImageHeight().intValue();
         int strips = (imageHeight + rowsPerStrip - 1) / rowsPerStrip;
-        if (fileDirectory.getPlanarConfiguration() == TiffConstants.PlanarConfiguration.PLANAR) {
+        if (fileDirectory.getPlanarConfiguration() == PlanarConfiguration.PLANAR) {
             strips *= fileDirectory.getSamplesPerPixel();
         }
 
@@ -218,7 +219,7 @@ public class TiffImageWriter {
         int maxY = fileDirectory.getImageHeight().intValue();
         int stripsPerSample = (maxY + rowsPerStrip - 1) / rowsPerStrip;
         int strips = stripsPerSample;
-        if (fileDirectory.getPlanarConfiguration() == TiffConstants.PlanarConfiguration.PLANAR) {
+        if (fileDirectory.getPlanarConfiguration() == PlanarConfiguration.PLANAR) {
             strips *= fileDirectory.getSamplesPerPixel();
         }
 
@@ -231,7 +232,7 @@ public class TiffImageWriter {
 
             int startingY;
             Integer sample = null;
-            if (fileDirectory.getPlanarConfiguration() == TiffConstants.PlanarConfiguration.PLANAR) {
+            if (fileDirectory.getPlanarConfiguration() == PlanarConfiguration.PLANAR) {
                 sample = strip / stripsPerSample;
                 startingY = (strip % stripsPerSample) * rowsPerStrip;
             } else {

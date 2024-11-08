@@ -2,7 +2,8 @@ package mil.nga.tiff.internal;
 
 import mil.nga.tiff.FieldType;
 import mil.nga.tiff.io.ByteReader;
-import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.util.PlanarConfiguration;
+import mil.nga.tiff.util.SampleFormat;
 import mil.nga.tiff.util.TiffException;
 
 import java.nio.ByteBuffer;
@@ -18,7 +19,7 @@ public class FileDirectoryRasterReader {
         this.tileOrStripProcessor = tileOrStripProcessor;
     }
 
-    public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues, ByteReader reader, int planarConfiguration, boolean tiled, Integer predictor) {
+    public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, Integer predictor) {
 
         int width = directory.getImageWidth().intValue();
         int height = directory.getImageHeight().intValue();
@@ -93,7 +94,7 @@ public class FileDirectoryRasterReader {
      * @param samples pixel samples to read
      * @param rasters rasters to populate
      */
-    private void readRaster(ImageWindow window, int[] samples, Rasters rasters, ByteReader reader, int planarConfiguration, boolean tiled, Integer predictor) {
+    private void readRaster(ImageWindow window, int[] samples, Rasters rasters, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, Integer predictor) {
 
         int tileWidth = directory.getTileWidth().intValue();
         int tileHeight = directory.getTileHeight().intValue();
@@ -109,7 +110,7 @@ public class FileDirectoryRasterReader {
         FieldType[] sampleFieldTypes = new FieldType[samples.length];
         for (int i = 0; i < samples.length; i++) {
             int sampleOffset = 0;
-            if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
+            if (planarConfiguration == PlanarConfiguration.CHUNKY) {
                 sampleOffset = directory.getBitsPerSample().subList(0, samples[i]).stream().mapToInt(Integer::intValue).sum() / 8;
             }
             srcSampleOffsets[i] = sampleOffset;
@@ -126,7 +127,7 @@ public class FileDirectoryRasterReader {
 
                 for (int sampleIndex = 0; sampleIndex < samples.length; sampleIndex++) {
                     int sample = samples[sampleIndex];
-                    if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR) {
+                    if (planarConfiguration == PlanarConfiguration.PLANAR) {
                         bytesPerPixel = getSampleByteSize(sample);
                     }
 
@@ -208,11 +209,15 @@ public class FileDirectoryRasterReader {
      * @return field type
      */
     public FieldType getFieldTypeForSample(int sampleIndex) {
-
-        List<Integer> sampleFormatList = directory.getSampleFormat();
-        int sampleFormat = sampleFormatList == null ? TiffConstants.SampleFormat.UNSIGNED_INT : sampleFormatList.get(sampleIndex < sampleFormatList.size() ? sampleIndex : 0);
+        SampleFormat sampleFormat;
+        List<SampleFormat> sampleFormatList = directory.getSampleFormat();
+        if (sampleFormatList.isEmpty()) {
+            sampleFormat = SampleFormat.UNSIGNED_INT;
+        } else {
+            int listId = sampleIndex < sampleFormatList.size() ? sampleIndex : 0;
+            sampleFormat = sampleFormatList.get(listId);
+        }
         int bitsPerSample = directory.getBitsPerSample().get(sampleIndex);
-
         return FieldType.getFieldType(sampleFormat, bitsPerSample);
     }
 

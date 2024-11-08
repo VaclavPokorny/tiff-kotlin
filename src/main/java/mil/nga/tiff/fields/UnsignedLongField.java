@@ -2,7 +2,7 @@ package mil.nga.tiff.fields;
 
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.util.SampleFormat;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public final class UnsignedLongField extends AbstractLongField {
     public UnsignedLongField() {
-        super(TiffConstants.SampleFormat.UNSIGNED_INT);
+        super(SampleFormat.UNSIGNED_INT);
     }
 
     @Override

@@ -16,6 +16,7 @@ import mil.nga.tiff.fields.SignedShortField;
 import mil.nga.tiff.fields.UndefinedField;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
+import mil.nga.tiff.util.SampleFormat;
 import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
@@ -146,7 +147,7 @@ public enum FieldType {
      * @return field type
      * @since 2.0.0
      */
-    public static FieldType getFieldType(int sampleFormat, int bitsPerSample) {
+    public static FieldType getFieldType(SampleFormat sampleFormat, int bitsPerSample) {
         return Arrays.stream(values())
             .filter(o -> o.fieldType.hasSampleFormat(sampleFormat))
             .filter(o -> o.fieldType.hasBitsPerSample(bitsPerSample))

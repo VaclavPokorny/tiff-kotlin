@@ -2,7 +2,7 @@ package mil.nga.tiff.fields;
 
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.util.SampleFormat;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public final class FloatField extends AbstractRasterFieldType {
     public FloatField() {
-        super(4, TiffConstants.SampleFormat.FLOAT);
+        super(4, SampleFormat.FLOAT);
     }
 
     @Override

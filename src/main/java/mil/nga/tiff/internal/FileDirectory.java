@@ -5,6 +5,10 @@ import mil.nga.tiff.FieldType;
 import mil.nga.tiff.compression.CompressionDecoder;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.Compression;
+import mil.nga.tiff.util.PhotometricInterpretation;
+import mil.nga.tiff.util.PlanarConfiguration;
+import mil.nga.tiff.util.ResolutionUnit;
+import mil.nga.tiff.util.SampleFormat;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 
@@ -44,11 +48,6 @@ public class FileDirectory {
      * Tiled flag
      */
     private boolean tiled;
-
-    /**
-     * Planar configuration
-     */
-    private int planarConfiguration;
 
     /**
      * Differencing Predictor
@@ -100,13 +99,6 @@ public class FileDirectory {
 
         // Determine if tiled
         tiled = getRowsPerStrip() == null;
-
-        // Determine and validate the planar configuration
-        Integer pc = getPlanarConfiguration();
-        planarConfiguration = pc != null ? pc : TiffConstants.PlanarConfiguration.CHUNKY;
-        if (planarConfiguration != TiffConstants.PlanarConfiguration.CHUNKY && planarConfiguration != TiffConstants.PlanarConfiguration.PLANAR) {
-            throw new TiffException("Invalid planar configuration: " + planarConfiguration);
-        }
 
         // Determine the decoder based upon the compression
         decoder = Compression.getDecoder(getCompression());
@@ -308,7 +300,7 @@ public class FileDirectory {
      * @param bitsPerSample bits per sample
      */
     public void setBitsPerSample(int bitsPerSample) {
-        setBitsPerSample(createSingleIntegerList(bitsPerSample));
+        setBitsPerSample(List.of(bitsPerSample));
     }
 
     /**
@@ -343,8 +335,8 @@ public class FileDirectory {
      *
      * @return photometric interpretation
      */
-    public Integer getPhotometricInterpretation() {
-        return getIntegerEntryValue(FieldTagType.PhotometricInterpretation);
+    public PhotometricInterpretation getPhotometricInterpretation() {
+        return PhotometricInterpretation.findById(getIntegerEntryValue(FieldTagType.PhotometricInterpretation));
     }
 
     /**
@@ -352,8 +344,8 @@ public class FileDirectory {
      *
      * @param photometricInterpretation photometric interpretation
      */
-    public void setPhotometricInterpretation(int photometricInterpretation) {
-        setUnsignedIntegerEntryValue(FieldTagType.PhotometricInterpretation, photometricInterpretation);
+    public void setPhotometricInterpretation(PhotometricInterpretation photometricInterpretation) {
+        setUnsignedIntegerEntryValue(FieldTagType.PhotometricInterpretation, photometricInterpretation.getId());
     }
 
     /**
@@ -389,7 +381,7 @@ public class FileDirectory {
      * @param stripOffset strip offset
      */
     public void setStripOffsets(int stripOffset) {
-        setStripOffsets(createSingleIntegerList(stripOffset));
+        setStripOffsets(List.of(stripOffset));
     }
 
     /**
@@ -398,7 +390,7 @@ public class FileDirectory {
      * @param stripOffset strip offset
      */
     public void setStripOffsets(long stripOffset) {
-        setStripOffsetsAsLongs(createSingleLongList(stripOffset));
+        setStripOffsetsAsLongs(List.of(stripOffset));
     }
 
     /**
@@ -486,7 +478,7 @@ public class FileDirectory {
      * @param stripByteCount strip byte count
      */
     public void setStripByteCounts(int stripByteCount) {
-        setStripByteCounts(createSingleIntegerList(stripByteCount));
+        setStripByteCounts(List.of(stripByteCount));
     }
 
     /**
@@ -495,7 +487,7 @@ public class FileDirectory {
      * @param stripByteCount strip byte count
      */
     public void setStripByteCounts(long stripByteCount) {
-        setStripByteCountsAsLongs(createSingleLongList(stripByteCount));
+        setStripByteCountsAsLongs(List.of(stripByteCount));
     }
 
     /**
@@ -522,7 +514,7 @@ public class FileDirectory {
      * @param xResolution x resolution
      */
     public void setXResolution(long xResolution) {
-        setXResolution(createRationalValue(xResolution));
+        setXResolution(new ArrayList<>(List.of(xResolution, 1L)));
     }
 
     /**
@@ -549,7 +541,7 @@ public class FileDirectory {
      * @param yResolution y resolution
      */
     public void setYResolution(long yResolution) {
-        setYResolution(createRationalValue(yResolution));
+        setYResolution(new ArrayList<>(List.of(yResolution, 1L)));
     }
 
     /**
@@ -557,8 +549,8 @@ public class FileDirectory {
      *
      * @return planar configuration
      */
-    public Integer getPlanarConfiguration() {
-        return getIntegerEntryValue(FieldTagType.PlanarConfiguration);
+    public PlanarConfiguration getPlanarConfiguration() {
+        return PlanarConfiguration.findById(getIntegerEntryValue(FieldTagType.PlanarConfiguration));
     }
 
     /**
@@ -566,8 +558,8 @@ public class FileDirectory {
      *
      * @param planarConfiguration planar configuration
      */
-    public void setPlanarConfiguration(int planarConfiguration) {
-        setUnsignedIntegerEntryValue(FieldTagType.PlanarConfiguration, planarConfiguration);
+    public void setPlanarConfiguration(PlanarConfiguration planarConfiguration) {
+        setUnsignedIntegerEntryValue(FieldTagType.PlanarConfiguration, planarConfiguration.getId());
     }
 
     /**
@@ -575,8 +567,8 @@ public class FileDirectory {
      *
      * @return resolution unit
      */
-    public Integer getResolutionUnit() {
-        return getIntegerEntryValue(FieldTagType.ResolutionUnit);
+    public ResolutionUnit getResolutionUnit() {
+        return ResolutionUnit.findById(getIntegerEntryValue(FieldTagType.ResolutionUnit));
     }
 
     /**
@@ -584,8 +576,8 @@ public class FileDirectory {
      *
      * @param resolutionUnit resolution unit
      */
-    public void setResolutionUnit(int resolutionUnit) {
-        setUnsignedIntegerEntryValue(FieldTagType.ResolutionUnit, resolutionUnit);
+    public void setResolutionUnit(ResolutionUnit resolutionUnit) {
+        setUnsignedIntegerEntryValue(FieldTagType.ResolutionUnit, resolutionUnit.getId());
     }
 
     /**
@@ -652,7 +644,7 @@ public class FileDirectory {
      * @param colorMap color map
      */
     public void setColorMap(int colorMap) {
-        setColorMap(createSingleIntegerList(colorMap));
+        setColorMap(List.of(colorMap));
     }
 
     /**
@@ -733,7 +725,7 @@ public class FileDirectory {
      * @param tileOffset tile offset
      */
     public void setTileOffsets(long tileOffset) {
-        setTileOffsets(createSingleLongList(tileOffset));
+        setTileOffsets(List.of(tileOffset));
     }
 
     /**
@@ -769,7 +761,7 @@ public class FileDirectory {
      * @param tileByteCount tile byte count
      */
     public void setTileByteCounts(int tileByteCount) {
-        setTileByteCounts(createSingleIntegerList(tileByteCount));
+        setTileByteCounts(List.of(tileByteCount));
     }
 
     /**
@@ -778,7 +770,7 @@ public class FileDirectory {
      * @param tileByteCount tile byte count
      */
     public void setTileByteCounts(long tileByteCount) {
-        setTileByteCountsAsLongs(createSingleLongList(tileByteCount));
+        setTileByteCountsAsLongs(List.of(tileByteCount));
     }
 
     /**
@@ -786,8 +778,11 @@ public class FileDirectory {
      *
      * @return sample format
      */
-    public List<Integer> getSampleFormat() {
-        return getIntegerListEntryValue(FieldTagType.SampleFormat);
+    public List<SampleFormat> getSampleFormat() {
+        return getIntegerListEntryValue(FieldTagType.SampleFormat)
+            .stream()
+            .map(SampleFormat::findById)
+            .toList();
     }
 
     /**
@@ -795,8 +790,11 @@ public class FileDirectory {
      *
      * @param sampleFormat sample format
      */
-    public void setSampleFormat(List<Integer> sampleFormat) {
-        setUnsignedIntegerListEntryValue(FieldTagType.SampleFormat, sampleFormat);
+    public void setSampleFormat(List<SampleFormat> sampleFormat) {
+        setUnsignedIntegerListEntryValue(
+            FieldTagType.SampleFormat,
+            sampleFormat.stream().map(SampleFormat::getId).toList()
+        );
     }
 
     /**
@@ -804,8 +802,8 @@ public class FileDirectory {
      *
      * @param sampleFormat sample format
      */
-    public void setSampleFormat(int sampleFormat) {
-        setSampleFormat(createSingleIntegerList(sampleFormat));
+    public void setSampleFormat(SampleFormat sampleFormat) {
+        setSampleFormat(List.of(sampleFormat));
     }
 
     /**
@@ -986,7 +984,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues) {
-        return rasterReader.readRasters(window, samples, sampleValues, interleaveValues, reader, planarConfiguration, tiled, predictor);
+        return rasterReader.readRasters(window, samples, sampleValues, interleaveValues, reader, getPlanarConfiguration(), tiled, predictor);
     }
 
     /**
@@ -1196,42 +1194,6 @@ public class FileDirectory {
     private void setEntryValue(FieldTagType fieldTagType, FieldType fieldType, long typeCount, Object values) {
         FileDirectoryEntry entry = new FileDirectoryEntry(fieldTagType, fieldType, typeCount, values);
         addEntry(entry);
-    }
-
-    /**
-     * Create a single integer list with the value
-     *
-     * @param value int value
-     * @return single value list
-     */
-    private List<Integer> createSingleIntegerList(int value) {
-        List<Integer> valueList = new ArrayList<>();
-        valueList.add(value);
-        return valueList;
-    }
-
-    /**
-     * Create a single long list with the value
-     *
-     * @param value long value
-     * @return single value list
-     */
-    private List<Long> createSingleLongList(long value) {
-        List<Long> valueList = new ArrayList<>();
-        valueList.add(value);
-        return valueList;
-    }
-
-    /**
-     * Create a rational value (list of two longs) from a numerator value
-     *
-     * @param numerator long numerator value
-     * @return rational list of two longs
-     */
-    private List<Long> createRationalValue(long numerator) {
-        List<Long> rational = createSingleLongList(numerator);
-        rational.add(1L);
-        return rational;
     }
 
     /**

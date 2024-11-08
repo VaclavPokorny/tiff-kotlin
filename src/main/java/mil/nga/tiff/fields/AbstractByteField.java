@@ -1,9 +1,11 @@
 package mil.nga.tiff.fields;
 
+import mil.nga.tiff.util.SampleFormat;
+
 import java.nio.ByteBuffer;
 
 abstract sealed class AbstractByteField extends AbstractRasterFieldType permits UnsignedByteField, SignedByteField {
-    public AbstractByteField(int sampleFormat) {
+    public AbstractByteField(SampleFormat sampleFormat) {
         super(1, sampleFormat);
     }
 

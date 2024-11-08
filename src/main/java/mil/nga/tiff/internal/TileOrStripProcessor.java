@@ -2,7 +2,7 @@ package mil.nga.tiff.internal;
 
 import mil.nga.tiff.compression.Predictor;
 import mil.nga.tiff.io.ByteReader;
-import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.util.PlanarConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class TileOrStripProcessor {
      * @param sample sample index
      * @return bytes
      */
-    public byte[] run(int x, int y, int sample, ByteReader reader, boolean tiled, int planarConfiguration, Integer predictor) {
+    public byte[] run(int x, int y, int sample, ByteReader reader, boolean tiled, PlanarConfiguration planarConfiguration, Integer predictor) {
 
         byte[] tileOrStrip;
 
@@ -67,9 +67,9 @@ public class TileOrStripProcessor {
         int numTilesPerCol = (imageHeight + tileHeight - 1) / tileHeight;
 
         int index = 0;
-        if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
+        if (planarConfiguration == PlanarConfiguration.CHUNKY) {
             index = y * numTilesPerRow + x;
-        } else if (planarConfiguration == TiffConstants.PlanarConfiguration.PLANAR) {
+        } else if (planarConfiguration == PlanarConfiguration.PLANAR) {
             index = sample * numTilesPerRow * numTilesPerCol + y * numTilesPerRow + x;
         }
 

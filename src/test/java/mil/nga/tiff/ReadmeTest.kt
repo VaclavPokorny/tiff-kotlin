@@ -3,8 +3,7 @@ package mil.nga.tiff
 import mil.nga.tiff.internal.FileDirectory
 import mil.nga.tiff.internal.Rasters
 import mil.nga.tiff.internal.TIFFImage
-import mil.nga.tiff.util.Compression
-import mil.nga.tiff.util.TiffConstants
+import mil.nga.tiff.util.*
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
@@ -65,7 +64,7 @@ class ReadmeTest {
         )
 
         val rowsPerStrip = rasters.calculateRowsPerStrip(
-            TiffConstants.PlanarConfiguration.CHUNKY
+            PlanarConfiguration.CHUNKY
         )
 
         val directory = FileDirectory()
@@ -73,11 +72,11 @@ class ReadmeTest {
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)
         directory.compression = Compression.NO.id
-        directory.photometricInterpretation = TiffConstants.PhotometricInterpretation.BLACK_IS_ZERO
+        directory.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
         directory.samplesPerPixel = samplesPerPixel
         directory.setRowsPerStrip(rowsPerStrip)
-        directory.planarConfiguration = TiffConstants.PlanarConfiguration.CHUNKY
-        directory.setSampleFormat(TiffConstants.SampleFormat.FLOAT)
+        directory.planarConfiguration = PlanarConfiguration.CHUNKY
+        directory.setSampleFormat(SampleFormat.FLOAT)
         directory.writeRasters = rasters
 
         for (y in 0 until height) {

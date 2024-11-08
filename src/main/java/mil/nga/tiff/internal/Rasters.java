@@ -1,6 +1,8 @@
 package mil.nga.tiff.internal;
 
 import mil.nga.tiff.FieldType;
+import mil.nga.tiff.util.PlanarConfiguration;
+import mil.nga.tiff.util.SampleFormat;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 
@@ -147,7 +149,7 @@ public class Rasters {
      * @param sampleFormats  sample formats
      * @since 2.0.0
      */
-    public Rasters(int width, int height, int[] bitsPerSamples, int[] sampleFormats) {
+    public Rasters(int width, int height, int[] bitsPerSamples, SampleFormat[] sampleFormats) {
         this(width, height, createFieldTypeArray(bitsPerSamples, sampleFormats));
     }
 
@@ -164,7 +166,7 @@ public class Rasters {
      * @param order          byte order
      * @since 2.0.0
      */
-    public Rasters(int width, int height, int[] bitsPerSamples, int[] sampleFormats, ByteOrder order) {
+    public Rasters(int width, int height, int[] bitsPerSamples, SampleFormat[] sampleFormats, ByteOrder order) {
         this(width, height, createFieldTypeArray(bitsPerSamples, sampleFormats), order);
     }
 
@@ -181,7 +183,7 @@ public class Rasters {
      * @param sampleFormat    format for each sample
      * @since 2.0.0
      */
-    public Rasters(int width, int height, int samplesPerPixel, int bitsPerSample, int sampleFormat) {
+    public Rasters(int width, int height, int samplesPerPixel, int bitsPerSample, SampleFormat sampleFormat) {
         this(width, height, samplesPerPixel, FieldType.getFieldType(sampleFormat, bitsPerSample));
     }
 
@@ -199,7 +201,7 @@ public class Rasters {
      * @param order           byte order
      * @since 2.0.0
      */
-    public Rasters(int width, int height, int samplesPerPixel, int bitsPerSample, int sampleFormat, ByteOrder order) {
+    public Rasters(int width, int height, int samplesPerPixel, int bitsPerSample, SampleFormat sampleFormat, ByteOrder order) {
         this(width, height, samplesPerPixel, FieldType.getFieldType(sampleFormat, bitsPerSample), order);
     }
 
@@ -261,7 +263,7 @@ public class Rasters {
      * @param sampleFormats  sample formats
      * @return field type array
      */
-    private static FieldType[] createFieldTypeArray(int[] bitsPerSamples, int[] sampleFormats) {
+    private static FieldType[] createFieldTypeArray(int[] bitsPerSamples, SampleFormat[] sampleFormats) {
         if (bitsPerSamples.length != sampleFormats.length) {
             throw new TiffException("Equal number of bits per samples and sample formats expected. " + "Bits Per Samples: " + Arrays.toString(bitsPerSamples) + ", Sample Formats: " + Arrays.toString(sampleFormats));
         }
@@ -768,7 +770,7 @@ public class Rasters {
      * @param planarConfiguration chunky or planar
      * @return rows per strip
      */
-    public int calculateRowsPerStrip(int planarConfiguration) {
+    public int calculateRowsPerStrip(PlanarConfiguration planarConfiguration) {
         return calculateRowsPerStrip(planarConfiguration, TiffConstants.DEFAULT_MAX_BYTES_PER_STRIP);
     }
 
@@ -779,11 +781,11 @@ public class Rasters {
      * @param maxBytesPerStrip    attempted max bytes per strip
      * @return rows per strip
      */
-    public int calculateRowsPerStrip(int planarConfiguration, int maxBytesPerStrip) {
+    public int calculateRowsPerStrip(PlanarConfiguration planarConfiguration, int maxBytesPerStrip) {
 
         Integer rowsPerStrip = null;
 
-        if (planarConfiguration == TiffConstants.PlanarConfiguration.CHUNKY) {
+        if (planarConfiguration == PlanarConfiguration.CHUNKY) {
             rowsPerStrip = rowsPerStrip(sizePixel(), maxBytesPerStrip);
         } else {
 

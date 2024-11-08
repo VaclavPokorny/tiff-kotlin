@@ -1,9 +1,11 @@
 package mil.nga.tiff.fields;
 
+import mil.nga.tiff.util.SampleFormat;
+
 import java.nio.ByteBuffer;
 
 abstract sealed class AbstractLongField extends AbstractRasterFieldType permits UnsignedLongField, SignedLongField {
-    public AbstractLongField(int sampleFormat) {
+    public AbstractLongField(SampleFormat sampleFormat) {
         super(4, sampleFormat);
     }
 

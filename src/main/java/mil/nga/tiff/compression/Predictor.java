@@ -2,7 +2,8 @@ package mil.nga.tiff.compression;
 
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.util.DifferencingPredictor;
+import mil.nga.tiff.util.PlanarConfiguration;
 import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
@@ -27,11 +28,11 @@ public class Predictor {
      * @param planarConfiguration planar configuration
      * @return decoded or original bytes
      */
-    public static byte[] decode(byte[] bytes, int predictor, int width, int height, List<Integer> bitsPerSample, int planarConfiguration) {
-        if (predictor != TiffConstants.DifferencingPredictor.NO) {
+    public static byte[] decode(byte[] bytes, int predictor, int width, int height, List<Integer> bitsPerSample, PlanarConfiguration planarConfiguration) {
+        if (predictor != DifferencingPredictor.NO.getId()) {
 
             int bytesPerSample = getBytesPerSample(bitsPerSample);
-            int samples = planarConfiguration == 2 ? 1 : bitsPerSample.size();
+            int samples = planarConfiguration == PlanarConfiguration.PLANAR ? 1 : bitsPerSample.size();
 
             ByteReader reader = new ByteReader(bytes);
             ByteWriter writer = new ByteWriter();
@@ -42,15 +43,12 @@ public class Predictor {
                     if (row * samples * width * bytesPerSample >= bytes.length) {
                         break;
                     }
-                    switch (predictor) {
-                        case TiffConstants.DifferencingPredictor.HORIZONTAL:
-                            decodeHorizontal(reader, writer, width, bytesPerSample, samples);
-                            break;
-                        case TiffConstants.DifferencingPredictor.FLOATINGPOINT:
-                            decodeFloatingPoint(reader, writer, width, bytesPerSample, samples);
-                            break;
-                        default:
-                            throw new TiffException("Unsupported predictor: " + predictor);
+                    if (predictor == DifferencingPredictor.HORIZONTAL.getId()) {
+                        decodeHorizontal(reader, writer, width, bytesPerSample, samples);
+                    } else if (predictor == DifferencingPredictor.FLOATINGPOINT.getId()) {
+                        decodeFloatingPoint(reader, writer, width, bytesPerSample, samples);
+                    } else {
+                        throw new TiffException("Unsupported predictor: " + predictor);
                     }
                 }
 

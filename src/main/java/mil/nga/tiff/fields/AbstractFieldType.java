@@ -3,7 +3,7 @@ package mil.nga.tiff.fields;
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import mil.nga.tiff.util.TiffConstants;
+import mil.nga.tiff.util.SampleFormat;
 import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
@@ -16,19 +16,19 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
      * Number of bytes per field value
      */
     private final int bytes;
-    private final int sampleFormat;
+    private final SampleFormat sampleFormat;
 
     public AbstractFieldType(int bytes) {
         this.bytes = bytes;
-        this.sampleFormat = TiffConstants.SampleFormat.UNDEFINED;
+        this.sampleFormat = SampleFormat.UNDEFINED;
     }
 
-    public AbstractFieldType(int bytes, int sampleFormat) {
+    public AbstractFieldType(int bytes, SampleFormat sampleFormat) {
         this.bytes = bytes;
         this.sampleFormat = sampleFormat;
     }
 
-    public boolean hasSampleFormat(int sampleFormat) {
+    public boolean hasSampleFormat(SampleFormat sampleFormat) {
         return this.sampleFormat == sampleFormat;
     }
 
@@ -43,10 +43,10 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
      * @since 2.0.0
      */
     public int getSampleFormat() {
-        if (sampleFormat == TiffConstants.SampleFormat.UNDEFINED) {
+        if (sampleFormat == SampleFormat.UNDEFINED) {
             throw new TiffException("Unsupported sample format");
         }
-        return sampleFormat;
+        return sampleFormat.getId();
     }
 
     public int getBytes() {
