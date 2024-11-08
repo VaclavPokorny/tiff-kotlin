@@ -4,6 +4,7 @@ import mil.nga.tiff.compression.CompressionEncoder;
 import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.field.type.enumeration.Compression;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
+import mil.nga.tiff.util.TiffByteOrder;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 
@@ -30,8 +31,8 @@ public class TiffImageWriter {
     public void write(TIFFImage tiffImage) throws IOException {
 
         // Write the byte order (bytes 0-1)
-        String byteOrder = writer.getByteOrder() == ByteOrder.BIG_ENDIAN ? TiffConstants.BYTE_ORDER_BIG_ENDIAN : TiffConstants.BYTE_ORDER_LITTLE_ENDIAN;
-        writer.writeString(byteOrder);
+        String byteOrderId = TiffByteOrder.findByByteOrder(writer.getByteOrder()).getId();
+        writer.writeString(byteOrderId);
 
         // Write the TIFF file identifier (bytes 2-3)
         writer.writeUnsignedShort(TiffConstants.FILE_IDENTIFIER);

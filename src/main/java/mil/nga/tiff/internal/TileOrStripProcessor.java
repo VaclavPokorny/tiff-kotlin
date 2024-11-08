@@ -1,50 +1,24 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.compression.Predictor;
-import mil.nga.tiff.io.ByteReader;
+import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
+import mil.nga.tiff.io.ByteReader;
 
 public class TileOrStripProcessor {
 
     private final FileDirectory directory;
+    private final TileOrStripCache cache;
+
 
     /**
-     * Cache
-     */
-    private Map<Integer, byte[]> cache = null;
-
-    /**
-     * Last block index, index of single block cache
-     */
-    private int lastBlockIndex = -1;
-
-    /**
-     * Last block, single block cache when caching is not enabled
-     */
-    private byte[] lastBlock;
-
-
-    public TileOrStripProcessor(FileDirectory directory) {
-        this.directory = directory;
-    }
-
-    /**
-     * Set whether to cache tiles. Does nothing is already caching tiles, clears
-     * the existing cache if set to false.
+     * Create tile or strip processor
      *
-     * @param cacheData true to cache tiles and strips
+     * @param directory IFD
+     * @param cache true to cache tiles and strips
      */
-    public void setCache(boolean cacheData) {
-        if (cacheData) {
-            if (cache == null) {
-                cache = new HashMap<>();
-            }
-        } else {
-            cache = null;
-        }
+    public TileOrStripProcessor(FileDirectory directory, TileOrStripCache cache) {
+        this.directory = directory;
+        this.cache = cache;
     }
 
     /**
@@ -55,35 +29,14 @@ public class TileOrStripProcessor {
      * @param sample sample index
      * @return bytes
      */
-    public byte[] run(int x, int y, int sample, ByteReader reader, boolean tiled, PlanarConfiguration planarConfiguration, Integer predictor) {
+    public byte[] run(int x, int y, int sample, ByteReader reader, boolean tiled, PlanarConfiguration planarConfiguration, DifferencingPredictor predictor) {
+        int index = determineIndex(x, y, sample, planarConfiguration);
 
-        byte[] tileOrStrip;
-
-        int imageWidth = directory.getImageWidth().intValue();
-        int imageHeight = directory.getImageHeight().intValue();
-        int tileWidth = directory.getTileWidth().intValue();
-        int tileHeight = directory.getTileHeight().intValue();
-        int numTilesPerRow = (imageWidth + tileWidth - 1) / tileWidth;
-        int numTilesPerCol = (imageHeight + tileHeight - 1) / tileHeight;
-
-        int index = 0;
-        if (planarConfiguration == PlanarConfiguration.CHUNKY) {
-            index = y * numTilesPerRow + x;
-        } else if (planarConfiguration == PlanarConfiguration.PLANAR) {
-            index = sample * numTilesPerRow * numTilesPerCol + y * numTilesPerRow + x;
-        }
-
-        // Attempt to pull from the cache
-        if (cache != null && cache.containsKey(index)) {
-            tileOrStrip = cache.get(index);
-        } else if (lastBlockIndex == index && lastBlock != null) {
-            tileOrStrip = lastBlock;
-        } else {
-
+        return cache.getOrSet(index, () -> {
             // Read and decode the block
-
             long offset;
             int byteCount;
+            byte[] tileOrStrip;
 
             if (tiled) {
                 offset = directory.getTileOffsets().get(index);
@@ -98,19 +51,35 @@ public class TileOrStripProcessor {
             tileOrStrip = directory.getDecoder().decode(bytes, reader.getByteOrder());
 
             if (directory.getPredictor() != null) {
-                tileOrStrip = Predictor.decode(tileOrStrip, directory.getPredictor(), tileWidth, tileHeight, directory.getBitsPerSample(), planarConfiguration);
+                tileOrStrip = predictor.getImplementation().decode(
+                    tileOrStrip,
+                    directory.getTileWidth().intValue(),
+                    directory.getTileHeight().intValue(),
+                    directory.getBitsPerSample(),
+                    planarConfiguration
+                );
             }
 
             // Cache the data
-            if (cache != null) {
-                cache.put(index, tileOrStrip);
-            } else {
-                lastBlockIndex = index;
-                lastBlock = tileOrStrip;
-            }
+            return tileOrStrip;
+        });
+    }
+
+    private int determineIndex(int x, int y, int sample, PlanarConfiguration planarConfiguration) {
+        int imageWidth = directory.getImageWidth().intValue();
+        int imageHeight = directory.getImageHeight().intValue();
+        int tileWidth = directory.getTileWidth().intValue();
+        int tileHeight = directory.getTileHeight().intValue();
+        int numTilesPerRow = (imageWidth + tileWidth - 1) / tileWidth;
+        int numTilesPerCol = (imageHeight + tileHeight - 1) / tileHeight;
+
+        if (planarConfiguration == PlanarConfiguration.CHUNKY) {
+            return y * numTilesPerRow + x;
+        } else if (planarConfiguration == PlanarConfiguration.PLANAR) {
+            return sample * numTilesPerRow * numTilesPerCol + y * numTilesPerRow + x;
         }
 
-        return tileOrStrip;
+        return 0;
     }
 
 }

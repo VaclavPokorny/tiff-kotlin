@@ -1,6 +1,7 @@
 package mil.nga.tiff.internal;
 
 import mil.nga.tiff.field.FieldType;
+import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
@@ -19,7 +20,7 @@ public class FileDirectoryRasterReader {
         this.tileOrStripProcessor = tileOrStripProcessor;
     }
 
-    public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, Integer predictor) {
+    public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, DifferencingPredictor predictor) {
 
         int width = directory.getImageWidth().intValue();
         int height = directory.getImageHeight().intValue();
@@ -94,7 +95,7 @@ public class FileDirectoryRasterReader {
      * @param samples pixel samples to read
      * @param rasters rasters to populate
      */
-    private void readRaster(ImageWindow window, int[] samples, Rasters rasters, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, Integer predictor) {
+    private void readRaster(ImageWindow window, int[] samples, Rasters rasters, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, DifferencingPredictor predictor) {
 
         int tileWidth = directory.getTileWidth().intValue();
         int tileHeight = directory.getTileHeight().intValue();

@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
  *
  * @author osbornb
  */
-public class ByteWriter {
+public class ByteWriter implements AutoCloseable {
 
     /**
      * Output stream to write bytes to
@@ -41,6 +41,7 @@ public class ByteWriter {
     /**
      * Close the byte writer
      */
+    @Override
     public void close() {
         try {
             os.close();

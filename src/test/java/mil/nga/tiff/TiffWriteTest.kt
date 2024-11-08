@@ -10,6 +10,7 @@ import mil.nga.tiff.util.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.util.*
 import kotlin.math.pow
 
 /**
@@ -95,7 +96,7 @@ class TiffWriteTest {
         val newRaster = Rasters(
             inpWidth, inpHeight, samplesPerPixel, bitsPerSample, SampleFormat.UNSIGNED_INT
         )
-        val fileDirs = FileDirectory()
+        val fileDirs = FileDirectory(TreeSet(), null, false)
 
         val rowsPerStrip = newRaster.calculateRowsPerStrip(
             PlanarConfiguration.CHUNKY

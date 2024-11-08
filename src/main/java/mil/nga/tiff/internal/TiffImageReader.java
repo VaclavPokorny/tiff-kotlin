@@ -3,6 +3,7 @@ package mil.nga.tiff.internal;
 import mil.nga.tiff.field.FieldTagType;
 import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.io.ByteReader;
+import mil.nga.tiff.util.TiffByteOrder;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 
@@ -57,11 +58,7 @@ public class TiffImageReader {
         }
 
         // Determine the byte order
-        ByteOrder byteOrder = switch (byteOrderString) {
-            case TiffConstants.BYTE_ORDER_LITTLE_ENDIAN -> ByteOrder.LITTLE_ENDIAN;
-            case TiffConstants.BYTE_ORDER_BIG_ENDIAN -> ByteOrder.BIG_ENDIAN;
-            default -> throw new TiffException("Invalid byte order: " + byteOrderString);
-        };
+        ByteOrder byteOrder = TiffByteOrder.findById(byteOrderString).getByteOrder();
         reader.setByteOrder(byteOrder);
     }
 
@@ -94,7 +91,10 @@ public class TiffImageReader {
 
                 // Read the field tag, field type, and type count
                 int fieldTagValue = reader.readUnsignedShort();
-                FieldTagType fieldTag = FieldTagType.getById(fieldTagValue);
+                FieldTagType fieldTag = FieldTagType.getById(fieldTagValue).orElse(null);
+                if (fieldTag == null) {
+                    System.out.println("Unrecognized tag: " + fieldTagValue);
+                }
 
                 int fieldTypeValue = reader.readUnsignedShort();
                 FieldType fieldType = FieldType.findById(fieldTypeValue);

@@ -11,6 +11,7 @@ import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.util.*
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.util.TreeSet
 
 /**
  * README example tests
@@ -72,7 +73,7 @@ class ReadmeTest {
             PlanarConfiguration.CHUNKY
         )
 
-        val directory = FileDirectory()
+        val directory = FileDirectory(TreeSet(), null, false)
         directory.setImageWidth(width)
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)
