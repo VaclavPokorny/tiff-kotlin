@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public sealed interface FieldTagType permits TiffBasicTag {
+public sealed interface FieldTagType permits TiffBasicTag, TiffExtendedTag, JpegTag, ExifTag, GeoTiffTag, GdalTag, MetaTag {
 
     /**
      * Find all available described tags

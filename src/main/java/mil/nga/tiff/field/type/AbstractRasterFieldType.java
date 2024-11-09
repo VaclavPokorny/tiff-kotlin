@@ -6,12 +6,9 @@ import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 abstract public sealed class AbstractRasterFieldType extends AbstractFieldType permits AbstractByteField, AbstractShortField, AbstractLongField, FloatField, DoubleField {
 
@@ -26,7 +23,7 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
     /**
      * Read the value from the reader according to the field type
      *
-     * @param reader    byte reader
+     * @param reader byte reader
      * @return value
      */
     @Override
@@ -95,25 +92,9 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
     /**
      * Write value
      *
-     * @param writer
-     *            byte writer
-     * @param value
-     *            value
+     * @param writer byte writer
+     * @param value  value
      */
     abstract protected void writeValue(ByteWriter writer, Object value) throws IOException;
-
-    @SuppressWarnings("unchecked")
-    public static Iterable<AbstractRasterFieldType> allTypes() {
-        return Arrays.stream((Class<AbstractRasterFieldType>[]) AbstractRasterFieldType.class.getPermittedSubclasses())
-            .filter(o -> !Modifier.isAbstract(o.getModifiers()))
-            .flatMap(subclass -> {
-                try {
-                    return Stream.of(subclass.getDeclaredConstructor().newInstance());
-                } catch (ReflectiveOperationException ignore) {
-                    return Stream.empty();
-                }
-            })
-            .toList();
-    }
 
 }
