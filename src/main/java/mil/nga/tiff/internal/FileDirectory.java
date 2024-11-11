@@ -11,6 +11,7 @@ import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.field.type.enumeration.ResolutionUnit;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
+import mil.nga.tiff.internal.rasters.Rasters;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;

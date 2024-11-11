@@ -61,11 +61,29 @@ abstract public sealed class AbstractFieldType permits AbstractRasterFieldType, 
         throw new TiffException("Unsupported raster field type.");
     }
 
-    public Number readSample(ByteBuffer buffer) {
+    /**
+     * Reads sample from given buffer.
+     *
+     * @param buffer      A buffer to read from
+     * @param index       Position in buffer where to read from
+     * @param sampleIndex Index of sample type to read
+     * @return Number read from buffer
+     */
+    public Number getSampleFromByteBuffer(ByteBuffer buffer, int index, int sampleIndex) {
         throw new TiffException("Unsupported raster field type.");
     }
 
-    public void writeSample(ByteBuffer buffer, Number value) {
+    /**
+     * Updates sample to given value in buffer.
+     *
+     * @param buffer      A buffer to be updated.
+     * @param bufferIndex Position in buffer where to update.
+     * @param sampleIndex Sample index in sampleFieldTypes. Needed for determining
+     *                    sample size.
+     * @param value       A Number value to be put in buffer. Has to be same size as
+     *                    sampleFieldTypes[sampleIndex].
+     */
+    public void updateSampleInByteBuffer(ByteBuffer buffer, int bufferIndex, int sampleIndex, Number value) {
         throw new TiffException("Unsupported raster field type.");
     }
 

@@ -21,12 +21,12 @@ public final class DoubleField extends AbstractRasterFieldType {
     }
 
     @Override
-    public Number readSample(ByteBuffer buffer) {
+    protected Number readSample(ByteBuffer buffer) {
         return buffer.getDouble();
     }
 
     @Override
-    public void writeSample(ByteBuffer buffer, Number value) {
+    protected void writeSample(ByteBuffer buffer, Number value) {
         buffer.putDouble(value.doubleValue());
     }
 

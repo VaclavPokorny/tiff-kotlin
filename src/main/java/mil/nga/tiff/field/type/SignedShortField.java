@@ -21,7 +21,7 @@ public final class SignedShortField extends AbstractShortField {
     }
 
     @Override
-    public Number readSample(ByteBuffer buffer) {
+    protected Number readSample(ByteBuffer buffer) {
         return buffer.getShort();
     }
 

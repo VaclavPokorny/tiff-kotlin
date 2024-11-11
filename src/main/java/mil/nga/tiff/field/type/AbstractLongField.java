@@ -10,7 +10,7 @@ abstract sealed class AbstractLongField extends AbstractRasterFieldType permits 
     }
 
     @Override
-    final public void writeSample(ByteBuffer buffer, Number value) {
+    final protected void writeSample(ByteBuffer buffer, Number value) {
         buffer.putInt(value.intValue());
     }
 

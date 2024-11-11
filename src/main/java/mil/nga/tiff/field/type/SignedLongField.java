@@ -21,7 +21,7 @@ public final class SignedLongField extends AbstractLongField {
     }
 
     @Override
-    public Number readSample(ByteBuffer buffer) {
+    protected Number readSample(ByteBuffer buffer) {
         return buffer.getInt();
     }
 

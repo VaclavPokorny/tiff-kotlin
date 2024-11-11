@@ -1,6 +1,7 @@
 package mil.nga.tiff.internal;
 
 import mil.nga.tiff.compression.CompressionEncoder;
+import mil.nga.tiff.internal.rasters.Rasters;
 import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.field.type.enumeration.Compression;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
@@ -42,9 +43,9 @@ public class TiffImageWriter {
         writer.writeUnsignedInt(TiffConstants.HEADER_BYTES);
 
         // Write each file internal
-        for (int i = 0; i < tiffImage.getFileDirectories().size(); i++) {
-            boolean isLast = (i + 1) == tiffImage.getFileDirectories().size();
-            FileDirectory fileDirectory = tiffImage.getFileDirectories().get(i);
+        for (int i = 0; i < tiffImage.fileDirectories().size(); i++) {
+            boolean isLast = (i + 1) == tiffImage.fileDirectories().size();
+            FileDirectory fileDirectory = tiffImage.fileDirectories().get(i);
             write(fileDirectory, isLast);
         }
     }

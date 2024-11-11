@@ -1,7 +1,8 @@
 package mil.nga.tiff;
 
+import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.internal.FileDirectory;
-import mil.nga.tiff.internal.Rasters;
+import mil.nga.tiff.internal.rasters.Rasters;
 import mil.nga.tiff.internal.TIFFImage;
 import mil.nga.tiff.internal.TiffImageWriter;
 import mil.nga.tiff.io.ByteWriter;
@@ -23,8 +24,8 @@ import java.util.List;
  * {@link FileDirectory#getPlanarConfiguration()}, and
  * {@link FileDirectory#getSamplesPerPixel()}.
  * <p>
- * The {@link Rasters#calculateRowsPerStrip(int)} and
- * {@link Rasters#calculateRowsPerStrip(int, int)} methods provide a mechanism
+ * The {@link Rasters#calculateRowsPerStrip(PlanarConfiguration)} and
+ * {@link Rasters#calculateRowsPerStrip(PlanarConfiguration, int)} methods provide a mechanism
  * for determining a {@link FileDirectory#getRowsPerStrip()} setting.
  *
  * @author osbornb

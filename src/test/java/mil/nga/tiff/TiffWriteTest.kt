@@ -1,15 +1,18 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.TiffTestUtils.createFieldTypeArray
+import mil.nga.tiff.TiffTestUtils.createSampleValues
 import mil.nga.tiff.field.*
-import mil.nga.tiff.field.FieldType
 import mil.nga.tiff.field.type.enumeration.*
 import mil.nga.tiff.internal.FileDirectory
-import mil.nga.tiff.internal.Rasters
+import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.internal.TIFFImage
+import mil.nga.tiff.internal.rasters.RasterTestUtils
 import mil.nga.tiff.util.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.nio.ByteOrder
 import java.util.*
 import kotlin.math.pow
 
@@ -26,7 +29,7 @@ class TiffWriteTest {
         val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
         val strippedTiff = TiffReader.readTiff(strippedFile)
 
-        val fileDirectory = strippedTiff.fileDirectory
+        val fileDirectory = strippedTiff.fileDirectories.first()
         val rasters = fileDirectory.readRasters()
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
@@ -38,12 +41,12 @@ class TiffWriteTest {
         val tiffBytes = TiffWriter.writeTiffToBytes(strippedTiff)
 
         val readTiffImage = TiffReader.readTiff(tiffBytes)
-        val fileDirectory2 = readTiffImage.fileDirectory
+        val fileDirectory2 = readTiffImage.fileDirectories.first()
         val rasters2 = fileDirectory2.readRasters()
         val rasters2Interleaved = fileDirectory2.readInterleavedRasters()
 
-        TiffTestUtils.compareRastersSampleValues(rasters, rasters2)
-        TiffTestUtils.compareRastersInterleaveValues(
+        RasterTestUtils.compareRastersSampleValues(rasters, rasters2)
+        RasterTestUtils.compareRastersInterleaveValues(
             rastersInterleaved, rasters2Interleaved
         )
     }
@@ -54,7 +57,7 @@ class TiffWriteTest {
         val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
         val strippedTiff = TiffReader.readTiff(strippedFile)
 
-        val fileDirectory = strippedTiff.fileDirectory
+        val fileDirectory = strippedTiff.fileDirectories.first()
         val rasters = fileDirectory.readRasters()
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
@@ -66,14 +69,12 @@ class TiffWriteTest {
         val tiffBytes = TiffWriter.writeTiffToBytes(strippedTiff)
 
         val readTiffImage = TiffReader.readTiff(tiffBytes)
-        val fileDirectory2 = readTiffImage.fileDirectory
+        val fileDirectory2 = readTiffImage.fileDirectories.first()
         val rasters2 = fileDirectory2.readRasters()
         val rasters2Interleaved = fileDirectory2.readInterleavedRasters()
 
-        TiffTestUtils.compareRastersSampleValues(rasters, rasters2)
-        TiffTestUtils.compareRastersInterleaveValues(
-            rastersInterleaved, rasters2Interleaved
-        )
+        RasterTestUtils.compareRastersSampleValues(rasters, rasters2)
+        RasterTestUtils.compareRastersInterleaveValues(rastersInterleaved, rasters2Interleaved)
     }
 
     @Test
@@ -93,9 +94,11 @@ class TiffWriteTest {
             }
         }
 
-        val newRaster = Rasters(
-            inpWidth, inpHeight, samplesPerPixel, bitsPerSample, SampleFormat.UNSIGNED_INT
-        )
+        val rasterFieldTypes = createFieldTypeArray(samplesPerPixel, FieldType.findBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample))
+        val order = ByteOrder.nativeOrder()
+        val sampleValues = createSampleValues(inpWidth, inpHeight, rasterFieldTypes, order)
+        val newRaster = Rasters(inpWidth, inpHeight, rasterFieldTypes, sampleValues, null)
+
         val fileDirs = FileDirectory(TreeSet(), null, false)
 
         val rowsPerStrip = newRaster.calculateRowsPerStrip(
@@ -122,8 +125,7 @@ class TiffWriteTest {
                 )
             }
         }
-        val newImage = TIFFImage()
-        newImage.add(fileDirs)
+        val newImage = TIFFImage(listOf(fileDirs))
 
         val tiffBytes = TiffWriter.writeTiffToBytes(newImage)
         Assertions.assertNotNull(tiffBytes)
@@ -131,7 +133,7 @@ class TiffWriteTest {
         val image = TiffReader.readTiff(tiffBytes)
         Assertions.assertNotNull(image)
 
-        val fileDirectory = image.fileDirectory
+        val fileDirectory = image.fileDirectories.first()
         Assertions.assertEquals(inpWidth, fileDirectory.imageWidth)
         Assertions.assertEquals(inpHeight, fileDirectory.imageHeight)
         val bitsPerSamp = fileDirectory.bitsPerSample
@@ -180,16 +182,7 @@ class TiffWriteTest {
         Assertions.assertEquals(
             SampleFormat.UNSIGNED_INT, sf[0]
         )
-        val fieldTypes = rasters.fieldTypes
-        Assertions.assertEquals(1, fieldTypes.size)
-        Assertions.assertEquals(FieldType.SHORT, fieldTypes[0])
 
-        for (y in 0 until inpHeight) {
-            for (x in 0 until inpWidth) {
-                Assertions.assertEquals(
-                    inpPixVals[y * inpWidth + x], rasters.getPixelSample(0, x, y)
-                )
-            }
-        }
+        RasterTestUtils.testRastersMetadata(inpWidth, inpHeight, inpPixVals, rasters)
     }
 }

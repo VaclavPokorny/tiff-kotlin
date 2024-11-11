@@ -1,17 +1,20 @@
 package mil.nga.tiff
 
+import mil.nga.tiff.TiffTestUtils.createFieldTypeArray
+import mil.nga.tiff.TiffTestUtils.createSampleValues
+import mil.nga.tiff.field.FieldType
 import mil.nga.tiff.field.type.enumeration.Compression
 import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
 import mil.nga.tiff.field.type.enumeration.SampleFormat
-import mil.nga.tiff.field.FieldType
 import mil.nga.tiff.internal.FileDirectory
-import mil.nga.tiff.internal.Rasters
+import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.util.*
 import org.junit.jupiter.api.Test
 import java.io.IOException
-import java.util.TreeSet
+import java.nio.ByteOrder
+import java.util.*
 
 /**
  * README example tests
@@ -45,7 +48,7 @@ class ReadmeTest {
         // ByteReader input = ...
 
         val tiffImage = TiffReader.readTiff(input)
-        val directories = tiffImage.fileDirectories
+        val directories = tiffImage.fileDirectories()
         val directory = directories[0]
         val rasters = directory.readRasters()
     }
@@ -65,9 +68,10 @@ class ReadmeTest {
         val fieldType = FieldType.FLOAT
         val bitsPerSample = fieldType.definition.bits
 
-        val rasters = Rasters(
-            width, height, samplesPerPixel, fieldType
-        )
+        val fieldTypes = createFieldTypeArray(samplesPerPixel, fieldType)
+        val order = ByteOrder.nativeOrder()
+        val sampleValues = createSampleValues(width, height, fieldTypes, order)
+        val rasters = Rasters(width, height, fieldTypes, sampleValues, null)
 
         val rowsPerStrip = rasters.calculateRowsPerStrip(
             PlanarConfiguration.CHUNKY
@@ -92,8 +96,7 @@ class ReadmeTest {
             }
         }
 
-        val tiffImage = TIFFImage()
-        tiffImage.add(directory)
+        val tiffImage = TIFFImage(listOf(directory))
         val bytes = TiffWriter.writeTiffToBytes(tiffImage)
 
         // or

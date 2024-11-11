@@ -130,9 +130,9 @@ class TiffReadTest {
         val tiff = TiffReader.readTiff(file)
 
         Assertions.assertNotNull(tiff)
-        Assertions.assertTrue(tiff.fileDirectories.size > 0)
-        for (i in tiff.fileDirectories.indices) {
-            val fileDirectory = tiff.getFileDirectory(i)
+        Assertions.assertTrue(tiff.fileDirectories().size > 0)
+        for (i in tiff.fileDirectories().indices) {
+            val fileDirectory = tiff.fileDirectories[i]
             Assertions.assertNotNull(fileDirectory)
             try {
                 fileDirectory.readRasters()

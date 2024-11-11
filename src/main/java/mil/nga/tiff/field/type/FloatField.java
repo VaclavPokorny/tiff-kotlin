@@ -21,12 +21,12 @@ public final class FloatField extends AbstractRasterFieldType {
     }
 
     @Override
-    public Number readSample(ByteBuffer buffer) {
+    protected Number readSample(ByteBuffer buffer) {
         return buffer.getFloat();
     }
 
     @Override
-    public void writeSample(ByteBuffer buffer, Number value) {
+    protected void writeSample(ByteBuffer buffer, Number value) {
         buffer.putFloat(value.floatValue());
     }
 

@@ -2,6 +2,7 @@ package mil.nga.tiff.internal;
 
 import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
+import mil.nga.tiff.internal.rasters.Rasters;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;

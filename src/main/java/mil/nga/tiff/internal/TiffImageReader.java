@@ -9,6 +9,7 @@ import mil.nga.tiff.util.TiffException;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -71,7 +72,7 @@ public class TiffImageReader {
      */
     private TIFFImage parseTIFFImage(long byteOffset, boolean cache) {
 
-        TIFFImage tiffImage = new TIFFImage();
+        List<FileDirectory> dirs = new ArrayList<>();
 
         // Continue until the byte offset no longer points to another file
         // internal
@@ -122,13 +123,13 @@ public class TiffImageReader {
 
             // Add the file internal
             FileDirectory fileDirectory = new FileDirectory(entries, reader, cache);
-            tiffImage.add(fileDirectory);
+            dirs.add(fileDirectory);
 
             // Read the next byte offset location
             byteOffset = reader.readUnsignedInt();
         }
 
-        return tiffImage;
+        return new TIFFImage(dirs);
     }
 
     /**

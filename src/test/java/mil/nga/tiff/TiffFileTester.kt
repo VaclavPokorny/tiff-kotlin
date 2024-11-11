@@ -1,6 +1,6 @@
 package mil.nga.tiff
 
-import mil.nga.tiff.internal.Rasters
+import mil.nga.tiff.internal.rasters.Rasters
 import java.io.File
 import java.io.IOException
 
@@ -29,7 +29,7 @@ object TiffFileTester {
 
         println("TIFF Image: " + file.name)
 
-        val fileDirectories = tiffImage.fileDirectories
+        val fileDirectories = tiffImage.fileDirectories()
         for (i in fileDirectories.indices) {
             val fileDirectory = fileDirectories[i]
 

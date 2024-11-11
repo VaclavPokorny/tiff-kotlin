@@ -20,7 +20,7 @@ public final class UnsignedByteField extends AbstractByteField {
     }
 
     @Override
-    public Number readSample(ByteBuffer buffer) {
+    protected Number readSample(ByteBuffer buffer) {
         return (short) (buffer.get() & 0xff);
     }
 
