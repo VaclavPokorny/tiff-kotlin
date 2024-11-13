@@ -296,8 +296,22 @@ public class TiffImageWriter {
      * @return bytes written
      * @throws IOException IO exception
      */
+    @SuppressWarnings("unchecked")
     private int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
-        return entry.fieldType().writeDirectoryEntryValues(writer, entry);
+        List<Object> valuesList;
+        if (entry.typeCount() == 1 && !entry.fieldTag().isArray()) {
+            valuesList = new ArrayList<>();
+            valuesList.add(entry.values());
+        } else {
+            valuesList = (List<Object>) entry.values();
+        }
+
+        int bytesWritten = 0;
+        for (Object value : valuesList) {
+            bytesWritten += entry.fieldType().writeDirectoryEntryValue(writer, entry.fieldTag(), entry.typeCount(), value);
+        }
+
+        return bytesWritten;
     }
 
 }

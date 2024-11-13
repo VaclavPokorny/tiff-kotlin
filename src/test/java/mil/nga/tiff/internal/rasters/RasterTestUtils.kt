@@ -100,7 +100,7 @@ object RasterTestUtils {
                 var rasters3: Rasters? = null
                 var rasters4: Rasters? = null
                 if ((x == 0 && y == 0) || (x == rasters1.width - 1 && y == rasters1.height - 1) || (x == randomX && y == randomY)) {
-                    val window = ImageWindow(x, y)
+                    val window = ImageWindow.singlePixel(x, y)
                     rasters3 = fileDirectory1.readRasters(window)
                     Assertions.assertEquals(1, rasters3.numPixels)
                     rasters4 = fileDirectory2.readInterleavedRasters(window)

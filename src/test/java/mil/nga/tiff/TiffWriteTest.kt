@@ -2,6 +2,7 @@ package mil.nga.tiff
 
 import mil.nga.tiff.TiffTestUtils.createFieldTypeArray
 import mil.nga.tiff.TiffTestUtils.createSampleValues
+import mil.nga.tiff.domain.UnsignedRational
 import mil.nga.tiff.field.*
 import mil.nga.tiff.field.type.enumeration.*
 import mil.nga.tiff.internal.FileDirectory
@@ -9,6 +10,7 @@ import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.internal.rasters.RasterTestUtils
 import mil.nga.tiff.util.*
+import org.joou.UInteger
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -132,8 +134,8 @@ class TiffWriteTest {
         fileDirs.setSampleFormat(SampleFormat.UNSIGNED_INT)
         fileDirs.setRowsPerStrip(rowsPerStrip)
         fileDirs.resolutionUnit = ResolutionUnit.INCH
-        fileDirs.setXResolution(xResolution)
-        fileDirs.setYResolution(yResolution)
+        fileDirs.setXResolution(UnsignedRational(UInteger.valueOf(xResolution), UInteger.valueOf(1L)))
+        fileDirs.setYResolution(UnsignedRational(UInteger.valueOf(yResolution), UInteger.valueOf(1L)))
         fileDirs.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = PlanarConfiguration.CHUNKY
         fileDirs.compression = Compression.NO.id
@@ -181,13 +183,11 @@ class TiffWriteTest {
             ResolutionUnit.INCH, fileDirectory.resolutionUnit
         )
         val xRes = fileDirectory.xResolution
-        Assertions.assertEquals(2, xRes.size)
-        Assertions.assertEquals(xResolution, xRes[0])
-        Assertions.assertEquals(1, xRes[1])
+        Assertions.assertEquals(xResolution, xRes.numerator.toLong())
+        Assertions.assertEquals(1L, xRes.denominator.toLong())
         val yRes = fileDirectory.yResolution
-        Assertions.assertEquals(2, yRes.size)
-        Assertions.assertEquals(yResolution, yRes[0])
-        Assertions.assertEquals(1, yRes[1])
+        Assertions.assertEquals(yResolution, yRes.numerator.toLong())
+        Assertions.assertEquals(1L, yRes.denominator.toLong())
         Assertions.assertEquals(
             PhotometricInterpretation.BLACK_IS_ZERO, fileDirectory.photometricInterpretation
         )

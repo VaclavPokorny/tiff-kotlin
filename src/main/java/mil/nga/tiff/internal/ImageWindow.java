@@ -1,6 +1,7 @@
 package mil.nga.tiff.internal;
 
 import mil.nga.tiff.util.TiffException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Coordinates of a window over a portion or the entire image coordinates
@@ -19,17 +20,18 @@ public record ImageWindow(int minX, int minY, int maxX, int maxY) {
      * @param x x coordinate
      * @param y y coordinate
      */
-    public ImageWindow(int x, int y) {
-        this(x, y, x + 1, y + 1);
+    public static ImageWindow singlePixel(int x, int y) {
+        return new ImageWindow(x, y, x + 1, y + 1);
     }
 
     /**
-     * Constructor, full image size
+     * Constructor for window starting from zero X and zero Y
      *
-     * @param fileDirectory file internal
+     * @param maxX Max x
+     * @param maxY Max y
      */
-    public ImageWindow(FileDirectory fileDirectory) {
-        this(0, 0, fileDirectory.getImageWidth().intValue(), fileDirectory.getImageHeight().intValue());
+    public static ImageWindow fromZero(int maxX, int maxY) {
+        return new ImageWindow(0, 0, maxX, maxY);
     }
 
     public void validate() {

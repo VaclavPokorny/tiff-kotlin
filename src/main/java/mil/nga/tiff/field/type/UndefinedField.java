@@ -1,7 +1,7 @@
 package mil.nga.tiff.field.type;
 
 import mil.nga.tiff.field.FieldType;
-import mil.nga.tiff.internal.FileDirectoryEntry;
+import mil.nga.tiff.field.tag.FieldTagType;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 
@@ -26,25 +26,10 @@ public final class UndefinedField implements GenericFieldType {
         return values;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public int writeDirectoryEntryValues(ByteWriter writer, FileDirectoryEntry entry) {
-        List<Object> valuesList;
-        if (entry.typeCount() == 1 && !entry.fieldTag().isArray()) {
-            valuesList = new ArrayList<>();
-            valuesList.add(entry.values());
-        } else {
-            valuesList = (List<Object>) entry.values();
-        }
-
-        int bytesWritten = 0;
-
-        for (Object value : valuesList) {
-            writer.writeUnsignedByte((short) value);
-            bytesWritten += 1;
-        }
-
-        return bytesWritten;
+    public int writeDirectoryEntryValue(ByteWriter writer, FieldTagType fieldTag, long typeCount, Object value) {
+        writer.writeUnsignedByte((short) value);
+        return 1;
     }
 
 }

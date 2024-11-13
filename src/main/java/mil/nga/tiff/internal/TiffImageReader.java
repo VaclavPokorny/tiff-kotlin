@@ -143,7 +143,7 @@ public class TiffImageReader {
 
         // Get the single or array values
         Object values;
-        if (typeCount == 1 && fieldTag != null && !fieldTag.isArray() && !fieldType.metadata().multivalue()) {
+        if (typeCount == 1 && fieldTag != null && !fieldTag.isArray()) {
             values = valuesList.getFirst();
         } else {
             values = valuesList;

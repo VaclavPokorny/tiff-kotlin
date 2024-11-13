@@ -1,5 +1,6 @@
 package mil.nga.tiff.internal;
 
+import mil.nga.tiff.domain.UnsignedRational;
 import mil.nga.tiff.field.FieldTypeDictionary;
 import mil.nga.tiff.field.tag.FieldTagType;
 import mil.nga.tiff.field.tag.TiffBasicTag;
@@ -59,6 +60,8 @@ public class FileDirectory {
 
     private final FileDirectoryRasterReader rasterReader;
 
+    private final DirectoryStats stats;
+
     /**
      * Constructor, for reading TIFF files
      *
@@ -83,7 +86,8 @@ public class FileDirectory {
             fieldTagTypeMapping.put(entry.fieldTag(), entry);
         }
 
-        DirectoryStats stats = new DirectoryStats(this);
+        this.stats = new DirectoryStats(this);
+
         TileOrStripCache cache = new TileOrStripCache(cacheData);
         TileOrStripProcessor tileOrStripProcessor = new TileOrStripProcessor(stats, cache);
         this.rasterReader = new FileDirectoryRasterReader(stats, tileOrStripProcessor, typeDictionary);
@@ -97,7 +101,7 @@ public class FileDirectory {
      * @param entry file internal entry
      */
     public void addEntry(FileDirectoryEntry entry) {
-        entries.remove(entry);
+        entries.removeIf(o -> o.fieldTag() == entry.fieldTag());
         entries.add(entry);
         fieldTagTypeMapping.put(entry.fieldTag(), entry);
     }
@@ -385,26 +389,17 @@ public class FileDirectory {
      *
      * @return x resolution
      */
-    public List<Long> getXResolution() {
-        return getLongListEntryValue(TiffBasicTag.XResolution);
+    public UnsignedRational getXResolution() {
+        return getEntryValue(TiffBasicTag.XResolution);
     }
 
     /**
      * Set the x resolution
      *
-     * @param xResolution x resolution
+     * @param value x resolution
      */
-    public void setXResolution(List<Long> xResolution) {
-        setRationalEntryValue(TiffBasicTag.XResolution, xResolution);
-    }
-
-    /**
-     * Set a single value x resolution
-     *
-     * @param xResolution x resolution
-     */
-    public void setXResolution(long xResolution) {
-        setXResolution(new ArrayList<>(List.of(xResolution, 1L)));
+    public void setXResolution(UnsignedRational value) {
+        setRationalEntryValue(TiffBasicTag.XResolution, value);
     }
 
     /**
@@ -412,26 +407,17 @@ public class FileDirectory {
      *
      * @return y resolution
      */
-    public List<Long> getYResolution() {
-        return getLongListEntryValue(TiffBasicTag.YResolution);
+    public UnsignedRational getYResolution() {
+        return getEntryValue(TiffBasicTag.YResolution);
     }
 
     /**
      * Set the y resolution
      *
-     * @param yResolution y resolution
+     * @param value y resolution
      */
-    public void setYResolution(List<Long> yResolution) {
-        setRationalEntryValue(TiffBasicTag.YResolution, yResolution);
-    }
-
-    /**
-     * Set a single value y resolution
-     *
-     * @param yResolution y resolution
-     */
-    public void setYResolution(long yResolution) {
-        setYResolution(new ArrayList<>(List.of(yResolution, 1L)));
+    public void setYResolution(UnsignedRational value) {
+        setRationalEntryValue(TiffBasicTag.YResolution, value);
     }
 
     /**
@@ -683,7 +669,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readRasters() {
-        ImageWindow window = new ImageWindow(this);
+        ImageWindow window = ImageWindow.fromZero(stats.imageWidth(), stats.imageHeight());
         return readRasters(window);
     }
 
@@ -693,7 +679,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readInterleavedRasters() {
-        ImageWindow window = new ImageWindow(this);
+        ImageWindow window = ImageWindow.fromZero(stats.imageWidth(), stats.imageHeight());
         return readInterleavedRasters(window);
     }
 
@@ -724,7 +710,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readRasters(int[] samples) {
-        ImageWindow window = new ImageWindow(this);
+        ImageWindow window = ImageWindow.fromZero(stats.imageWidth(), stats.imageHeight());
         return readRasters(window, samples);
     }
 
@@ -735,7 +721,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readInterleavedRasters(int[] samples) {
-        ImageWindow window = new ImageWindow(this);
+        ImageWindow window = ImageWindow.fromZero(stats.imageWidth(), stats.imageHeight());
         return readInterleavedRasters(window, samples);
     }
 
@@ -769,7 +755,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readRasters(boolean sampleValues, boolean interleaveValues) {
-        ImageWindow window = new ImageWindow(this);
+        ImageWindow window = ImageWindow.fromZero(stats.imageWidth(), stats.imageHeight());
         return readRasters(window, sampleValues, interleaveValues);
     }
 
@@ -794,7 +780,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readRasters(int[] samples, boolean sampleValues, boolean interleaveValues) {
-        ImageWindow window = new ImageWindow(this);
+        ImageWindow window = ImageWindow.fromZero(stats.imageWidth(), stats.imageHeight());
         return readRasters(window, samples, sampleValues, interleaveValues);
     }
 
@@ -929,9 +915,9 @@ public class FileDirectory {
      * @param value        long list value
      * @since 2.0.1
      */
-    public void setRationalEntryValue(FieldTagType fieldTagType, List<Long> value) {
-        if (value == null || value.size() != 2) {
-            throw new TiffException("Invalid rational value, must be two longs. Size: " + (value == null ? null : value.size()));
+    public void setRationalEntryValue(FieldTagType fieldTagType, UnsignedRational value) {
+        if (value == null) {
+            throw new TiffException("Invalid rational value.");
         }
         setEntryValue(fieldTagType, new UnsignedRationalField(), 1, value);
     }

@@ -16,5 +16,4 @@ public @interface FieldType {
     int id();
     int bytesPerSample();
     SampleFormat sampleFormat() default SampleFormat.UNDEFINED;
-    boolean multivalue() default false;
 }
