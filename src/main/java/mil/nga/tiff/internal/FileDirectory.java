@@ -1,8 +1,7 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.compression.CompressionDecoder;
-import mil.nga.tiff.field.tag.FieldTagType;
 import mil.nga.tiff.field.FieldTypeDictionary;
+import mil.nga.tiff.field.tag.FieldTagType;
 import mil.nga.tiff.field.tag.TiffBasicTag;
 import mil.nga.tiff.field.tag.TiffExtendedTag;
 import mil.nga.tiff.field.type.ASCIIField;
@@ -10,7 +9,6 @@ import mil.nga.tiff.field.type.GenericFieldType;
 import mil.nga.tiff.field.type.UnsignedLongField;
 import mil.nga.tiff.field.type.UnsignedRationalField;
 import mil.nga.tiff.field.type.UnsignedShortField;
-import mil.nga.tiff.field.type.enumeration.Compression;
 import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
 import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
@@ -20,6 +18,7 @@ import mil.nga.tiff.internal.rasters.Rasters;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,16 +52,6 @@ public class FileDirectory {
     private final ByteReader reader;
 
     /**
-     * Differencing Predictor
-     */
-    private final DifferencingPredictor predictor;
-
-    /**
-     * Compression decoder
-     */
-    private final CompressionDecoder decoder;
-
-    /**
      * Rasters to write to the TIFF file
      */
     private Rasters writeRasters = null;
@@ -88,23 +77,18 @@ public class FileDirectory {
      * @param cacheData true to cache tiles and strips
      */
     public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader, boolean cacheData, FieldTypeDictionary typeDictionary) {
-        TileOrStripCache cache = new TileOrStripCache(cacheData);
-        TileOrStripProcessor tileOrStripProcessor = new TileOrStripProcessor(this, cache);
-        this.rasterReader = new FileDirectoryRasterReader(this, tileOrStripProcessor, typeDictionary);
-
         // Set the entries and the field tag type mapping
         this.entries = entries;
         for (FileDirectoryEntry entry : entries) {
             fieldTagTypeMapping.put(entry.fieldTag(), entry);
         }
 
+        DirectoryStats stats = new DirectoryStats(this);
+        TileOrStripCache cache = new TileOrStripCache(cacheData);
+        TileOrStripProcessor tileOrStripProcessor = new TileOrStripProcessor(stats, cache);
+        this.rasterReader = new FileDirectoryRasterReader(stats, tileOrStripProcessor, typeDictionary);
+
         this.reader = reader;
-
-        // Determine the decoder based upon the compression
-        this.decoder = Compression.getDecoder(getCompression());
-
-        // Determine the differencing predictor
-        this.predictor = getPredictor();
     }
 
     /**
@@ -125,15 +109,6 @@ public class FileDirectory {
      */
     public boolean isTiled() {
         return getRowsPerStrip() == null;
-    }
-
-    /**
-     * Get the compression decoder
-     *
-     * @return compression decoder
-     */
-    public CompressionDecoder getDecoder() {
-        return decoder;
     }
 
     /**
@@ -165,54 +140,54 @@ public class FileDirectory {
     }
 
     /**
-     * Get the image width
+     * Get the image imageWidth
      *
-     * @return image width
+     * @return image imageWidth
      */
     public Number getImageWidth() {
         return getNumberEntryValue(TiffBasicTag.ImageWidth);
     }
 
     /**
-     * Set the image width
+     * Set the image imageWidth
      *
-     * @param value image width
+     * @param value image imageWidth
      */
     public void setImageWidth(int value) {
         setEntryValue(TiffBasicTag.ImageWidth, new UnsignedShortField(), 1, value);
     }
 
     /**
-     * Set the image width
+     * Set the image imageWidth
      *
-     * @param value image width
+     * @param value image imageWidth
      */
     public void setImageWidthAsLong(long value) {
         setEntryValue(TiffBasicTag.ImageWidth, new UnsignedLongField(), 1, value);
     }
 
     /**
-     * Get the image height
+     * Get the image imageHeight
      *
-     * @return image height
+     * @return image imageHeight
      */
     public Number getImageHeight() {
         return getNumberEntryValue(TiffBasicTag.ImageLength);
     }
 
     /**
-     * Set the image height
+     * Set the image imageHeight
      *
-     * @param value image height
+     * @param value image imageHeight
      */
     public void setImageHeight(int value) {
         setEntryValue(TiffBasicTag.ImageLength, new UnsignedShortField(), 1, value);
     }
 
     /**
-     * Set the image height
+     * Set the image imageHeight
      *
-     * @param value image height
+     * @param value image imageHeight
      */
     public void setImageHeightAsLong(long value) {
         setEntryValue(TiffBasicTag.ImageLength, new UnsignedLongField(), 1, value);
@@ -496,54 +471,54 @@ public class FileDirectory {
     }
 
     /**
-     * Get the tile width
+     * Get the tile imageWidth
      *
-     * @return tile width
+     * @return tile imageWidth
      */
     public Number getTileWidth() {
         return isTiled() ? getNumberEntryValue(TiffExtendedTag.TileWidth) : getImageWidth();
     }
 
     /**
-     * Set the tile width
+     * Set the tile imageWidth
      *
-     * @param value tile width
+     * @param value tile imageWidth
      */
     public void setTileWidth(int value) {
         setEntryValue(TiffExtendedTag.TileWidth, new UnsignedShortField(), 1, value);
     }
 
     /**
-     * Set the tile width
+     * Set the tile imageWidth
      *
-     * @param value tile width
+     * @param value tile imageWidth
      */
     public void setTileWidthAsLong(long value) {
         setEntryValue(TiffExtendedTag.TileWidth, new UnsignedLongField(), 1, value);
     }
 
     /**
-     * Get the tile height
+     * Get the tile imageHeight
      *
-     * @return tile height
+     * @return tile imageHeight
      */
     public Number getTileHeight() {
         return isTiled() ? getNumberEntryValue(TiffExtendedTag.TileLength) : getRowsPerStrip();
     }
 
     /**
-     * Set the tile height
+     * Set the tile imageHeight
      *
-     * @param value tile height
+     * @param value tile imageHeight
      */
     public void setTileHeight(int value) {
         setEntryValue(TiffExtendedTag.TileLength, new UnsignedShortField(), 1, value);
     }
 
     /**
-     * Set the tile height
+     * Set the tile imageHeight
      *
-     * @param value tile height
+     * @param value tile imageHeight
      */
     public void setTileHeightAsLong(long value) {
         setEntryValue(TiffExtendedTag.TileLength, new UnsignedLongField(), 1, value);
@@ -627,7 +602,13 @@ public class FileDirectory {
      * @return sample format
      */
     public List<SampleFormat> getSampleFormat() {
-        return getIntegerListEntryValue(TiffExtendedTag.SampleFormat).stream().map(SampleFormat::findById).toList();
+        List<Integer> idList = getIntegerListEntryValue(TiffExtendedTag.SampleFormat);
+        if (idList != null) {
+            return idList.stream()
+                .map(SampleFormat::findById)
+                .toList();
+        }
+        return null;
     }
 
     /**
@@ -663,6 +644,7 @@ public class FileDirectory {
      * @return predictor
      * @since 3.0.0
      */
+    @NotNull
     public DifferencingPredictor getPredictor() {
         return DifferencingPredictor.findById(getIntegerEntryValue(TiffExtendedTag.Predictor));
     }
@@ -826,7 +808,7 @@ public class FileDirectory {
      * @return rasters
      */
     public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues) {
-        return rasterReader.readRasters(window, samples, sampleValues, interleaveValues, reader, getPlanarConfiguration(), isTiled(), predictor);
+        return rasterReader.readRasters(window, samples, sampleValues, interleaveValues, reader, isTiled());
     }
 
     /**

@@ -16,7 +16,7 @@ public class HorizontalPredictor extends AbstractPredictor {
      *
      * @param reader         byte reader
      * @param writer         byte writer
-     * @param width          tile width
+     * @param width          tile imageWidth
      * @param bytesPerSample bytes per sample
      * @param samples        number of samples
      */

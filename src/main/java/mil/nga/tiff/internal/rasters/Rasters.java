@@ -38,8 +38,8 @@ public class Rasters {
     /**
      * Constructor
      *
-     * @param width            width of pixels
-     * @param height           height of pixels
+     * @param width            imageWidth of pixels
+     * @param height           imageHeight of pixels
      * @param fieldTypes       Field type for each sample
      * @param sampleValues     empty sample values buffer array
      * @param interleaveValues empty interleaved values buffer
@@ -98,18 +98,18 @@ public class Rasters {
     }
 
     /**
-     * Get the width of pixels
+     * Get the imageWidth of pixels
      *
-     * @return width
+     * @return imageWidth
      */
     public int getWidth() {
         return metadata.width();
     }
 
     /**
-     * Get the height of pixels
+     * Get the imageHeight of pixels
      *
-     * @return height
+     * @return imageHeight
      */
     public int getHeight() {
         return metadata.height();

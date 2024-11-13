@@ -17,8 +17,8 @@ public interface Predictor {
      * Decode the predictor encoded bytes
      *
      * @param bytes               bytes to decode
-     * @param width               tile width
-     * @param height              tile height
+     * @param width               tile imageWidth
+     * @param height              tile imageHeight
      * @param bitsPerSample       bits per samples
      * @param planarConfiguration planar configuration
      * @param byteOrder           byte order

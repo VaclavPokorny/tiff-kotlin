@@ -20,7 +20,7 @@ abstract class AbstractPredictor implements Predictor {
         try (ByteWriter writer = new ByteWriter(byteOrder)) {
 
             for (int row = 0; row < height; row++) {
-                // Last strip will be truncated if height % stripHeight != 0
+                // Last strip will be truncated if imageHeight % stripHeight != 0
                 if (row * samples * width * bytesPerSample >= bytes.length) {
                     break;
                 }

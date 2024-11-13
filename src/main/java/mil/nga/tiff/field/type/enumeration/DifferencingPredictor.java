@@ -5,6 +5,7 @@ import mil.nga.tiff.internal.predictor.HorizontalPredictor;
 import mil.nga.tiff.internal.predictor.NullPredictor;
 import mil.nga.tiff.internal.predictor.Predictor;
 import mil.nga.tiff.util.TiffException;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -23,6 +24,7 @@ public enum DifferencingPredictor {
         this.implementation = implementation;
     }
 
+    @NotNull
     public static DifferencingPredictor findById(Integer id) {
         if (id == null) {
             return DEFAULT;

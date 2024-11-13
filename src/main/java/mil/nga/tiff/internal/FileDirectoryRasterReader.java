@@ -2,11 +2,10 @@ package mil.nga.tiff.internal;
 
 import mil.nga.tiff.field.FieldTypeDictionary;
 import mil.nga.tiff.field.type.NumericFieldType;
-import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
-import mil.nga.tiff.internal.rasters.Rasters;
-import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
+import mil.nga.tiff.internal.rasters.Rasters;
+import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffException;
 
 import java.nio.ByteBuffer;
@@ -15,29 +14,27 @@ import java.util.stream.IntStream;
 
 public class FileDirectoryRasterReader {
 
-    private final FileDirectory directory;
+    private final DirectoryStats stats;
     private final TileOrStripProcessor tileOrStripProcessor;
     private final FieldTypeDictionary typeDictionary;
 
-    public FileDirectoryRasterReader(FileDirectory directory, TileOrStripProcessor tileOrStripProcessor, FieldTypeDictionary typeDictionary) {
-        this.directory = directory;
+
+    public FileDirectoryRasterReader(DirectoryStats stats, TileOrStripProcessor tileOrStripProcessor, FieldTypeDictionary typeDictionary) {
+        this.stats = stats;
         this.tileOrStripProcessor = tileOrStripProcessor;
         this.typeDictionary = typeDictionary;
     }
 
-    public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, DifferencingPredictor predictor) {
-
-        int width = directory.getImageWidth().intValue();
-        int height = directory.getImageHeight().intValue();
+    public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues, ByteReader reader, boolean tiled) {
 
         // Validate the image window
         window.validate();
-        window.validateFitsInImage(width, height);
+        window.validateFitsInImage(stats.imageWidth(), stats.imageHeight());
 
         int numPixels = window.numPixels();
 
         // Set or validate the samples
-        int samplesPerPixel = directory.getSamplesPerPixel();
+        int samplesPerPixel = stats.samplesPerPixel();
         if (samples == null) {
             samples = new int[samplesPerPixel];
             for (int i = 0; i < samples.length; i++) {
@@ -52,7 +49,7 @@ public class FileDirectoryRasterReader {
         }
 
         // Create the interleaved result buffer
-        List<Integer> bitsPerSample = directory.getBitsPerSample();
+        List<Integer> bitsPerSample = stats.bitsPerSample();
         int bytesPerPixel = 0;
         for (int i = 0; i < samplesPerPixel; ++i) {
             bytesPerPixel += bitsPerSample.get(i) / 8;
@@ -87,7 +84,7 @@ public class FileDirectoryRasterReader {
         Rasters rasters = new Rasters(window.width(), window.height(), fieldTypes, sample, interleave);
 
         // Read the rasters
-        readRaster(window, samples, rasters, reader, planarConfiguration, tiled, predictor);
+        readRaster(window, samples, rasters, reader, tiled);
 
         return rasters;
     }
@@ -99,10 +96,10 @@ public class FileDirectoryRasterReader {
      * @param samples pixel samples to read
      * @param rasters rasters to populate
      */
-    private void readRaster(ImageWindow window, int[] samples, Rasters rasters, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, DifferencingPredictor predictor) {
+    private void readRaster(ImageWindow window, int[] samples, Rasters rasters, ByteReader reader, boolean tiled) {
 
-        int tileWidth = directory.getTileWidth().intValue();
-        int tileHeight = directory.getTileHeight().intValue();
+        int tileWidth = stats.tileWidth();
+        int tileHeight = stats.tileHeight();
 
         int minXTile = window.minX() / tileWidth;
         int maxXTile = (window.maxX() + tileWidth - 1) / tileWidth;
@@ -115,8 +112,12 @@ public class FileDirectoryRasterReader {
         NumericFieldType[] sampleFieldTypes = new NumericFieldType[samples.length];
         for (int i = 0; i < samples.length; i++) {
             int sampleOffset = 0;
-            if (planarConfiguration == PlanarConfiguration.CHUNKY) {
-                sampleOffset = directory.getBitsPerSample().subList(0, samples[i]).stream().mapToInt(Integer::intValue).sum() / 8;
+            if (stats.planarConfiguration() == PlanarConfiguration.CHUNKY) {
+                sampleOffset = stats.bitsPerSample()
+                        .subList(0, samples[i])
+                        .stream()
+                        .mapToInt(Integer::intValue)
+                        .sum() / 8;
             }
             srcSampleOffsets[i] = sampleOffset;
             sampleFieldTypes[i] = getFieldTypeForSample(samples[i]);
@@ -132,11 +133,11 @@ public class FileDirectoryRasterReader {
 
                 for (int sampleIndex = 0; sampleIndex < samples.length; sampleIndex++) {
                     int sample = samples[sampleIndex];
-                    if (planarConfiguration == PlanarConfiguration.PLANAR) {
+                    if (stats.planarConfiguration() == PlanarConfiguration.PLANAR) {
                         bytesPerPixel = getSampleByteSize(sample);
                     }
 
-                    byte[] block = tileOrStripProcessor.run(xTile, yTile, sample, reader, tiled, planarConfiguration, predictor, reader.getByteOrder());
+                    byte[] block = tileOrStripProcessor.run(xTile, yTile, sample, reader, tiled, reader.getByteOrder());
                     ByteReader blockReader = new ByteReader(block, reader.getByteOrder());
 
                     for (int y = Math.max(0, window.minY() - firstLine); y < Math.min(tileHeight, tileHeight - (lastLine - window.maxY())); y++) {
@@ -174,13 +175,13 @@ public class FileDirectoryRasterReader {
      * @return byte size
      */
     private int getSampleByteSize(int sampleIndex) {
-        List<Integer> bitsPerSample = directory.getBitsPerSample();
+        List<Integer> bitsPerSample = stats.bitsPerSample();
         if (sampleIndex >= bitsPerSample.size()) {
             throw new TiffException("Sample index " + sampleIndex + " is out of range");
         }
         int bits = bitsPerSample.get(sampleIndex);
         if ((bits % 8) != 0) {
-            throw new TiffException("Sample bit-width of " + bits + " is not supported");
+            throw new TiffException("Sample bit-imageWidth of " + bits + " is not supported");
         }
         return (bits / 8);
     }
@@ -194,11 +195,11 @@ public class FileDirectoryRasterReader {
      */
     private int getBytesPerPixel() {
         int bitsPerSample = 0;
-        List<Integer> bitsPerSamples = directory.getBitsPerSample();
+        List<Integer> bitsPerSamples = stats.bitsPerSample();
         for (int i = 0; i < bitsPerSamples.size(); i++) {
             int bits = bitsPerSamples.get(i);
             if ((bits % 8) != 0) {
-                throw new TiffException("Sample bit-width of " + bits + " is not supported");
+                throw new TiffException("Sample bit-imageWidth of " + bits + " is not supported");
             } else if (bits != bitsPerSamples.getFirst()) {
                 throw new TiffException("Differing size of samples in a pixel are not supported. sample 0 = " + bitsPerSamples.getFirst() + ", sample " + i + " = " + bits);
             }
@@ -215,14 +216,14 @@ public class FileDirectoryRasterReader {
      */
     public NumericFieldType getFieldTypeForSample(int sampleIndex) {
         SampleFormat sampleFormat;
-        List<SampleFormat> sampleFormatList = directory.getSampleFormat();
+        List<SampleFormat> sampleFormatList = stats.sampleFormatList();
         if (sampleFormatList.isEmpty()) {
             sampleFormat = SampleFormat.UNSIGNED_INT;
         } else {
             int listId = sampleIndex < sampleFormatList.size() ? sampleIndex : 0;
             sampleFormat = sampleFormatList.get(listId);
         }
-        int bitsPerSample = directory.getBitsPerSample().get(sampleIndex);
+        int bitsPerSample = stats.bitsPerSample().get(sampleIndex);
         return typeDictionary.findBySampleParams(sampleFormat, bitsPerSample);
     }
 
