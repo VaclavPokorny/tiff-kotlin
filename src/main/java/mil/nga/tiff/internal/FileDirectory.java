@@ -1,10 +1,15 @@
 package mil.nga.tiff.internal;
 
 import mil.nga.tiff.compression.CompressionDecoder;
-import mil.nga.tiff.field.FieldTagType;
-import mil.nga.tiff.field.FieldType;
-import mil.nga.tiff.field.TiffBasicTag;
-import mil.nga.tiff.field.TiffExtendedTag;
+import mil.nga.tiff.field.tag.FieldTagType;
+import mil.nga.tiff.field.FieldTypeDictionary;
+import mil.nga.tiff.field.tag.TiffBasicTag;
+import mil.nga.tiff.field.tag.TiffExtendedTag;
+import mil.nga.tiff.field.type.ASCIIField;
+import mil.nga.tiff.field.type.GenericFieldType;
+import mil.nga.tiff.field.type.UnsignedLongField;
+import mil.nga.tiff.field.type.UnsignedRationalField;
+import mil.nga.tiff.field.type.UnsignedShortField;
 import mil.nga.tiff.field.type.enumeration.Compression;
 import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
 import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation;
@@ -71,8 +76,8 @@ public class FileDirectory {
      * @param entries file internal entries
      * @param reader  TIFF file byte reader
      */
-    public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader) {
-        this(entries, reader, false);
+    public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader, FieldTypeDictionary typeDictionary) {
+        this(entries, reader, false, typeDictionary);
     }
 
     /**
@@ -82,10 +87,10 @@ public class FileDirectory {
      * @param reader    TIFF file byte reader
      * @param cacheData true to cache tiles and strips
      */
-    public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader, boolean cacheData) {
+    public FileDirectory(SortedSet<FileDirectoryEntry> entries, ByteReader reader, boolean cacheData, FieldTypeDictionary typeDictionary) {
         TileOrStripCache cache = new TileOrStripCache(cacheData);
         TileOrStripProcessor tileOrStripProcessor = new TileOrStripProcessor(this, cache);
-        this.rasterReader = new FileDirectoryRasterReader(this, tileOrStripProcessor);
+        this.rasterReader = new FileDirectoryRasterReader(this, tileOrStripProcessor, typeDictionary);
 
         // Set the entries and the field tag type mapping
         this.entries = entries;
@@ -174,7 +179,7 @@ public class FileDirectory {
      * @param value image width
      */
     public void setImageWidth(int value) {
-        setEntryValue(TiffBasicTag.ImageWidth, FieldType.SHORT, 1, value);
+        setEntryValue(TiffBasicTag.ImageWidth, new UnsignedShortField(), 1, value);
     }
 
     /**
@@ -183,7 +188,7 @@ public class FileDirectory {
      * @param value image width
      */
     public void setImageWidthAsLong(long value) {
-        setEntryValue(TiffBasicTag.ImageWidth, FieldType.LONG, 1, value);
+        setEntryValue(TiffBasicTag.ImageWidth, new UnsignedLongField(), 1, value);
     }
 
     /**
@@ -201,7 +206,7 @@ public class FileDirectory {
      * @param value image height
      */
     public void setImageHeight(int value) {
-        setEntryValue(TiffBasicTag.ImageLength, FieldType.SHORT, 1, value);
+        setEntryValue(TiffBasicTag.ImageLength, new UnsignedShortField(), 1, value);
     }
 
     /**
@@ -210,7 +215,7 @@ public class FileDirectory {
      * @param value image height
      */
     public void setImageHeightAsLong(long value) {
-        setEntryValue(TiffBasicTag.ImageLength, FieldType.LONG, 1, value);
+        setEntryValue(TiffBasicTag.ImageLength, new UnsignedLongField(), 1, value);
     }
 
     /**
@@ -228,7 +233,7 @@ public class FileDirectory {
      * @param value bits per sample
      */
     public void setBitsPerSample(List<Integer> value) {
-        setEntryValue(TiffBasicTag.BitsPerSample, FieldType.SHORT, value.size(), value);
+        setEntryValue(TiffBasicTag.BitsPerSample, new UnsignedShortField(), value.size(), value);
     }
 
     /**
@@ -264,7 +269,7 @@ public class FileDirectory {
      * @param value compression
      */
     public void setCompression(int value) {
-        setEntryValue(TiffBasicTag.Compression, FieldType.SHORT, 1, value);
+        setEntryValue(TiffBasicTag.Compression, new UnsignedShortField(), 1, value);
     }
 
     /**
@@ -282,7 +287,7 @@ public class FileDirectory {
      * @param value photometric interpretation
      */
     public void setPhotometricInterpretation(PhotometricInterpretation value) {
-        setEntryValue(TiffBasicTag.PhotometricInterpretation, FieldType.SHORT, 1, value.getId());
+        setEntryValue(TiffBasicTag.PhotometricInterpretation, new UnsignedShortField(), 1, value.getId());
     }
 
     /**
@@ -300,7 +305,7 @@ public class FileDirectory {
      * @param value strip offsets
      */
     public void setStripOffsets(List<Integer> value) {
-        setEntryValue(TiffBasicTag.StripOffsets, FieldType.SHORT, value.size(), value);
+        setEntryValue(TiffBasicTag.StripOffsets, new UnsignedShortField(), value.size(), value);
     }
 
     /**
@@ -309,7 +314,7 @@ public class FileDirectory {
      * @param value strip offsets
      */
     public void setStripOffsetsAsLongs(List<Long> value) {
-        setEntryValue(TiffBasicTag.StripOffsets, FieldType.LONG, value.size(), value);
+        setEntryValue(TiffBasicTag.StripOffsets, new UnsignedLongField(), value.size(), value);
     }
 
     /**
@@ -334,7 +339,7 @@ public class FileDirectory {
      * @param value samples per pixel
      */
     public void setSamplesPerPixel(int value) {
-        setEntryValue(TiffBasicTag.SamplesPerPixel, FieldType.SHORT, 1, value);
+        setEntryValue(TiffBasicTag.SamplesPerPixel, new UnsignedShortField(), 1, value);
     }
 
     /**
@@ -352,7 +357,7 @@ public class FileDirectory {
      * @param value rows per strip
      */
     public void setRowsPerStrip(int value) {
-        setEntryValue(TiffBasicTag.RowsPerStrip, FieldType.SHORT, 1, value);
+        setEntryValue(TiffBasicTag.RowsPerStrip, new UnsignedShortField(), 1, value);
     }
 
     /**
@@ -370,7 +375,7 @@ public class FileDirectory {
      * @param value strip byte counts
      */
     public void setStripByteCounts(List<Integer> value) {
-        setEntryValue(TiffBasicTag.StripByteCounts, FieldType.SHORT, value.size(), value);
+        setEntryValue(TiffBasicTag.StripByteCounts, new UnsignedShortField(), value.size(), value);
     }
 
     /**
@@ -379,7 +384,7 @@ public class FileDirectory {
      * @param value strip byte counts
      */
     public void setStripByteCountsAsLongs(List<Long> value) {
-        setEntryValue(TiffBasicTag.StripByteCounts, FieldType.LONG, value.size(), value);
+        setEntryValue(TiffBasicTag.StripByteCounts, new UnsignedLongField(), value.size(), value);
     }
 
     /**
@@ -469,7 +474,7 @@ public class FileDirectory {
      * @param value planar configuration
      */
     public void setPlanarConfiguration(PlanarConfiguration value) {
-        setEntryValue(TiffBasicTag.PlanarConfiguration, FieldType.SHORT, 1, value.getId());
+        setEntryValue(TiffBasicTag.PlanarConfiguration, new UnsignedShortField(), 1, value.getId());
     }
 
     /**
@@ -487,7 +492,7 @@ public class FileDirectory {
      * @param value resolution unit
      */
     public void setResolutionUnit(ResolutionUnit value) {
-        setEntryValue(TiffBasicTag.ResolutionUnit, FieldType.SHORT, 1, value.getId());
+        setEntryValue(TiffBasicTag.ResolutionUnit, new UnsignedShortField(), 1, value.getId());
     }
 
     /**
@@ -505,7 +510,7 @@ public class FileDirectory {
      * @param value tile width
      */
     public void setTileWidth(int value) {
-        setEntryValue(TiffExtendedTag.TileWidth, FieldType.SHORT, 1, value);
+        setEntryValue(TiffExtendedTag.TileWidth, new UnsignedShortField(), 1, value);
     }
 
     /**
@@ -514,7 +519,7 @@ public class FileDirectory {
      * @param value tile width
      */
     public void setTileWidthAsLong(long value) {
-        setEntryValue(TiffExtendedTag.TileWidth, FieldType.LONG, 1, value);
+        setEntryValue(TiffExtendedTag.TileWidth, new UnsignedLongField(), 1, value);
     }
 
     /**
@@ -532,7 +537,7 @@ public class FileDirectory {
      * @param value tile height
      */
     public void setTileHeight(int value) {
-        setEntryValue(TiffExtendedTag.TileLength, FieldType.SHORT, 1, value);
+        setEntryValue(TiffExtendedTag.TileLength, new UnsignedShortField(), 1, value);
     }
 
     /**
@@ -541,7 +546,7 @@ public class FileDirectory {
      * @param value tile height
      */
     public void setTileHeightAsLong(long value) {
-        setEntryValue(TiffExtendedTag.TileLength, FieldType.LONG, 1, value);
+        setEntryValue(TiffExtendedTag.TileLength, new UnsignedLongField(), 1, value);
     }
 
     /**
@@ -559,7 +564,7 @@ public class FileDirectory {
      * @param value tile offsets
      */
     public void setTileOffsets(List<Long> value) {
-        setEntryValue(TiffExtendedTag.TileOffsets, FieldType.LONG, value.size(), value);
+        setEntryValue(TiffExtendedTag.TileOffsets, new UnsignedLongField(), value.size(), value);
     }
 
     /**
@@ -586,7 +591,7 @@ public class FileDirectory {
      * @param value tile byte counts
      */
     public void setTileByteCounts(List<Integer> value) {
-        setEntryValue(TiffExtendedTag.TileByteCounts, FieldType.SHORT, value.size(), value);
+        setEntryValue(TiffExtendedTag.TileByteCounts, new UnsignedShortField(), value.size(), value);
     }
 
     /**
@@ -595,7 +600,7 @@ public class FileDirectory {
      * @param value tile byte counts
      */
     public void setTileByteCountsAsLongs(List<Long> value) {
-        setEntryValue(TiffExtendedTag.TileByteCounts, FieldType.LONG, value.size(), value);
+        setEntryValue(TiffExtendedTag.TileByteCounts, new UnsignedLongField(), value.size(), value);
     }
 
     /**
@@ -631,7 +636,7 @@ public class FileDirectory {
      * @param value sample format
      */
     public void setSampleFormat(List<SampleFormat> value) {
-        setEntryValue(TiffExtendedTag.SampleFormat, FieldType.SHORT, value.size(), value.stream().map(SampleFormat::getId).toList());
+        setEntryValue(TiffExtendedTag.SampleFormat, new UnsignedShortField(), value.size(), value.stream().map(SampleFormat::getId).toList());
     }
 
     /**
@@ -669,7 +674,7 @@ public class FileDirectory {
      * @since 3.0.0
      */
     public void setPredictor(DifferencingPredictor value) {
-        setEntryValue(TiffExtendedTag.Predictor, FieldType.SHORT, 1, value.getId());
+        setEntryValue(TiffExtendedTag.Predictor, new UnsignedShortField(), 1, value.getId());
     }
 
     /**
@@ -872,7 +877,7 @@ public class FileDirectory {
     public void setStringEntryValue(FieldTagType fieldTagType, String value) {
         List<String> values = new ArrayList<>();
         values.add(value);
-        setEntryValue(fieldTagType, FieldType.ASCII, value.length() + 1, values);
+        setEntryValue(fieldTagType, new ASCIIField(), value.length() + 1, values);
     }
 
     /**
@@ -946,7 +951,7 @@ public class FileDirectory {
         if (value == null || value.size() != 2) {
             throw new TiffException("Invalid rational value, must be two longs. Size: " + (value == null ? null : value.size()));
         }
-        setEntryValue(fieldTagType, FieldType.RATIONAL, 1, value);
+        setEntryValue(fieldTagType, new UnsignedRationalField(), 1, value);
     }
 
     /**
@@ -973,7 +978,7 @@ public class FileDirectory {
      * @param typeCount    type count
      * @param values       entry values
      */
-    private void setEntryValue(FieldTagType fieldTagType, FieldType fieldType, long typeCount, Object values) {
+    private void setEntryValue(FieldTagType fieldTagType, GenericFieldType fieldType, long typeCount, Object values) {
         FileDirectoryEntry entry = new FileDirectoryEntry(fieldTagType, fieldType, typeCount, values);
         addEntry(entry);
     }

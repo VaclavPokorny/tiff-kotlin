@@ -24,7 +24,7 @@ record InterleaveValues(ByteBuffer values, RasterMetadata metadata) {
 
         int interleaveIndex = interleaveIndexLocationForPixel(x, y);
         for (int i = 0; i < sample; ++i) {
-            interleaveIndex += metadata.field(sample).getBytes();
+            interleaveIndex += metadata.field(sample).metadata().bytesPerSample();
         }
         metadata.field(sample).updateSampleInByteBuffer(values, interleaveIndex, sample, value);
     }
@@ -35,19 +35,19 @@ record InterleaveValues(ByteBuffer values, RasterMetadata metadata) {
 
         int bufferPos = interleaveIndexLocation(x, y);
         for (int i = 0; i < sample; i++) {
-            bufferPos += metadata.field(sample).getBytes();
+            bufferPos += metadata.field(sample).metadata().bytesPerSample();
         }
 
         return metadata.field(sample).getSampleFromByteBuffer(values, bufferPos, sample);
     }
 
     public byte[] getSampleRow(int y, int sample, ByteOrder newOrder) {
-        ByteBuffer outBuffer = ByteBuffer.allocate(metadata.width() * metadata.field(sample).getBytes());
+        ByteBuffer outBuffer = ByteBuffer.allocate(metadata.width() * metadata.field(sample).metadata().bytesPerSample());
         outBuffer.order(newOrder);
 
         int sampleOffset = 0;
         for (int i = 0; i < sample; ++i) {
-            sampleOffset += metadata.field(sample).getBytes();
+            sampleOffset += metadata.field(sample).metadata().bytesPerSample();
         }
 
         for (int i = 0; i < metadata.width(); ++i) {
@@ -80,7 +80,7 @@ record InterleaveValues(ByteBuffer values, RasterMetadata metadata) {
         int interleaveIndex = interleaveIndexLocationForPixel(x, y);
         for (int i = 0; i < metadata.samplesPerPixel(); i++) {
             metadata.field(i).updateSampleInByteBuffer(this.values, interleaveIndex, i, values[i]);
-            interleaveIndex += metadata.field(i).getBytes();
+            interleaveIndex += metadata.field(i).metadata().bytesPerSample();
         }
     }
 
@@ -95,7 +95,7 @@ record InterleaveValues(ByteBuffer values, RasterMetadata metadata) {
         int interleaveIndex = interleaveIndexLocation(x, y);
         for (int i = 0; i < metadata.samplesPerPixel(); i++) {
             pixel[i] = metadata.field(i).getSampleFromByteBuffer(values, interleaveIndex, i);
-            interleaveIndex += metadata.field(i).getBytes();
+            interleaveIndex += metadata.field(i).metadata().bytesPerSample();
         }
 
         return pixel;
@@ -112,7 +112,7 @@ record InterleaveValues(ByteBuffer values, RasterMetadata metadata) {
     public void addValue(int sampleIndex, int coordinate, Number value) {
         int bufferPos = coordinate * metadata.pixelSize();
         for (int i = 0; i < sampleIndex; ++i) {
-            bufferPos += metadata.field(i).getBytes();
+            bufferPos += metadata.field(i).metadata().bytesPerSample();
         }
 
         metadata.field(sampleIndex).updateSampleInByteBuffer(values, bufferPos, sampleIndex, value);

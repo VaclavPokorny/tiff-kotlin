@@ -1,4 +1,4 @@
-package mil.nga.tiff.field;
+package mil.nga.tiff.field.tag;
 
 /**
  * TIFF extended tags

@@ -1,6 +1,7 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.field.FieldType;
+import mil.nga.tiff.field.FieldTypeDictionary;
+import mil.nga.tiff.field.type.NumericFieldType;
 import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
 import mil.nga.tiff.internal.rasters.Rasters;
 import mil.nga.tiff.io.ByteReader;
@@ -10,15 +11,18 @@ import mil.nga.tiff.util.TiffException;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class FileDirectoryRasterReader {
 
     private final FileDirectory directory;
     private final TileOrStripProcessor tileOrStripProcessor;
+    private final FieldTypeDictionary typeDictionary;
 
-    public FileDirectoryRasterReader(FileDirectory directory, TileOrStripProcessor tileOrStripProcessor) {
+    public FileDirectoryRasterReader(FileDirectory directory, TileOrStripProcessor tileOrStripProcessor, FieldTypeDictionary typeDictionary) {
         this.directory = directory;
         this.tileOrStripProcessor = tileOrStripProcessor;
+        this.typeDictionary = typeDictionary;
     }
 
     public Rasters readRasters(ImageWindow window, int[] samples, boolean sampleValues, boolean interleaveValues, ByteReader reader, PlanarConfiguration planarConfiguration, boolean tiled, DifferencingPredictor predictor) {
@@ -75,10 +79,9 @@ public class FileDirectoryRasterReader {
             }
         }
 
-        FieldType[] fieldTypes = new FieldType[samples.length];
-        for (int i = 0; i < samples.length; i++) {
-            fieldTypes[i] = getFieldTypeForSample(samples[i]);
-        }
+        List<NumericFieldType> fieldTypes = IntStream.range(0, samples.length)
+            .mapToObj(this::getFieldTypeForSample)
+            .toList();
 
         // Create the rasters results
         Rasters rasters = new Rasters(window.width(), window.height(), fieldTypes, sample, interleave);
@@ -109,7 +112,7 @@ public class FileDirectoryRasterReader {
         int bytesPerPixel = getBytesPerPixel();
 
         int[] srcSampleOffsets = new int[samples.length];
-        FieldType[] sampleFieldTypes = new FieldType[samples.length];
+        NumericFieldType[] sampleFieldTypes = new NumericFieldType[samples.length];
         for (int i = 0; i < samples.length; i++) {
             int sampleOffset = 0;
             if (planarConfiguration == PlanarConfiguration.CHUNKY) {
@@ -145,7 +148,7 @@ public class FileDirectoryRasterReader {
                             blockReader.setNextByte(valueOffset);
 
                             // Read the value
-                            Number value = sampleFieldTypes[sampleIndex].getDefinition().readValue(blockReader);
+                            Number value = sampleFieldTypes[sampleIndex].readValue(blockReader);
 
                             if (rasters.hasInterleaveValues()) {
                                 int windowCoordinate = (y + firstLine - window.minY()) * window.width() + (x + firstCol - window.minX());
@@ -210,7 +213,7 @@ public class FileDirectoryRasterReader {
      * @param sampleIndex sample index
      * @return field type
      */
-    public FieldType getFieldTypeForSample(int sampleIndex) {
+    public NumericFieldType getFieldTypeForSample(int sampleIndex) {
         SampleFormat sampleFormat;
         List<SampleFormat> sampleFormatList = directory.getSampleFormat();
         if (sampleFormatList.isEmpty()) {
@@ -220,7 +223,7 @@ public class FileDirectoryRasterReader {
             sampleFormat = sampleFormatList.get(listId);
         }
         int bitsPerSample = directory.getBitsPerSample().get(sampleIndex);
-        return FieldType.findBySampleParams(sampleFormat, bitsPerSample);
+        return typeDictionary.findBySampleParams(sampleFormat, bitsPerSample);
     }
 
 }

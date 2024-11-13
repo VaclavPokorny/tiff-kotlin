@@ -1,7 +1,8 @@
 package mil.nga.tiff.internal.rasters;
 
-import mil.nga.tiff.field.type.AbstractFieldType;
-import mil.nga.tiff.field.type.enumeration.SampleFormat;
+import mil.nga.tiff.field.FieldType;
+import mil.nga.tiff.field.type.GenericFieldType;
+import mil.nga.tiff.field.type.NumericFieldType;
 import mil.nga.tiff.util.TiffException;
 
 import java.util.List;
@@ -9,35 +10,33 @@ import java.util.List;
 /**
  * Raster precalculated metadata
  *
- * @param width         Width of pixels
- * @param height        Height of pixels
- * @param fields    Field type for each sample
- * @param pixelSize     Calculated pixel size in bytes
- * @param bitsPerSample Bits per sample
- * @param sampleFormat  List of sample types constants
+ * @param width          Width of pixels
+ * @param height         Height of pixels
+ * @param fields         Field type for each sample
+ * @param pixelSize      Calculated pixel size in bytes
  */
 record RasterMetadata(
     int width,
     int height,
-    List<AbstractFieldType> fields,
-    int pixelSize,
-    List<Integer> bitsPerSample,
-    List<SampleFormat> sampleFormat
+    List<NumericFieldType> fields,
+    int pixelSize
 ) {
 
-    public RasterMetadata(int width, int height, List<AbstractFieldType> fields) {
+    public RasterMetadata(int width, int height, List<NumericFieldType> fields) {
         this(
             width,
             height,
             fields,
-            fields.stream().mapToInt(AbstractFieldType::getBytes).sum(),
-            fields.stream().map(AbstractFieldType::getBits).toList(),
-            fields.stream().map(AbstractFieldType::getSampleFormat).toList()
+            fields.stream().map(GenericFieldType::metadata).mapToInt(FieldType::bytesPerSample).sum()
         );
     }
 
-    public AbstractFieldType field(int index) {
+    public NumericFieldType field(int index) {
         return fields.get(index);
+    }
+
+    public FieldType fieldMetadata(int index) {
+        return fields.get(index).metadata();
     }
 
     /**
@@ -79,7 +78,8 @@ record RasterMetadata(
 
     public int calculateRowsPerStripPlanar(int maxBytesPerStrip) {
         return fields.stream()
-            .mapToInt(AbstractFieldType::getBytes)
+            .map(GenericFieldType::metadata)
+            .mapToInt(FieldType::bytesPerSample)
             .map(bytes -> bytes * width)
             .map(bytesPerRow -> Math.max(1, maxBytesPerStrip / bytesPerRow))
             .min()

@@ -1,7 +1,8 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.field.FieldTagType;
-import mil.nga.tiff.field.FieldType;
+import mil.nga.tiff.field.tag.FieldTagType;
+import mil.nga.tiff.field.FieldTypeDictionary;
+import mil.nga.tiff.field.type.GenericFieldType;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.util.TiffByteOrder;
 import mil.nga.tiff.util.TiffConstants;
@@ -22,9 +23,11 @@ import java.util.TreeSet;
 public class TiffImageReader {
 
     private final ByteReader reader;
+    private final FieldTypeDictionary typeDictionary;
 
-    public TiffImageReader(ByteReader reader) {
+    public TiffImageReader(ByteReader reader, FieldTypeDictionary typeDictionary) {
         this.reader = reader;
+        this.typeDictionary = typeDictionary;
     }
 
     /**
@@ -66,8 +69,8 @@ public class TiffImageReader {
     /**
      * Parse the TIFF Image with file directories
      *
-     * @param byteOffset byte offset
-     * @param cache      true to cache tiles and strips
+     * @param byteOffset     byte offset
+     * @param cache          true to cache tiles and strips
      * @return TIFF image
      */
     private TIFFImage parseTIFFImage(long byteOffset, boolean cache) {
@@ -98,7 +101,7 @@ public class TiffImageReader {
                 }
 
                 int fieldTypeValue = reader.readUnsignedShort();
-                FieldType fieldType = FieldType.findById(fieldTypeValue);
+                GenericFieldType fieldType = typeDictionary.findById(fieldTypeValue);
                 if (fieldType == null) {
                     throw new TiffException("Unknown field type value " + fieldTypeValue);
                 }
@@ -122,7 +125,7 @@ public class TiffImageReader {
             }
 
             // Add the file internal
-            FileDirectory fileDirectory = new FileDirectory(entries, reader, cache);
+            FileDirectory fileDirectory = new FileDirectory(entries, reader, cache, typeDictionary);
             dirs.add(fileDirectory);
 
             // Read the next byte offset location
@@ -140,20 +143,20 @@ public class TiffImageReader {
      * @param typeCount type count
      * @return values
      */
-    private Object readFieldValues(FieldTagType fieldTag, FieldType fieldType, long typeCount) {
+    private Object readFieldValues(FieldTagType fieldTag, GenericFieldType fieldType, long typeCount) {
 
         // If the value is larger and not stored inline, determine the offset
-        if (fieldType.getDefinition().getBytes() * typeCount > 4) {
+        if (fieldType.metadata().bytesPerSample() * typeCount > 4) {
             long valueOffset = reader.readUnsignedInt();
             reader.setNextByte(valueOffset);
         }
 
         // Read the internal entry values
-        List<Object> valuesList = fieldType.getDefinition().getDirectoryEntryValues(reader, typeCount);
+        List<Object> valuesList = fieldType.readDirectoryEntryValues(reader, typeCount);
 
         // Get the single or array values
         Object values;
-        if (typeCount == 1 && fieldTag != null && !fieldTag.isArray() && !(fieldType == FieldType.RATIONAL || fieldType == FieldType.SRATIONAL)) {
+        if (typeCount == 1 && fieldTag != null && !fieldTag.isArray() && !fieldType.metadata().multivalue()) {
             values = valuesList.getFirst();
         } else {
             values = valuesList;

@@ -1,5 +1,6 @@
 package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
@@ -14,13 +15,11 @@ import java.util.List;
  * 8-bit byte that contains a 7-bit ASCII code; the last byte must be NUL
  * (binary zero)
  */
-public final class ASCIIField extends AbstractFieldType {
-    public ASCIIField() {
-        super(1);
-    }
+@FieldType(id = 2, bytesPerSample = 1)
+public final class ASCIIField implements GenericFieldType {
 
     @Override
-    public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount) {
+    public List<Object> readDirectoryEntryValues(ByteReader reader, long typeCount) {
         List<Object> values = new ArrayList<>();
 
         for (int i = 0; i < typeCount; i++) {

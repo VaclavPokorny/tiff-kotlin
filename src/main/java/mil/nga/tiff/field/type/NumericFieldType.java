@@ -1,6 +1,5 @@
 package mil.nga.tiff.field.type;
 
-import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
@@ -10,15 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public sealed class AbstractRasterFieldType extends AbstractFieldType permits AbstractByteField, AbstractShortField, AbstractLongField, FloatField, DoubleField {
-
-    public AbstractRasterFieldType(int bytes) {
-        super(bytes);
-    }
-
-    public AbstractRasterFieldType(int bytes, SampleFormat sampleFormat) {
-        super(bytes, sampleFormat);
-    }
+abstract public sealed class NumericFieldType implements GenericFieldType permits ByteField, ShortField, LongField, FloatField, DoubleField {
 
     /**
      * Read the value from the reader according to the field type
@@ -26,7 +17,6 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
      * @param reader byte reader
      * @return value
      */
-    @Override
     abstract public Number readValue(ByteReader reader);
 
     /**
@@ -83,20 +73,16 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
         return readSample(buffer);
     }
 
-
-
-
     /**
      * Writes sample from input buffer to given output buffer.
      *
      * @param outBuffer A buffer to write to. @note Make sure buffer position is set.
      * @param inBuffer  A buffer to read from. @note Make sure buffer position is set.
      */
-    @Override
     abstract public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer);
 
     @Override
-    public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount) {
+    public List<Object> readDirectoryEntryValues(ByteReader reader, long typeCount) {
 
         List<Object> values = new ArrayList<>();
 
@@ -110,6 +96,7 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
     @SuppressWarnings("unchecked")
     @Override
     public int writeDirectoryEntryValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
+        int bytesPerSample = metadata().bytesPerSample();
         List<Object> valuesList;
         if (entry.typeCount() == 1 && !entry.fieldTag().isArray()) {
             valuesList = new ArrayList<>();
@@ -122,7 +109,7 @@ abstract public sealed class AbstractRasterFieldType extends AbstractFieldType p
 
         for (Object value : valuesList) {
             writeValue(writer, value);
-            bytesWritten += getBytes();
+            bytesWritten += bytesPerSample;
         }
 
         return bytesWritten;

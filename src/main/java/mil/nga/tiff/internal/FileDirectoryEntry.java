@@ -1,7 +1,7 @@
 package mil.nga.tiff.internal;
 
-import mil.nga.tiff.field.FieldTagType;
-import mil.nga.tiff.field.FieldType;
+import mil.nga.tiff.field.tag.FieldTagType;
+import mil.nga.tiff.field.type.GenericFieldType;
 import mil.nga.tiff.util.TiffConstants;
 
 /**
@@ -13,7 +13,7 @@ import mil.nga.tiff.util.TiffConstants;
  * @param values    Values
  * @author osbornb
  */
-public record FileDirectoryEntry(FieldTagType fieldTag, FieldType fieldType, long typeCount, Object values) implements Comparable<FileDirectoryEntry> {
+public record FileDirectoryEntry(FieldTagType fieldTag, GenericFieldType fieldType, long typeCount, Object values) implements Comparable<FileDirectoryEntry> {
 
     /**
      * Size in bytes of the image file internal entry and its values (not
@@ -32,7 +32,7 @@ public record FileDirectoryEntry(FieldTagType fieldTag, FieldType fieldType, lon
      */
     public long sizeOfValues() {
         long size = 0;
-        long valueBytes = fieldType.getDefinition().getBytes() * typeCount;
+        long valueBytes = valueBytes();
         if (valueBytes > 4) {
             size = valueBytes;
         }
@@ -62,6 +62,10 @@ public record FileDirectoryEntry(FieldTagType fieldTag, FieldType fieldType, lon
         }
         FileDirectoryEntry other = (FileDirectoryEntry) obj;
         return fieldTag == other.fieldTag;
+    }
+
+    public long valueBytes() {
+        return fieldType.metadata().bytesPerSample() * typeCount;
     }
 
 }

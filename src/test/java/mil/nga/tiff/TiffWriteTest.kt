@@ -94,12 +94,13 @@ class TiffWriteTest {
             }
         }
 
-        val rasterFieldTypes = createFieldTypeArray(samplesPerPixel, FieldType.findBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample))
+        val dictionary = DefaultFieldTypeDictionary()
+        val rasterFieldTypes = createFieldTypeArray(samplesPerPixel, dictionary.findBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample))
         val order = ByteOrder.nativeOrder()
         val sampleValues = createSampleValues(inpWidth, inpHeight, rasterFieldTypes, order)
         val newRaster = Rasters(inpWidth, inpHeight, rasterFieldTypes, sampleValues, null)
 
-        val fileDirs = FileDirectory(TreeSet(), null, false)
+        val fileDirs = FileDirectory(TreeSet(), null, false, DefaultFieldTypeDictionary())
 
         val rowsPerStrip = newRaster.calculateRowsPerStrip(
             PlanarConfiguration.CHUNKY
@@ -174,10 +175,10 @@ class TiffWriteTest {
         Assertions.assertEquals(inpWidth, rasters.width)
         Assertions.assertEquals(inpHeight, rasters.height)
         Assertions.assertEquals(samplesPerPixel, rasters.samplesPerPixel)
-        val bps = rasters.bitsPerSample
+        val bps = rasters.fields.map { it.bytesPerSample * 8 }
         Assertions.assertEquals(1, bps.size)
         Assertions.assertEquals(bitsPerSample, bps[0])
-        val sf = rasters.sampleFormat
+        val sf = rasters.fields.map { it.sampleFormat }
         Assertions.assertEquals(1, sf.size)
         Assertions.assertEquals(
             SampleFormat.UNSIGNED_INT, sf[0]

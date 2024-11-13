@@ -1,13 +1,15 @@
-package mil.nga.tiff.field;
+package mil.nga.tiff.field.tag;
 
 /**
- * Meta tags containg embedded custom data
+ * GEO TIFF tags
  */
-public enum MetaTag implements FieldTagType {
-    IPTC(33723, false),
-    ICCProfile(34675, false),
-    XMP(700, false),
-    Photoshop(34377, false);
+public enum GeoTiffTag implements FieldTagType {
+    ModelPixelScale(33550, false),
+    ModelTiepoint(33922, false),
+    ModelTransformation(34264, false),
+    GeoKeyDirectory(34735, false),
+    GeoDoubleParams(34736, false),
+    GeoAsciiParams(34737, false);
 
     /**
      * Tag id
@@ -25,7 +27,7 @@ public enum MetaTag implements FieldTagType {
      * @param id    tag id
      * @param array true if an array type
      */
-    MetaTag(int id, boolean array) {
+    GeoTiffTag(int id, boolean array) {
         this.id = id;
         this.array = array;
     }

@@ -1,5 +1,6 @@
 package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 
@@ -9,7 +10,8 @@ import java.io.IOException;
  * Two LONGs: the first represents the numerator of a fraction; the second,
  * the denominator
  */
-public final class UnsignedRationalField extends AbstractRationalField {
+@FieldType(id = 5, bytesPerSample = 8, multivalue = true)
+public final class UnsignedRationalField extends RationalField {
 
     @Override
     protected Number readPart(ByteReader reader) {

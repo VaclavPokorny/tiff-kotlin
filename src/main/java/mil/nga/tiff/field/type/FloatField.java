@@ -1,5 +1,6 @@
 package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
@@ -10,10 +11,8 @@ import java.nio.ByteBuffer;
 /**
  * Single precision (4-byte) IEEE format
  */
-public final class FloatField extends AbstractRasterFieldType {
-    public FloatField() {
-        super(4, SampleFormat.FLOAT);
-    }
+@FieldType(id = 11, bytesPerSample = 4, sampleFormat = SampleFormat.FLOAT)
+public final class FloatField extends NumericFieldType {
 
     @Override
     public Number readValue(ByteReader reader) {

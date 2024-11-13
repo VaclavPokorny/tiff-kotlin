@@ -1,5 +1,7 @@
 package mil.nga.tiff;
 
+import mil.nga.tiff.field.DefaultFieldTypeDictionary;
+import mil.nga.tiff.field.FieldTypeDictionary;
 import mil.nga.tiff.internal.TIFFImage;
 import mil.nga.tiff.internal.TiffImageReader;
 import mil.nga.tiff.io.ByteReader;
@@ -99,12 +101,24 @@ public class TiffReader {
     /**
      * Read a TIFF from the byte reader
      *
-     * @param reader byte reader
-     * @param cache  true to cache tiles and strips
+     * @param reader         byte reader
+     * @param cache          true to cache tiles and strips
      * @return TIFF image
      */
     public static TIFFImage readTiff(ByteReader reader, boolean cache) {
-        return new TiffImageReader(reader).readTiff(cache);
+        return readTiff(reader, cache, new DefaultFieldTypeDictionary());
+    }
+
+    /**
+     * Read a TIFF from the byte reader
+     *
+     * @param reader         byte reader
+     * @param cache          true to cache tiles and strips
+     * @param typeDictionary field type dictionary
+     * @return TIFF image
+     */
+    public static TIFFImage readTiff(ByteReader reader, boolean cache, FieldTypeDictionary typeDictionary) {
+        return new TiffImageReader(reader, typeDictionary).readTiff(cache);
     }
 
 }

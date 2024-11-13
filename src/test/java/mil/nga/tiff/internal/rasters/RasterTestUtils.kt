@@ -27,9 +27,11 @@ object RasterTestUtils {
         )
 
         for (i in rasters1.sampleValues.values.indices) {
-            Assertions.assertEquals(
-                rasters1.sampleValues.values[i].capacity() / rasters1.metadata.fields[i].bytes, rasters2.sampleValues.values[i].capacity() / rasters2.metadata.fields[i].bytes
-            )
+            val capacity1 = rasters1.sampleValues.values[i].capacity()
+            val bytesPerSample1 = rasters1.metadata.fields[i].metadata().bytesPerSample
+            val capacity2 = rasters2.sampleValues.values[i].capacity()
+            val bytesPerSample2 = rasters2.metadata.fields[i].metadata().bytesPerSample
+            Assertions.assertEquals(capacity1 / bytesPerSample1, capacity2 / bytesPerSample2)
 
             for (x in 0 until rasters1.width) {
                 for (y in 0 until rasters1.height) {
@@ -139,12 +141,12 @@ object RasterTestUtils {
         Assertions.assertEquals(rasters1.height, rasters2.height)
         Assertions.assertEquals(rasters1.numPixels, rasters2.numPixels)
         Assertions.assertEquals(
-            rasters1.bitsPerSample.size, rasters2.bitsPerSample.size
+            rasters1.fields.size, rasters2.fields.size
         )
         if (sameBitsPerSample) {
-            for (i in rasters1.bitsPerSample.indices) {
+            for (i in rasters1.fields.indices) {
                 Assertions.assertEquals(
-                    rasters1.bitsPerSample[i], rasters2.bitsPerSample[i]
+                    rasters1.fields[i].bytesPerSample, rasters2.fields[i].bytesPerSample
                 )
             }
         }
@@ -170,7 +172,7 @@ object RasterTestUtils {
     fun testRastersMetadata(inpWidth: Int, inpHeight: Int, inpPixVals: IntArray, rasters: Rasters) {
         val fieldTypes = rasters.metadata.fields
         Assertions.assertEquals(1, fieldTypes.size)
-        Assertions.assertEquals(2, fieldTypes[0].bytes)
+        Assertions.assertEquals(2, fieldTypes[0].metadata().bytesPerSample)
 
         for (y in 0 until inpHeight) {
             for (x in 0 until inpWidth) {

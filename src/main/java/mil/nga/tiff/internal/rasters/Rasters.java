@@ -1,16 +1,15 @@
 package mil.nga.tiff.internal.rasters;
 
 import mil.nga.tiff.field.FieldType;
-import mil.nga.tiff.field.type.AbstractFieldType;
+import mil.nga.tiff.field.type.GenericFieldType;
+import mil.nga.tiff.field.type.NumericFieldType;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
-import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,12 +45,8 @@ public class Rasters {
      * @param interleaveValues empty interleaved values buffer
      * @since 2.0.0
      */
-    public Rasters(int width, int height, FieldType[] fieldTypes, ByteBuffer[] sampleValues, ByteBuffer interleaveValues) {
-        List<AbstractFieldType> fieldDefinitions = Arrays.stream(fieldTypes)
-            .map(FieldType::getDefinition)
-            .toList();
-
-        this.metadata = new RasterMetadata(width, height, fieldDefinitions);
+    public Rasters(int width, int height, List<NumericFieldType> fieldTypes, ByteBuffer[] sampleValues, ByteBuffer interleaveValues) {
+        this.metadata = new RasterMetadata(width, height, fieldTypes);
 
         this.sampleValues = new SampleValues(sampleValues, metadata);
         this.interleaveValues = new InterleaveValues(interleaveValues, metadata);
@@ -138,27 +133,8 @@ public class Rasters {
         return metadata.samplesPerPixel();
     }
 
-    /**
-     * Get the bits per sample
-     *
-     * @return bits per sample
-     */
-    public List<Integer> getBitsPerSample() {
-        return metadata.bitsPerSample();
-    }
-
-    /**
-     * Returns list of sample types constants
-     * <p>
-     * Returns list of sample types constants (SAMPLE_FORMAT_UNSIGNED_INT,
-     * SAMPLE_FORMAT_SIGNED_INT or SAMPLE_FORMAT_FLOAT) for each sample in
-     * sample list @see getFieldTypes(). @see {@link TiffConstants}
-     *
-     * @return list of sample type constants
-     * @since 2.0.0
-     */
-    public List<SampleFormat> getSampleFormat() {
-        return metadata.sampleFormat();
+    public List<FieldType> getFields() {
+        return metadata.fields().stream().map(GenericFieldType::metadata).toList();
     }
 
     /**

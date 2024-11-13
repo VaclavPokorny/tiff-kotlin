@@ -2,7 +2,8 @@ package mil.nga.tiff
 
 import mil.nga.tiff.TiffTestUtils.createFieldTypeArray
 import mil.nga.tiff.TiffTestUtils.createSampleValues
-import mil.nga.tiff.field.FieldType
+import mil.nga.tiff.field.DefaultFieldTypeDictionary
+import mil.nga.tiff.field.type.FloatField
 import mil.nga.tiff.field.type.enumeration.Compression
 import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
@@ -65,8 +66,8 @@ class ReadmeTest {
         val width = 256
         val height = 256
         val samplesPerPixel = 1
-        val fieldType = FieldType.FLOAT
-        val bitsPerSample = fieldType.definition.bits
+        val fieldType = FloatField()
+        val bitsPerSample = fieldType.metadata().bytesPerSample * 8
 
         val fieldTypes = createFieldTypeArray(samplesPerPixel, fieldType)
         val order = ByteOrder.nativeOrder()
@@ -77,7 +78,7 @@ class ReadmeTest {
             PlanarConfiguration.CHUNKY
         )
 
-        val directory = FileDirectory(TreeSet(), null, false)
+        val directory = FileDirectory(TreeSet(), null, false, DefaultFieldTypeDictionary())
         directory.setImageWidth(width)
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)

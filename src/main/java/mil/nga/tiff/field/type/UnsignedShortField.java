@@ -1,5 +1,6 @@
 package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
@@ -10,10 +11,8 @@ import java.nio.ByteBuffer;
 /**
  * 16-bit (2-byte) unsigned integer
  */
-public final class UnsignedShortField extends AbstractShortField {
-    public UnsignedShortField() {
-        super(SampleFormat.UNSIGNED_INT);
-    }
+@FieldType(id = 3, bytesPerSample = 2, sampleFormat = SampleFormat.UNSIGNED_INT)
+public final class UnsignedShortField extends ShortField {
 
     @Override
     public Number readValue(ByteReader reader) {

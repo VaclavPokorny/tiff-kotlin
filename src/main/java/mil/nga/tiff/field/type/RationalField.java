@@ -12,13 +12,10 @@ import java.util.List;
  * Two SLONG’s: the first represents the numerator of a fraction, the second
  * the denominator
  */
-abstract sealed class AbstractRationalField extends AbstractFieldType permits UnsignedRationalField, SignedRationalField {
-    public AbstractRationalField() {
-        super(8);
-    }
+abstract sealed class RationalField implements GenericFieldType permits UnsignedRationalField, SignedRationalField {
 
     @Override
-    final public List<Object> getDirectoryEntryValues(ByteReader reader, long typeCount) {
+    final public List<Object> readDirectoryEntryValues(ByteReader reader, long typeCount) {
         List<Object> values = new ArrayList<>();
 
         for (int i = 0; i < typeCount; i++) {

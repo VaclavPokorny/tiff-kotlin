@@ -1,5 +1,6 @@
 package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
@@ -10,10 +11,8 @@ import java.nio.ByteBuffer;
 /**
  * A 16-bit (2-byte) signed (twos-complement) integer
  */
-public final class SignedShortField extends AbstractShortField {
-    public SignedShortField() {
-        super(SampleFormat.SIGNED_INT);
-    }
+@FieldType(id = 8, bytesPerSample = 2, sampleFormat = SampleFormat.SIGNED_INT)
+public final class SignedShortField extends ShortField {
 
     @Override
     public Number readValue(ByteReader reader) {

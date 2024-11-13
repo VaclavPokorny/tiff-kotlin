@@ -46,7 +46,7 @@ object TiffFileTester {
                     (entry.fieldTag().toString() + " (" + entry.fieldTag().id + ")")
                 )
                 println(
-                    (entry.fieldType().toString() + " (" + entry.fieldType().definition.bytes + " bytes)")
+                    (entry.fieldType().toString() + " (" + entry.fieldType().metadata().bytesPerSample + " bytes)")
                 )
                 println("Count: " + entry.typeCount())
                 println("Values: " + entry.values())
@@ -62,7 +62,7 @@ object TiffFileTester {
             println(
                 "Samples Per Pixel: " + rasters.samplesPerPixel
             )
-            println("Bits Per Sample: " + rasters.bitsPerSample)
+            println("Bits Per Sample: " + (rasters.fields.map { it.bytesPerSample * 8 }))
 
             println()
             printPixel(rasters, 0, 0)

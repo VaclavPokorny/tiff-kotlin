@@ -1,13 +1,8 @@
 package mil.nga.tiff.field.type;
 
-import mil.nga.tiff.field.type.enumeration.SampleFormat;
-
 import java.nio.ByteBuffer;
 
-abstract sealed class AbstractShortField extends AbstractRasterFieldType permits UnsignedShortField, SignedShortField {
-    public AbstractShortField(SampleFormat sampleFormat) {
-        super(2, sampleFormat);
-    }
+abstract sealed class ShortField extends NumericFieldType permits UnsignedShortField, SignedShortField {
 
     @Override
     final protected void writeSample(ByteBuffer buffer, Number value) {

@@ -1,5 +1,6 @@
 package mil.nga.tiff.field.type;
 
+import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
@@ -10,11 +11,8 @@ import java.nio.ByteBuffer;
 /**
  * A 32-bit (4-byte) signed (twos-complement) integer
  */
-public final class SignedLongField extends AbstractLongField {
-    public SignedLongField() {
-        super(SampleFormat.SIGNED_INT);
-    }
-
+@FieldType(id = 9, bytesPerSample = 4, sampleFormat = SampleFormat.SIGNED_INT)
+public final class SignedLongField extends LongField {
     @Override
     public Number readValue(ByteReader reader) {
         return reader.readInt();

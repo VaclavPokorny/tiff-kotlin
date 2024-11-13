@@ -1,10 +1,10 @@
 package mil.nga.tiff.internal;
 
 import mil.nga.tiff.compression.CompressionEncoder;
-import mil.nga.tiff.internal.rasters.Rasters;
-import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.field.type.enumeration.Compression;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
+import mil.nga.tiff.internal.rasters.Rasters;
+import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffByteOrder;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
@@ -81,9 +81,9 @@ public class TiffImageWriter {
         // Write each entry
         for (FileDirectoryEntry entry : fileDirectory.getEntries()) {
             writer.writeUnsignedShort(entry.fieldTag().getId());
-            writer.writeUnsignedShort(entry.fieldType().getValue());
+            writer.writeUnsignedShort(entry.fieldType().metadata().id());
             writer.writeUnsignedInt(entry.typeCount());
-            long valueBytes = entry.fieldType().getDefinition().getBytes() * entry.typeCount();
+            long valueBytes = entry.valueBytes();
             if (valueBytes > 4) {
                 // Write the value offset
                 entryValues.add(entry);
@@ -117,7 +117,7 @@ public class TiffImageWriter {
                 throw new TiffException("Entry values byte does not match the write location. Entry Values Byte: " + entryValuesByte + ", Current Byte: " + writer.size());
             }
             int bytesWritten = writeValues(writer, entry);
-            long valueBytes = entry.fieldType().getDefinition().getBytes() * entry.typeCount();
+            long valueBytes = entry.valueBytes();
             if (bytesWritten != valueBytes) {
                 throw new TiffException("Unexpected bytes written. Expected: " + valueBytes + ", Actual: " + bytesWritten);
             }
@@ -297,7 +297,7 @@ public class TiffImageWriter {
      * @throws IOException IO exception
      */
     private int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
-        return entry.fieldType().getDefinition().writeDirectoryEntryValues(writer, entry);
+        return entry.fieldType().writeDirectoryEntryValues(writer, entry);
     }
 
 }

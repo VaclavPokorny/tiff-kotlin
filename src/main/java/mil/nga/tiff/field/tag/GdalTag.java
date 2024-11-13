@@ -1,15 +1,11 @@
-package mil.nga.tiff.field;
+package mil.nga.tiff.field.tag;
 
 /**
- * GEO TIFF tags
+ * GDAL tags
  */
-public enum GeoTiffTag implements FieldTagType {
-    ModelPixelScale(33550, false),
-    ModelTiepoint(33922, false),
-    ModelTransformation(34264, false),
-    GeoKeyDirectory(34735, false),
-    GeoDoubleParams(34736, false),
-    GeoAsciiParams(34737, false);
+public enum GdalTag implements FieldTagType {
+    GDAL_METADATA(42112, false),
+    GDAL_NODATA(42113, false);
 
     /**
      * Tag id
@@ -27,7 +23,7 @@ public enum GeoTiffTag implements FieldTagType {
      * @param id    tag id
      * @param array true if an array type
      */
-    GeoTiffTag(int id, boolean array) {
+    GdalTag(int id, boolean array) {
         this.id = id;
         this.array = array;
     }

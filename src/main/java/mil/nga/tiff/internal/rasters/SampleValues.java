@@ -17,7 +17,7 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
         metadata.validateCoordinates(x, y);
         metadata.validateSample(sample);
 
-        int bufferIndex = sampleIndexLocation(x, y) * metadata.field(sample).getBytes();
+        int bufferIndex = sampleIndexLocation(x, y) * metadata.field(sample).metadata().bytesPerSample();
         metadata.field(sample).updateSampleInByteBuffer(values[sample], bufferIndex, sample, value);
     }
 
@@ -25,15 +25,15 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
         metadata.validateCoordinates(x, y);
         metadata.validateSample(sample);
 
-        int bufferPos = sampleIndexLocation(x, y) * metadata.field(sample).getBytes();
+        int bufferPos = sampleIndexLocation(x, y) * metadata.field(sample).metadata().bytesPerSample();
         return metadata.field(sample).getSampleFromByteBuffer(values[sample], bufferPos, sample);
     }
 
     public byte[] getSampleRow(int y, int sample, ByteOrder newOrder) {
-        ByteBuffer outBuffer = ByteBuffer.allocate(metadata.width() * metadata.field(sample).getBytes());
+        ByteBuffer outBuffer = ByteBuffer.allocate(metadata.width() * metadata.field(sample).metadata().bytesPerSample());
         outBuffer.order(newOrder);
 
-        values[sample].position(y * metadata.width() * metadata.field(sample).getBytes());
+        values[sample].position(y * metadata.width() * metadata.field(sample).metadata().bytesPerSample());
         for (int x = 0; x < metadata.width(); ++x) {
             metadata.field(sample).writeSample(outBuffer, values[sample]);
         }
@@ -46,7 +46,7 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
         outBuffer.order(newOrder);
 
         for (int i = 0; i < metadata.samplesPerPixel(); ++i) {
-            values[i].position(y * metadata.width() * metadata.field(i).getBytes());
+            values[i].position(y * metadata.width() * metadata.field(i).metadata().bytesPerSample());
         }
         for (int i = 0; i < metadata.width(); ++i) {
             for (int j = 0; j < metadata.samplesPerPixel(); ++j) {
@@ -63,7 +63,7 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
 
         // Set the pixel values from each sample
         for (int i = 0; i < metadata.samplesPerPixel(); i++) {
-            int bufferIndex = sampleIndexLocation(x, y) * metadata.field(i).getBytes();
+            int bufferIndex = sampleIndexLocation(x, y) * metadata.field(i).metadata().bytesPerSample();
             metadata.field(i).updateSampleInByteBuffer(this.values[i], bufferIndex, i, values[i]);
         }
     }
@@ -77,7 +77,7 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
         // Get the pixel values from each sample
         int sampleIndex = sampleIndexLocation(x, y);
         for (int i = 0; i < metadata.samplesPerPixel(); i++) {
-            int bufferIndex = sampleIndex * metadata.field(i).getBytes();
+            int bufferIndex = sampleIndex * metadata.field(i).metadata().bytesPerSample();
             pixel[i] = metadata.field(i).getSampleFromByteBuffer(values[i], bufferIndex, i);
         }
 
@@ -85,7 +85,7 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
     }
 
     public void addValue(int sampleIndex, int coordinate, Number value) {
-        int bufferIndex = coordinate * metadata.field(sampleIndex).getBytes();
+        int bufferIndex = coordinate * metadata.field(sampleIndex).metadata().bytesPerSample();
         metadata.field(sampleIndex).updateSampleInByteBuffer(values[sampleIndex], bufferIndex, sampleIndex, value);
     }
 

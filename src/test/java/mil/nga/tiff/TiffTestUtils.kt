@@ -1,11 +1,10 @@
 package mil.nga.tiff
 
-import mil.nga.tiff.field.FieldType
+import mil.nga.tiff.field.type.NumericFieldType
 import mil.nga.tiff.internal.FileDirectory
-import mil.nga.tiff.internal.ImageWindow
-import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.internal.rasters.RasterTestUtils
+import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.util.TiffException
 import org.junit.jupiter.api.Assertions
 import java.io.File
@@ -84,9 +83,7 @@ object TiffTestUtils {
      * @param fileDirectory file internal
      * @param rasters rasters
      */
-    private fun compareFileDirectoryAndRastersMetadata(
-        fileDirectory: FileDirectory, rasters: Rasters
-    ) {
+    private fun compareFileDirectoryAndRastersMetadata(fileDirectory: FileDirectory, rasters: Rasters) {
         Assertions.assertEquals(fileDirectory.imageWidth, rasters.width)
         Assertions.assertEquals(
             fileDirectory.imageHeight, rasters.height
@@ -95,11 +92,11 @@ object TiffTestUtils {
             fileDirectory.samplesPerPixel, rasters.samplesPerPixel
         )
         Assertions.assertEquals(
-            fileDirectory.bitsPerSample.size, rasters.bitsPerSample.size
+            fileDirectory.bitsPerSample.size, rasters.fields.size
         )
         for (i in fileDirectory.bitsPerSample.indices) {
             Assertions.assertEquals(
-                fileDirectory.bitsPerSample[i], rasters.bitsPerSample[i]
+                fileDirectory.bitsPerSample[i], rasters.fields[i].bytesPerSample * 8
             )
         }
     }
@@ -124,24 +121,24 @@ object TiffTestUtils {
     }
 
     /**
-     * Create [FieldType] filled array for samples per pixel size
+     * Create [NumericFieldType] filled array for samples per pixel size
      *
      * @param samplesPerPixel number of samples per pixel
      * @param fieldType       type of field for each sample
      * @return field type array
      */
     @JvmStatic
-    fun createFieldTypeArray(samplesPerPixel: Int, fieldType: FieldType): Array<FieldType> {
-        val result = arrayOfNulls<FieldType>(samplesPerPixel)
+    fun createFieldTypeArray(samplesPerPixel: Int, fieldType: NumericFieldType): List<NumericFieldType> {
+        val result = arrayOfNulls<NumericFieldType>(samplesPerPixel)
         Arrays.fill(result, fieldType)
-        return result.requireNoNulls()
+        return result.requireNoNulls().toList()
     }
 
     @JvmStatic
-    fun createSampleValues(width: Int, height: Int, fieldTypes: Array<FieldType>, order: ByteOrder): Array<ByteBuffer> {
+    fun createSampleValues(width: Int, height: Int, fieldTypes: List<NumericFieldType>, order: ByteOrder): Array<ByteBuffer> {
         val sampleValues = arrayOfNulls<ByteBuffer>(fieldTypes.size)
         for (i in sampleValues.indices) {
-            sampleValues[i] = ByteBuffer.allocateDirect(width * height * fieldTypes[i].definition.bytes).order(order)
+            sampleValues[i] = ByteBuffer.allocateDirect(width * height * fieldTypes[i].metadata().bytesPerSample).order(order)
         }
         return sampleValues.requireNoNulls()
     }
