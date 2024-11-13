@@ -6,33 +6,18 @@ import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffException;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.List;
 
-/**
- * Differencing Predictor decoder
- *
- * @author osbornb
- * @since 3.0.0
- */
 abstract class AbstractPredictor implements Predictor {
 
-    /**
-     * Decode the predictor encoded bytes
-     *
-     * @param bytes               bytes to decode
-     * @param width               tile width
-     * @param height              tile height
-     * @param bitsPerSample       bits per samples
-     * @param planarConfiguration planar configuration
-     * @return decoded or original bytes
-     */
     @Override
-    public byte[] decode(byte[] bytes, int width, int height, List<Integer> bitsPerSample, PlanarConfiguration planarConfiguration) {
+    public byte[] decode(byte[] bytes, int width, int height, List<Integer> bitsPerSample, PlanarConfiguration planarConfiguration, ByteOrder byteOrder) {
         int bytesPerSample = getBytesPerSample(bitsPerSample);
         int samples = planarConfiguration == PlanarConfiguration.PLANAR ? 1 : bitsPerSample.size();
 
-        ByteReader reader = new ByteReader(bytes);
-        try (ByteWriter writer = new ByteWriter()) {
+        ByteReader reader = new ByteReader(bytes, byteOrder);
+        try (ByteWriter writer = new ByteWriter(byteOrder)) {
 
             for (int row = 0; row < height; row++) {
                 // Last strip will be truncated if height % stripHeight != 0
@@ -44,6 +29,8 @@ abstract class AbstractPredictor implements Predictor {
             }
 
             return writer.getBytes();
+        } catch (IOException e) {
+            throw new TiffException(e);
         }
     }
 

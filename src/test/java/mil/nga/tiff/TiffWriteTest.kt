@@ -27,7 +27,10 @@ class TiffWriteTest {
     @Throws(IOException::class)
     fun `Test writing and reading a stripped chunky file`() {
         val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val fileDirectory = strippedTiff.fileDirectories.first()
         val rasters = fileDirectory.readRasters()
@@ -38,9 +41,16 @@ class TiffWriteTest {
         fileDirectory.planarConfiguration = PlanarConfiguration.CHUNKY
         val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
-        val tiffBytes = TiffWriter.writeTiffToBytes(strippedTiff)
+        val tiffBytes = Tiff
+            .create()
+            .write(strippedTiff)
+            .toByteArray()
 
-        val readTiffImage = TiffReader.readTiff(tiffBytes)
+        val readTiffImage = Tiff
+            .create()
+            .read()
+            .fromByteArray(tiffBytes)
+
         val fileDirectory2 = readTiffImage.fileDirectories.first()
         val rasters2 = fileDirectory2.readRasters()
         val rasters2Interleaved = fileDirectory2.readInterleavedRasters()
@@ -55,7 +65,10 @@ class TiffWriteTest {
     @Throws(IOException::class)
     fun `Test writing and reading a stripped planar file`() {
         val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val fileDirectory = strippedTiff.fileDirectories.first()
         val rasters = fileDirectory.readRasters()
@@ -66,9 +79,16 @@ class TiffWriteTest {
         fileDirectory.planarConfiguration = PlanarConfiguration.PLANAR
         val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
-        val tiffBytes = TiffWriter.writeTiffToBytes(strippedTiff)
+        val tiffBytes = Tiff
+            .create()
+            .write(strippedTiff)
+            .toByteArray()
 
-        val readTiffImage = TiffReader.readTiff(tiffBytes)
+        val readTiffImage = Tiff
+            .create()
+            .read()
+            .fromByteArray(tiffBytes)
+
         val fileDirectory2 = readTiffImage.fileDirectories.first()
         val rasters2 = fileDirectory2.readRasters()
         val rasters2Interleaved = fileDirectory2.readInterleavedRasters()
@@ -96,7 +116,7 @@ class TiffWriteTest {
 
         val dictionary = DefaultFieldTypeDictionary()
         val rasterFieldTypes = createFieldTypeArray(samplesPerPixel, dictionary.findBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample))
-        val order = ByteOrder.nativeOrder()
+        val order = ByteOrder.LITTLE_ENDIAN
         val sampleValues = createSampleValues(inpWidth, inpHeight, rasterFieldTypes, order)
         val newRaster = Rasters(inpWidth, inpHeight, rasterFieldTypes, sampleValues, null)
 
@@ -126,12 +146,20 @@ class TiffWriteTest {
                 )
             }
         }
-        val newImage = TIFFImage(listOf(fileDirs))
+        val newImage = TIFFImage(listOf(fileDirs), ByteOrder.LITTLE_ENDIAN)
 
-        val tiffBytes = TiffWriter.writeTiffToBytes(newImage)
+        val tiffBytes = Tiff
+            .create()
+            .write(newImage)
+            .toByteArray()
+
         Assertions.assertNotNull(tiffBytes)
 
-        val image = TiffReader.readTiff(tiffBytes)
+        val image = Tiff
+            .create()
+            .read()
+            .fromByteArray(tiffBytes)
+
         Assertions.assertNotNull(image)
 
         val fileDirectory = image.fileDirectories.first()

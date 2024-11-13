@@ -25,7 +25,10 @@ object TiffFileTester {
         val file = File(args[0])
         require(file.exists()) { "TIFF file does not exist: " + file.absolutePath }
 
-        val tiffImage = TiffReader.readTiff(file)
+        val tiffImage = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         println("TIFF Image: " + file.name)
 

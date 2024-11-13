@@ -136,7 +136,7 @@ public class FileDirectoryRasterReader {
                         bytesPerPixel = getSampleByteSize(sample);
                     }
 
-                    byte[] block = tileOrStripProcessor.run(xTile, yTile, sample, reader, tiled, planarConfiguration, predictor);
+                    byte[] block = tileOrStripProcessor.run(xTile, yTile, sample, reader, tiled, planarConfiguration, predictor, reader.getByteOrder());
                     ByteReader blockReader = new ByteReader(block, reader.getByteOrder());
 
                     for (int y = Math.max(0, window.minY() - firstLine); y < Math.min(tileHeight, tileHeight - (lastLine - window.maxY())); y++) {

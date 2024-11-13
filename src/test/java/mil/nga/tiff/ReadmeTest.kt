@@ -48,7 +48,11 @@ class ReadmeTest {
         // byte[] input = ...
         // ByteReader input = ...
 
-        val tiffImage = TiffReader.readTiff(input)
+        val tiffImage = Tiff
+            .create()
+            .read()
+            .fromByteArray(input)
+
         val directories = tiffImage.fileDirectories()
         val directory = directories[0]
         val rasters = directory.readRasters()
@@ -70,7 +74,7 @@ class ReadmeTest {
         val bitsPerSample = fieldType.metadata().bytesPerSample * 8
 
         val fieldTypes = createFieldTypeArray(samplesPerPixel, fieldType)
-        val order = ByteOrder.nativeOrder()
+        val order = ByteOrder.LITTLE_ENDIAN
         val sampleValues = createSampleValues(width, height, fieldTypes, order)
         val rasters = Rasters(width, height, fieldTypes, sampleValues, null)
 
@@ -97,8 +101,11 @@ class ReadmeTest {
             }
         }
 
-        val tiffImage = TIFFImage(listOf(directory))
-        val bytes = TiffWriter.writeTiffToBytes(tiffImage)
+        val tiffImage = TIFFImage(listOf(directory), ByteOrder.LITTLE_ENDIAN)
+        val bytes = Tiff
+            .create()
+            .write(tiffImage)
+            .toByteArray()
 
         // or
         // File file = ...

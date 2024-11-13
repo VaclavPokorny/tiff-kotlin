@@ -2,6 +2,7 @@ package mil.nga.tiff.internal.predictor;
 
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 
+import java.nio.ByteOrder;
 import java.util.List;
 
 /**
@@ -20,8 +21,9 @@ public interface Predictor {
      * @param height              tile height
      * @param bitsPerSample       bits per samples
      * @param planarConfiguration planar configuration
+     * @param byteOrder           byte order
      * @return decoded or original bytes
      */
-    byte[] decode(byte[] bytes, int width, int height, List<Integer> bitsPerSample, PlanarConfiguration planarConfiguration);
+    byte[] decode(byte[] bytes, int width, int height, List<Integer> bitsPerSample, PlanarConfiguration planarConfiguration, ByteOrder byteOrder);
 
 }

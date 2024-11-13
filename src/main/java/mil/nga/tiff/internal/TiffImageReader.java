@@ -37,7 +37,8 @@ public class TiffImageReader {
      * @return TIFF image
      */
     public TIFFImage readTiff(boolean cache) {
-        determineByteOrder(reader);
+        // Skip byte order header (determined already)
+        reader.setNextByte(2);
 
         // Validate the TIFF file identifier
         int tiffIdentifier = reader.readUnsignedShort();
@@ -50,20 +51,6 @@ public class TiffImageReader {
 
         // Get the TIFF Image
         return parseTIFFImage(byteOffset, cache);
-    }
-
-    private void determineByteOrder(ByteReader reader) {
-        // Read the 2 bytes of byte order
-        String byteOrderString;
-        try {
-            byteOrderString = reader.readString(2);
-        } catch (UnsupportedEncodingException e) {
-            throw new TiffException("Failed to read byte order", e);
-        }
-
-        // Determine the byte order
-        ByteOrder byteOrder = TiffByteOrder.findById(byteOrderString).getByteOrder();
-        reader.setByteOrder(byteOrder);
     }
 
     /**
@@ -132,7 +119,7 @@ public class TiffImageReader {
             byteOffset = reader.readUnsignedInt();
         }
 
-        return new TIFFImage(dirs);
+        return new TIFFImage(dirs, reader.getByteOrder());
     }
 
     /**

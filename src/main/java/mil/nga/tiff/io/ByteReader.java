@@ -28,16 +28,7 @@ public class ByteReader {
     /**
      * Byte order
      */
-    private ByteOrder byteOrder;
-
-    /**
-     * Constructor
-     *
-     * @param bytes bytes
-     */
-    public ByteReader(byte[] bytes) {
-        this(bytes, ByteOrder.nativeOrder());
-    }
+    private final ByteOrder byteOrder;
 
     /**
      * Constructor
@@ -78,15 +69,6 @@ public class ByteReader {
      */
     public ByteOrder getByteOrder() {
         return byteOrder;
-    }
-
-    /**
-     * Set the byte order
-     *
-     * @param byteOrder byte order
-     */
-    public void setByteOrder(ByteOrder byteOrder) {
-        this.byteOrder = byteOrder;
     }
 
     /**

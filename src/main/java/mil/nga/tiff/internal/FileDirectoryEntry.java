@@ -44,26 +44,6 @@ public record FileDirectoryEntry(FieldTagType fieldTag, GenericFieldType fieldTy
         return fieldTag.getId() - other.fieldTag().getId();
     }
 
-    @Override
-    public int hashCode() {
-        return fieldTag.getId();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        FileDirectoryEntry other = (FileDirectoryEntry) obj;
-        return fieldTag == other.fieldTag;
-    }
-
     public long valueBytes() {
         return fieldType.metadata().bytesPerSample() * typeCount;
     }

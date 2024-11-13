@@ -19,10 +19,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data tiled`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_TILED)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -31,10 +37,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as int 32`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_INT32)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff, true, false)
     }
@@ -43,10 +55,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as unsigned int 32`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_UINT32)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff, false, false)
     }
@@ -55,10 +73,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as float 32`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_FLOAT32)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff, false, false)
     }
@@ -67,10 +91,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as float 64`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_FLOAT64)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff, false, false)
     }
@@ -79,10 +109,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data compressed as LZW`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_LZW)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -91,10 +127,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data compressed as Packbits`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_PACKBITS)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -103,10 +145,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as interleaved`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_INTERLEAVE)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -115,10 +163,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as tiled planar`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_TILED_PLANAR)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -127,7 +181,10 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the JPEG file header`() {
         val file = getTestFile(TiffTestConstants.FILE_JPEG)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         Assertions.assertNotNull(tiff)
         Assertions.assertTrue(tiff.fileDirectories().size > 0)
@@ -148,7 +205,10 @@ class TiffReadTest {
         val base64Bytes = "TU0AKoAAAAAAAAAAAAAAAQAAKgAAGABNAA=="
         val bytes = Base64.getDecoder().decode(base64Bytes)
         try {
-            TiffReader.readTiff(bytes)
+            Tiff
+                .create()
+                .read()
+                .fromByteArray(bytes)
             Assertions.fail("Unexpected success")
         } catch (e: TiffException) {
             // expected
@@ -159,10 +219,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as deflate predictor`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_DEFLATE_PREDICTOR)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -171,12 +237,18 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as deflate predictor big strips`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(
             TiffTestConstants.FILE_DEFLATE_PREDICTOR_BIG_STRIPS
         )
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -185,10 +257,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as deflate predictor tiled`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_DEFLATE_PREDICTOR_TILED)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -197,10 +275,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as LZW predictor`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_LZW_PREDICTOR)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -209,10 +293,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the stripped TIFF file vs the same data as tiled planar LZW`() {
         val strippedFile = getTestFile(TiffTestConstants.FILE_STRIPPED)
-        val strippedTiff = TiffReader.readTiff(strippedFile)
+        val strippedTiff = Tiff
+            .create()
+            .read()
+            .fromFile(strippedFile)
 
         val file = getTestFile(TiffTestConstants.FILE_TILED_PLANAR_LZW)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(strippedTiff, tiff)
     }
@@ -221,10 +311,16 @@ class TiffReadTest {
     @Throws(IOException::class)
     fun `Test the float 32 TIFF file vs the same data as LZW predictor floating point`() {
         val float32File = getTestFile(TiffTestConstants.FILE_FLOAT32)
-        val float32Tiff = TiffReader.readTiff(float32File)
+        val float32Tiff = Tiff
+            .create()
+            .read()
+            .fromFile(float32File)
 
         val file = getTestFile(TiffTestConstants.FILE_LZW_PREDICTOR_FLOATING)
-        val tiff = TiffReader.readTiff(file)
+        val tiff = Tiff
+            .create()
+            .read()
+            .fromFile(file)
 
         compareTIFFImages(float32Tiff, tiff)
     }

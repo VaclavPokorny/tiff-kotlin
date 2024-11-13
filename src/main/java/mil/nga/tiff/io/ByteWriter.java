@@ -15,7 +15,7 @@ public class ByteWriter implements AutoCloseable {
     /**
      * Output stream to write bytes to
      */
-    private final ByteArrayOutputStream os = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream os;
 
     /**
      * Byte order
@@ -24,29 +24,30 @@ public class ByteWriter implements AutoCloseable {
 
     /**
      * Constructor
+     *
+     * @param byteOrder byte order
      */
-    public ByteWriter() {
-        this(ByteOrder.nativeOrder());
+    public ByteWriter(ByteOrder byteOrder) {
+        this(byteOrder, new ByteArrayOutputStream());
     }
 
     /**
      * Constructor
      *
      * @param byteOrder byte order
+     * @param os output stream
      */
-    public ByteWriter(ByteOrder byteOrder) {
+    public ByteWriter(ByteOrder byteOrder, ByteArrayOutputStream os) {
         this.byteOrder = byteOrder;
+        this.os = os;
     }
 
     /**
      * Close the byte writer
      */
     @Override
-    public void close() {
-        try {
-            os.close();
-        } catch (IOException ignored) {
-        }
+    public void close() throws IOException {
+        os.close();
     }
 
     /**

@@ -4,6 +4,8 @@ import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.io.ByteReader;
 
+import java.nio.ByteOrder;
+
 public class TileOrStripProcessor {
 
     private final FileDirectory directory;
@@ -29,7 +31,7 @@ public class TileOrStripProcessor {
      * @param sample sample index
      * @return bytes
      */
-    public byte[] run(int x, int y, int sample, ByteReader reader, boolean tiled, PlanarConfiguration planarConfiguration, DifferencingPredictor predictor) {
+    public byte[] run(int x, int y, int sample, ByteReader reader, boolean tiled, PlanarConfiguration planarConfiguration, DifferencingPredictor predictor, ByteOrder byteOrder) {
         int index = determineIndex(x, y, sample, planarConfiguration);
 
         return cache.getOrSet(index, () -> {
@@ -56,7 +58,8 @@ public class TileOrStripProcessor {
                     directory.getTileWidth().intValue(),
                     directory.getTileHeight().intValue(),
                     directory.getBitsPerSample(),
-                    planarConfiguration
+                    planarConfiguration,
+                    byteOrder
                 );
             }
 
