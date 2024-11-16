@@ -12,20 +12,21 @@ import java.nio.ByteBuffer;
  * A 32-bit (4-byte) signed (twos-complement) integer
  */
 @FieldType(id = 9, bytesPerSample = 4, sampleFormat = SampleFormat.SIGNED_INT)
-public final class SignedLongField extends LongField {
+public final class SignedLongField extends LongField<Integer> {
     @Override
-    public Number readValue(ByteReader reader) {
+    public Integer readValue(ByteReader reader) {
         return reader.readInt();
     }
 
     @Override
-    protected Number readSample(ByteBuffer buffer) {
+    protected Integer readSample(ByteBuffer buffer) {
         return buffer.getInt();
     }
 
     @Override
-    protected void writeValue(ByteWriter writer, Object value) throws IOException {
-        writer.writeInt((int) value);
+    protected int writeValue(ByteWriter writer, Integer value) throws IOException {
+        writer.writeInt(value);
+        return metadata().bytesPerSample();
     }
 
 }

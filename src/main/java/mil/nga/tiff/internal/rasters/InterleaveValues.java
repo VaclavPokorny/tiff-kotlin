@@ -52,7 +52,7 @@ record InterleaveValues(ByteBuffer values, RasterMetadata metadata) {
 
         for (int i = 0; i < metadata.width(); ++i) {
             values.position((y * metadata.width() + i) * metadata.pixelSize() + sampleOffset);
-            metadata.field(sample).writeSample(outBuffer, values);
+            metadata.field(sample).transferSample(outBuffer, values);
         }
 
         return outBuffer.array();
@@ -66,7 +66,7 @@ record InterleaveValues(ByteBuffer values, RasterMetadata metadata) {
 
         for (int i = 0; i < metadata.width(); ++i) {
             for (int j = 0; j < metadata.samplesPerPixel(); ++j) {
-                metadata.field(j).writeSample(outBuffer, values);
+                metadata.field(j).transferSample(outBuffer, values);
             }
         }
 

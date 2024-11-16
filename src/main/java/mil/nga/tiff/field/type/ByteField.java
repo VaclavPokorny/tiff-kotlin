@@ -2,15 +2,15 @@ package mil.nga.tiff.field.type;
 
 import java.nio.ByteBuffer;
 
-abstract sealed class ByteField extends NumericFieldType permits UnsignedByteField, SignedByteField {
+abstract sealed class ByteField<T extends Number> extends NumericFieldType<T> permits UnsignedByteField, SignedByteField {
 
     @Override
-    final protected void writeSample(ByteBuffer buffer, Number value) {
+    final protected void writeSample(ByteBuffer buffer, T value) {
         buffer.put(value.byteValue());
     }
 
     @Override
-    final public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
+    final public void transferSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
         outBuffer.put(inBuffer.get());
     }
 

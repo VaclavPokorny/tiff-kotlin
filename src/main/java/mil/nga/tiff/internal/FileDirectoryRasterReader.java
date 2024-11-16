@@ -149,7 +149,7 @@ public class FileDirectoryRasterReader {
                             blockReader.setNextByte(valueOffset);
 
                             // Read the value
-                            Number value = sampleFieldTypes[sampleIndex].readValue(blockReader);
+                            Number value = (Number)sampleFieldTypes[sampleIndex].readValue(blockReader);
 
                             if (rasters.hasInterleaveValues()) {
                                 int windowCoordinate = (y + firstLine - window.minY()) * window.width() + (x + firstCol - window.minX());

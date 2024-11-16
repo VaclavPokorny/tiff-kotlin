@@ -128,14 +128,14 @@ object TiffTestUtils {
      * @return field type array
      */
     @JvmStatic
-    fun createFieldTypeArray(samplesPerPixel: Int, fieldType: NumericFieldType): List<NumericFieldType> {
-        val result = arrayOfNulls<NumericFieldType>(samplesPerPixel)
+    fun createFieldTypeArray(samplesPerPixel: Int, fieldType: NumericFieldType<Number>): List<NumericFieldType<Number>> {
+        val result = arrayOfNulls<NumericFieldType<Number>>(samplesPerPixel)
         Arrays.fill(result, fieldType)
         return result.requireNoNulls().toList()
     }
 
     @JvmStatic
-    fun createSampleValues(width: Int, height: Int, fieldTypes: List<NumericFieldType>, order: ByteOrder): Array<ByteBuffer> {
+    fun createSampleValues(width: Int, height: Int, fieldTypes: List<NumericFieldType<Number>>, order: ByteOrder): Array<ByteBuffer> {
         val sampleValues = arrayOfNulls<ByteBuffer>(fieldTypes.size)
         for (i in sampleValues.indices) {
             sampleValues[i] = ByteBuffer.allocateDirect(width * height * fieldTypes[i].metadata().bytesPerSample).order(order)

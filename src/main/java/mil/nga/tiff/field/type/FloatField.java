@@ -12,31 +12,32 @@ import java.nio.ByteBuffer;
  * Single precision (4-byte) IEEE format
  */
 @FieldType(id = 11, bytesPerSample = 4, sampleFormat = SampleFormat.FLOAT)
-public final class FloatField extends NumericFieldType {
+public final class FloatField extends NumericFieldType<Float> {
 
     @Override
-    public Number readValue(ByteReader reader) {
+    public Float readValue(ByteReader reader) {
         return reader.readFloat();
     }
 
     @Override
-    protected Number readSample(ByteBuffer buffer) {
+    protected Float readSample(ByteBuffer buffer) {
         return buffer.getFloat();
     }
 
     @Override
-    protected void writeSample(ByteBuffer buffer, Number value) {
-        buffer.putFloat(value.floatValue());
+    protected void writeSample(ByteBuffer buffer, Float value) {
+        buffer.putFloat(value);
     }
 
     @Override
-    public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
+    public void transferSample(ByteBuffer outBuffer, ByteBuffer inBuffer) {
         outBuffer.putFloat(inBuffer.getFloat());
     }
 
     @Override
-    protected void writeValue(ByteWriter writer, Object value) throws IOException {
-        writer.writeFloat((float) value);
+    protected int writeValue(ByteWriter writer, Float value) throws IOException {
+        writer.writeFloat(value);
+        return metadata().bytesPerSample();
     }
 
 }

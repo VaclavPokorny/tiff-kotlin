@@ -35,7 +35,7 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
 
         values[sample].position(y * metadata.width() * metadata.field(sample).metadata().bytesPerSample());
         for (int x = 0; x < metadata.width(); ++x) {
-            metadata.field(sample).writeSample(outBuffer, values[sample]);
+            metadata.field(sample).transferSample(outBuffer, values[sample]);
         }
 
         return outBuffer.array();
@@ -50,7 +50,7 @@ record SampleValues(ByteBuffer[] values, RasterMetadata metadata) {
         }
         for (int i = 0; i < metadata.width(); ++i) {
             for (int j = 0; j < metadata.samplesPerPixel(); ++j) {
-                metadata.field(j).writeSample(outBuffer, values[j]);
+                metadata.field(j).transferSample(outBuffer, values[j]);
             }
         }
 

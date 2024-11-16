@@ -13,10 +13,10 @@ import java.io.IOException;
  * the denominator
  */
 @FieldType(id = 10, bytesPerSample = 8)
-public final class SignedRationalField extends RationalField<Integer, SignedRational> {
+public final class SignedRationalField extends RationalField<SignedRational> {
 
     @Override
-    protected SignedRational readValue(ByteReader reader) {
+    public SignedRational readValue(ByteReader reader) {
         return new SignedRational(
             reader.readInt(),
             reader.readInt()
@@ -27,7 +27,7 @@ public final class SignedRationalField extends RationalField<Integer, SignedRati
     protected int writeValue(ByteWriter writer, SignedRational value) throws IOException {
         writer.writeInt(value.numerator());
         writer.writeInt(value.denominator());
-        return 8;
+        return metadata().bytesPerSample();
     }
 
 }

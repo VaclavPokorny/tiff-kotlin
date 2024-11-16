@@ -4,13 +4,14 @@ import mil.nga.tiff.TiffTestUtils.createFieldTypeArray
 import mil.nga.tiff.TiffTestUtils.createSampleValues
 import mil.nga.tiff.field.DefaultFieldTypeDictionary
 import mil.nga.tiff.field.type.FloatField
+import mil.nga.tiff.field.type.NumericFieldType
 import mil.nga.tiff.field.type.enumeration.Compression
 import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
 import mil.nga.tiff.field.type.enumeration.SampleFormat
 import mil.nga.tiff.internal.FileDirectory
-import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.internal.TIFFImage
+import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.util.*
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -55,7 +56,7 @@ class ReadmeTest {
 
         val directories = tiffImage.fileDirectories()
         val directory = directories[0]
-        val rasters = directory.readRasters()
+        directory.readRasters()
     }
 
     /**
@@ -70,10 +71,11 @@ class ReadmeTest {
         val width = 256
         val height = 256
         val samplesPerPixel = 1
-        val fieldType = FloatField()
+        @Suppress("UNCHECKED_CAST") val fieldType = FloatField() as NumericFieldType<Number>
         val bitsPerSample = fieldType.metadata().bytesPerSample * 8
 
         val fieldTypes = createFieldTypeArray(samplesPerPixel, fieldType)
+
         val order = ByteOrder.LITTLE_ENDIAN
         val sampleValues = createSampleValues(width, height, fieldTypes, order)
         val rasters = Rasters(width, height, fieldTypes, sampleValues, null)

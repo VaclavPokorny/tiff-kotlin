@@ -2,7 +2,11 @@ package mil.nga.tiff.internal;
 
 import mil.nga.tiff.field.tag.FieldTagType;
 import mil.nga.tiff.field.type.GenericFieldType;
+import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffConstants;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * TIFF File Directory Entry
@@ -13,7 +17,7 @@ import mil.nga.tiff.util.TiffConstants;
  * @param values    Values
  * @author osbornb
  */
-public record FileDirectoryEntry(FieldTagType fieldTag, GenericFieldType fieldType, long typeCount, Object values) implements Comparable<FileDirectoryEntry> {
+public record FileDirectoryEntry<T>(FieldTagType fieldTag, GenericFieldType<T> fieldType, long typeCount, List<T> values) implements Comparable<FileDirectoryEntry<T>> {
 
     /**
      * Size in bytes of the image file internal entry and its values (not
@@ -46,6 +50,17 @@ public record FileDirectoryEntry(FieldTagType fieldTag, GenericFieldType fieldTy
 
     public long valueBytes() {
         return fieldType.metadata().bytesPerSample() * typeCount;
+    }
+
+    /**
+     * Write file internal entry values
+     *
+     * @param writer byte writer
+     * @return bytes written
+     * @throws IOException IO exception
+     */
+    public int write(ByteWriter writer) throws IOException {
+        return fieldType.writeDirectoryEntryValues(writer, fieldTag, typeCount, values);
     }
 
 }

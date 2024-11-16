@@ -1,23 +1,10 @@
 package mil.nga.tiff.field.type;
 
-import mil.nga.tiff.field.tag.FieldTagType;
 import mil.nga.tiff.io.ByteReader;
-import mil.nga.tiff.io.ByteWriter;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
-abstract public sealed class NumericFieldType implements GenericFieldType permits ByteField, ShortField, LongField, FloatField, DoubleField {
-
-    /**
-     * Read the value from the reader according to the field type
-     *
-     * @param reader byte reader
-     * @return value
-     */
-    abstract public Number readValue(ByteReader reader);
+abstract public sealed class NumericFieldType<T extends Number> extends SingleValueFieldType<T> permits ByteField, ShortField, LongField, FloatField, DoubleField {
 
     /**
      * Reads sample from given buffer
@@ -25,7 +12,7 @@ abstract public sealed class NumericFieldType implements GenericFieldType permit
      * @param buffer A buffer to read from. @note Make sure position is set.
      * @return Sample from buffer
      */
-    abstract protected Number readSample(ByteBuffer buffer);
+    abstract protected T readSample(ByteBuffer buffer);
 
     /**
      * Writes sample into given buffer.
@@ -33,8 +20,7 @@ abstract public sealed class NumericFieldType implements GenericFieldType permit
      * @param buffer A buffer to write to. @note Make sure buffer position is set.
      * @param value  Actual value to write.
      */
-    abstract protected void writeSample(ByteBuffer buffer, Number value);
-
+    abstract protected void writeSample(ByteBuffer buffer, T value);
 
 
     /**
@@ -42,12 +28,10 @@ abstract public sealed class NumericFieldType implements GenericFieldType permit
      *
      * @param buffer      A buffer to be updated.
      * @param bufferIndex Position in buffer where to update.
-     * @param sampleIndex Sample index in sampleFieldTypes. Needed for determining
-     *                    sample size.
-     * @param value       A Number value to be put in buffer. Has to be same size as
-     *                    sampleFieldTypes[sampleIndex].
+     * @param sampleIndex Sample index in sampleFieldTypes. Needed for determining sample size.
+     * @param value       A Number value to be put in buffer. Has to be same size as sampleFieldTypes[sampleIndex].
      */
-    public void updateSampleInByteBuffer(ByteBuffer buffer, int bufferIndex, int sampleIndex, Number value) {
+    public void updateSampleInByteBuffer(ByteBuffer buffer, int bufferIndex, int sampleIndex, T value) {
         if (bufferIndex < 0 || bufferIndex >= buffer.capacity()) {
             throw new IndexOutOfBoundsException("index: " + bufferIndex + ". Buffer capacity: " + buffer.capacity());
         }
@@ -64,7 +48,7 @@ abstract public sealed class NumericFieldType implements GenericFieldType permit
      * @param sampleIndex Index of sample type to read
      * @return Number read from buffer
      */
-    public Number getSampleFromByteBuffer(ByteBuffer buffer, int index, int sampleIndex) {
+    public T getSampleFromByteBuffer(ByteBuffer buffer, int index, int sampleIndex) {
         if (index < 0 || index >= buffer.capacity()) {
             throw new IndexOutOfBoundsException("Requested index: " + index + ", but size of buffer is: " + buffer.capacity());
         }
@@ -74,37 +58,11 @@ abstract public sealed class NumericFieldType implements GenericFieldType permit
     }
 
     /**
-     * Writes sample from input buffer to given output buffer.
+     * Transfers sample from input buffer to given output buffer.
      *
      * @param outBuffer A buffer to write to. @note Make sure buffer position is set.
      * @param inBuffer  A buffer to read from. @note Make sure buffer position is set.
      */
-    abstract public void writeSample(ByteBuffer outBuffer, ByteBuffer inBuffer);
-
-    @Override
-    public List<Object> readDirectoryEntryValues(ByteReader reader, long typeCount) {
-
-        List<Object> values = new ArrayList<>();
-
-        for (int i = 0; i < typeCount; i++) {
-            values.add(readValue(reader));
-        }
-
-        return values;
-    }
-
-    @Override
-    public int writeDirectoryEntryValue(ByteWriter writer, FieldTagType fieldTag, long typeCount, Object value) throws IOException {
-        writeValue(writer, value);
-        return metadata().bytesPerSample();
-    }
-
-    /**
-     * Write value
-     *
-     * @param writer byte writer
-     * @param value  value
-     */
-    abstract protected void writeValue(ByteWriter writer, Object value) throws IOException;
+    abstract public void transferSample(ByteBuffer outBuffer, ByteBuffer inBuffer);
 
 }

@@ -8,7 +8,7 @@ import mil.nga.tiff.io.ByteWriter;
 import java.io.IOException;
 import java.util.List;
 
-public sealed interface GenericFieldType permits NumericFieldType, ASCIIField, UndefinedField, RationalField {
+public sealed interface GenericFieldType<T> permits SingleValueFieldType, ASCIIField {
 
     /**
      * Get the internal entry values
@@ -17,7 +17,7 @@ public sealed interface GenericFieldType permits NumericFieldType, ASCIIField, U
      * @param typeCount type count
      * @return values
      */
-    List<Object> readDirectoryEntryValues(ByteReader reader, long typeCount);
+    List<T> readDirectoryEntryValues(ByteReader reader, long typeCount);
 
     /**
      * Write file internal entry values
@@ -25,11 +25,12 @@ public sealed interface GenericFieldType permits NumericFieldType, ASCIIField, U
      * @param writer byte writer
      * @param fieldTag entry tag
      * @param typeCount count of values
-     * @param values actual value to write
+     * @param values actual values to write
      * @return bytes written
      * @throws IOException IO exception
      */
-    int writeDirectoryEntryValue(ByteWriter writer, FieldTagType fieldTag, long typeCount, Object values) throws IOException;
+    int writeDirectoryEntryValues(ByteWriter writer, FieldTagType fieldTag, long typeCount, List<T> values) throws IOException;
+
 
     /**
      * Gathers field type metadata and returns a record with them

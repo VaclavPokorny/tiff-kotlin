@@ -34,9 +34,9 @@ public record DirectoryStats(
             directory.getSampleFormat(),
             directory.getPlanarConfiguration(),
             directory.getTileOffsets(),
-            directory.getTileByteCounts() != null ? directory.getTileByteCounts().stream().map(Number::intValue).toList() : null,
-            directory.getStripOffsets() != null ? directory.getStripOffsets().stream().map(Number::longValue).toList() : null,
-            directory.getStripByteCounts() != null ? directory.getStripByteCounts().stream().map(Number::intValue).toList() : null,
+            directory.getTileByteCounts(),
+            directory.getStripOffsets(),
+            directory.getStripByteCounts(),
             directory.getCompression(),
             directory.getPredictor()
         );

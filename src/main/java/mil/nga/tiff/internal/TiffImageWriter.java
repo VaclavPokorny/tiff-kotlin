@@ -63,7 +63,7 @@ public class TiffImageWriter {
         // Write the number of internal entries
         writer.writeUnsignedShort(fileDirectory.numEntries());
 
-        List<FileDirectoryEntry> entryValues = new ArrayList<>();
+        List<FileDirectoryEntry<?>> entryValues = new ArrayList<>();
 
         // Byte to write the next values
         long nextByte = afterDirectory;
@@ -79,7 +79,7 @@ public class TiffImageWriter {
         byte[] rastersBytes = writeRasters(writer.getByteOrder(), fileDirectory, afterValues);
 
         // Write each entry
-        for (FileDirectoryEntry entry : fileDirectory.getEntries()) {
+        for (FileDirectoryEntry<?> entry : fileDirectory.getEntries()) {
             writer.writeUnsignedShort(entry.fieldTag().getId());
             writer.writeUnsignedShort(entry.fieldType().metadata().id());
             writer.writeUnsignedInt(entry.typeCount());
@@ -92,7 +92,7 @@ public class TiffImageWriter {
                 nextByte += entry.sizeOfValues();
             } else {
                 // Write the value in the inline 4 byte space, left aligned
-                int bytesWritten = writeValues(writer, entry);
+                int bytesWritten = entry.write(writer);
                 if (bytesWritten != valueBytes) {
                     throw new TiffException("Unexpected bytes written. Expected: " + valueBytes + ", Actual: " + bytesWritten);
                 }
@@ -111,12 +111,12 @@ public class TiffImageWriter {
 
         // Write the external entry values
         for (int entryIndex = 0; entryIndex < entryValues.size(); entryIndex++) {
-            FileDirectoryEntry entry = entryValues.get(entryIndex);
+            FileDirectoryEntry<?> entry = entryValues.get(entryIndex);
             long entryValuesByte = valueBytesCheck.get(entryIndex);
             if (entryValuesByte != writer.size()) {
                 throw new TiffException("Entry values byte does not match the write location. Entry Values Byte: " + entryValuesByte + ", Current Byte: " + writer.size());
             }
-            int bytesWritten = writeValues(writer, entry);
+            int bytesWritten = entry.write(writer);
             long valueBytes = entry.valueBytes();
             if (bytesWritten != valueBytes) {
                 throw new TiffException("Unexpected bytes written. Expected: " + valueBytes + ", Actual: " + bytesWritten);
@@ -286,32 +286,6 @@ public class TiffImageWriter {
         fileDirectory.setStripOffsetsAsLongs(stripOffsets);
         fileDirectory.setStripByteCounts(stripByteCounts);
 
-    }
-
-    /**
-     * Write file internal entry values
-     *
-     * @param writer byte writer
-     * @param entry  file internal entry
-     * @return bytes written
-     * @throws IOException IO exception
-     */
-    @SuppressWarnings("unchecked")
-    private int writeValues(ByteWriter writer, FileDirectoryEntry entry) throws IOException {
-        List<Object> valuesList;
-        if (entry.typeCount() == 1 && !entry.fieldTag().isArray()) {
-            valuesList = new ArrayList<>();
-            valuesList.add(entry.values());
-        } else {
-            valuesList = (List<Object>) entry.values();
-        }
-
-        int bytesWritten = 0;
-        for (Object value : valuesList) {
-            bytesWritten += entry.fieldType().writeDirectoryEntryValue(writer, entry.fieldTag(), entry.typeCount(), value);
-        }
-
-        return bytesWritten;
     }
 
 }

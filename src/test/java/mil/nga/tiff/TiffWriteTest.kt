@@ -6,11 +6,10 @@ import mil.nga.tiff.domain.UnsignedRational
 import mil.nga.tiff.field.*
 import mil.nga.tiff.field.type.enumeration.*
 import mil.nga.tiff.internal.FileDirectory
-import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.internal.rasters.RasterTestUtils
+import mil.nga.tiff.internal.rasters.Rasters
 import mil.nga.tiff.util.*
-import org.joou.UInteger
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -134,8 +133,8 @@ class TiffWriteTest {
         fileDirs.setSampleFormat(SampleFormat.UNSIGNED_INT)
         fileDirs.setRowsPerStrip(rowsPerStrip)
         fileDirs.resolutionUnit = ResolutionUnit.INCH
-        fileDirs.setXResolution(UnsignedRational(UInteger.valueOf(xResolution), UInteger.valueOf(1L)))
-        fileDirs.setYResolution(UnsignedRational(UInteger.valueOf(yResolution), UInteger.valueOf(1L)))
+        fileDirs.setXResolution(UnsignedRational(xResolution, 1L))
+        fileDirs.setYResolution(UnsignedRational(yResolution, 1L))
         fileDirs.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = PlanarConfiguration.CHUNKY
         fileDirs.compression = Compression.NO.id

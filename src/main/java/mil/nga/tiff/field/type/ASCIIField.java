@@ -2,7 +2,6 @@ package mil.nga.tiff.field.type;
 
 import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.field.tag.FieldTagType;
-import mil.nga.tiff.internal.FileDirectoryEntry;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
 import mil.nga.tiff.util.TiffException;
@@ -17,11 +16,11 @@ import java.util.List;
  * (binary zero)
  */
 @FieldType(id = 2, bytesPerSample = 1)
-public final class ASCIIField implements GenericFieldType {
+public final class ASCIIField implements GenericFieldType<String> {
 
     @Override
-    public List<Object> readDirectoryEntryValues(ByteReader reader, long typeCount) {
-        List<Object> values = new ArrayList<>();
+    public List<String> readDirectoryEntryValues(ByteReader reader, long typeCount) {
+        List<String> values = new ArrayList<>();
 
         for (int i = 0; i < typeCount; i++) {
             try {
@@ -31,10 +30,13 @@ public final class ASCIIField implements GenericFieldType {
             }
         }
 
-        // combine ASCII into strings
-        List<Object> stringValues = new ArrayList<>();
+        return combineAsciiCharsIntoStrings(values);
+    }
+
+    private List<String> combineAsciiCharsIntoStrings(List<String> values) {
+        List<String> stringValues = new ArrayList<>();
         StringBuilder stringValue = new StringBuilder();
-        for (Object value : values) {
+        for (String value : values) {
             if (value == null) {
                 if (!stringValue.isEmpty()) {
                     stringValues.add(stringValue.toString());
@@ -44,19 +46,20 @@ public final class ASCIIField implements GenericFieldType {
                 stringValue.append(value);
             }
         }
-        values = stringValues;
-
-        return values;
+        return stringValues;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public int writeDirectoryEntryValue(ByteWriter writer, FieldTagType fieldTag, long typeCount, Object value) throws IOException {
-        int bytesWritten = writer.writeString((String) value);
-        if (bytesWritten < typeCount) {
-            long fillerBytes = typeCount - bytesWritten;
-            writer.writeFillerBytes(fillerBytes);
-            bytesWritten += (int) fillerBytes;
+    public int writeDirectoryEntryValues(ByteWriter writer, FieldTagType fieldTag, long typeCount, List<String> values) throws IOException {
+        int bytesWritten = 0;
+
+        for (String value : values) {
+            bytesWritten += writer.writeString(value);
+            if (bytesWritten < typeCount) {
+                long fillerBytes = typeCount - bytesWritten;
+                writer.writeFillerBytes(fillerBytes);
+                bytesWritten += (int) fillerBytes;
+            }
         }
 
         return bytesWritten;

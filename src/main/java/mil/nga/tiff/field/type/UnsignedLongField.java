@@ -12,20 +12,21 @@ import java.nio.ByteBuffer;
  * 32-bit (4-byte) unsigned integer
  */
 @FieldType(id = 4, bytesPerSample = 4, sampleFormat = SampleFormat.UNSIGNED_INT)
-public final class UnsignedLongField extends LongField {
+public final class UnsignedLongField extends LongField<Long> {
     @Override
-    public Number readValue(ByteReader reader) {
+    public Long readValue(ByteReader reader) {
         return reader.readUnsignedInt();
     }
 
     @Override
-    protected Number readSample(ByteBuffer buffer) {
+    protected Long readSample(ByteBuffer buffer) {
         return buffer.getInt() & 0xffffffffL;
     }
 
     @Override
-    protected void writeValue(ByteWriter writer, Object value) throws IOException {
-        writer.writeUnsignedInt((long) value);
+    protected int writeValue(ByteWriter writer, Long value) throws IOException {
+        writer.writeUnsignedInt(value);
+        return metadata().bytesPerSample();
     }
 
 }

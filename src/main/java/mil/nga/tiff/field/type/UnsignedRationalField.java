@@ -4,7 +4,6 @@ import mil.nga.tiff.domain.UnsignedRational;
 import mil.nga.tiff.field.FieldType;
 import mil.nga.tiff.io.ByteReader;
 import mil.nga.tiff.io.ByteWriter;
-import org.joou.UInteger;
 
 import java.io.IOException;
 
@@ -13,21 +12,21 @@ import java.io.IOException;
  * the denominator
  */
 @FieldType(id = 5, bytesPerSample = 8)
-public final class UnsignedRationalField extends RationalField<UInteger, UnsignedRational> {
+public final class UnsignedRationalField extends RationalField<UnsignedRational> {
 
     @Override
-    protected UnsignedRational readValue(ByteReader reader) {
+    public UnsignedRational readValue(ByteReader reader) {
         return new UnsignedRational(
-            UInteger.valueOf(reader.readUnsignedInt()),
-            UInteger.valueOf(reader.readUnsignedInt())
+            reader.readUnsignedInt(),
+            reader.readUnsignedInt()
         );
     }
 
     @Override
     protected int writeValue(ByteWriter writer, UnsignedRational value) throws IOException {
-        writer.writeUnsignedInt(value.numerator().longValue());
-        writer.writeUnsignedInt(value.denominator().longValue());
-        return 8;
+        writer.writeUnsignedInt(value.numerator());
+        writer.writeUnsignedInt(value.denominator());
+        return metadata().bytesPerSample();
     }
 
 }
