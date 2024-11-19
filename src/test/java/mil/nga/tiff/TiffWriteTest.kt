@@ -4,6 +4,7 @@ import mil.nga.tiff.TiffTestUtils.createFieldTypeArray
 import mil.nga.tiff.TiffTestUtils.createSampleValues
 import mil.nga.tiff.domain.UnsignedRational
 import mil.nga.tiff.field.*
+import mil.nga.tiff.field.type.NumericFieldType
 import mil.nga.tiff.field.type.enumeration.*
 import mil.nga.tiff.internal.FileDirectory
 import mil.nga.tiff.internal.TIFFImage
@@ -116,16 +117,18 @@ class TiffWriteTest {
         }
 
         val dictionary = DefaultFieldTypeDictionary()
-        val rasterFieldTypes = createFieldTypeArray(samplesPerPixel, dictionary.findBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample))
+        @Suppress("UNCHECKED_CAST") val field = dictionary.findBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample) as NumericFieldType<Number>
+        val rasterFieldTypes = createFieldTypeArray(samplesPerPixel, field)
         val order = ByteOrder.LITTLE_ENDIAN
         val sampleValues = createSampleValues(inpWidth, inpHeight, rasterFieldTypes, order)
-        val newRaster = Rasters(inpWidth, inpHeight, rasterFieldTypes, sampleValues, null)
+        val newRaster = Rasters.create(inpWidth, inpHeight, rasterFieldTypes, sampleValues, null)
 
-        val fileDirs = FileDirectory(TreeSet(), null, false, DefaultFieldTypeDictionary())
 
         val rowsPerStrip = newRaster.calculateRowsPerStrip(
             PlanarConfiguration.CHUNKY
         )
+        val fileDirs = FileDirectory.create(emptySet(), null, false, DefaultFieldTypeDictionary(), newRaster)
+
         fileDirs.setImageWidth(inpWidth)
         fileDirs.setImageHeight(inpHeight)
         fileDirs.setBitsPerSample(bitsPerSample)
@@ -138,7 +141,6 @@ class TiffWriteTest {
         fileDirs.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = PlanarConfiguration.CHUNKY
         fileDirs.compression = Compression.NO.id
-        fileDirs.writeRasters = newRaster
 
         for (y in 0 until inpHeight) {
             for (x in 0 until inpWidth) {
@@ -164,9 +166,9 @@ class TiffWriteTest {
         Assertions.assertNotNull(image)
 
         val fileDirectory = image.fileDirectories.first()
-        Assertions.assertEquals(inpWidth, fileDirectory.imageWidth)
-        Assertions.assertEquals(inpHeight, fileDirectory.imageHeight)
-        val bitsPerSamp = fileDirectory.bitsPerSample
+        Assertions.assertEquals(inpWidth, fileDirectory.stats.imageWidth)
+        Assertions.assertEquals(inpHeight, fileDirectory.stats.imageHeight)
+        val bitsPerSamp = fileDirectory.stats.bitsPerSample
         Assertions.assertEquals(1, bitsPerSamp.size)
         Assertions.assertEquals(bitsPerSample, bitsPerSamp[0])
         Assertions.assertEquals(
@@ -182,11 +184,11 @@ class TiffWriteTest {
             ResolutionUnit.INCH, fileDirectory.resolutionUnit
         )
         val xRes = fileDirectory.xResolution
-        Assertions.assertEquals(xResolution, xRes.numerator.toLong())
-        Assertions.assertEquals(1L, xRes.denominator.toLong())
+        Assertions.assertEquals(xResolution, xRes.numerator)
+        Assertions.assertEquals(1L, xRes.denominator)
         val yRes = fileDirectory.yResolution
-        Assertions.assertEquals(yResolution, yRes.numerator.toLong())
-        Assertions.assertEquals(1L, yRes.denominator.toLong())
+        Assertions.assertEquals(yResolution, yRes.numerator)
+        Assertions.assertEquals(1L, yRes.denominator)
         Assertions.assertEquals(
             PhotometricInterpretation.BLACK_IS_ZERO, fileDirectory.photometricInterpretation
         )

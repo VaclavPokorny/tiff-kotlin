@@ -32,7 +32,7 @@ object TiffFileTester {
 
         println("TIFF Image: " + file.name)
 
-        val fileDirectories = tiffImage.fileDirectories()
+        val fileDirectories = tiffImage.fileDirectories
         for (i in fileDirectories.indices) {
             val fileDirectory = fileDirectories[i]
 
@@ -43,16 +43,16 @@ object TiffFileTester {
             }
             println("--")
 
-            for (entry in fileDirectory.entries) {
+            for (entry in fileDirectory.data.fieldTagTypeMapping.values) {
                 println()
                 println(
-                    (entry.fieldTag().toString() + " (" + entry.fieldTag().id + ")")
+                    (entry.fieldTag.toString() + " (" + entry.fieldTag.id + ")")
                 )
                 println(
-                    (entry.fieldType().toString() + " (" + entry.fieldType().metadata().bytesPerSample + " bytes)")
+                    (entry.fieldType.toString() + " (" + entry.fieldType.metadata().bytesPerSample + " bytes)")
                 )
-                println("Count: " + entry.typeCount())
-                println("Values: " + entry.values())
+                println("Count: " + entry.typeCount)
+                println("Values: " + entry.values)
             }
 
             val rasters = fileDirectory.readRasters()

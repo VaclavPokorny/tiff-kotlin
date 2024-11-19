@@ -38,9 +38,9 @@ object TiffTestUtils {
         Assertions.assertNotNull(tiffImage1)
         Assertions.assertNotNull(tiffImage2)
         Assertions.assertEquals(
-            tiffImage1.fileDirectories().size, tiffImage2.fileDirectories().size
+            tiffImage1.fileDirectories.size, tiffImage2.fileDirectories.size
         )
-        for (i in tiffImage1.fileDirectories().indices) {
+        for (i in tiffImage1.fileDirectories.indices) {
             val fileDirectory1 = tiffImage1.fileDirectories[i]
             val fileDirectory2 = tiffImage2.fileDirectories[i]
 
@@ -84,7 +84,7 @@ object TiffTestUtils {
      * @param rasters rasters
      */
     private fun compareFileDirectoryAndRastersMetadata(fileDirectory: FileDirectory, rasters: Rasters) {
-        Assertions.assertEquals(fileDirectory.imageWidth, rasters.width)
+        Assertions.assertEquals(fileDirectory.stats.imageWidth, rasters.width)
         Assertions.assertEquals(
             fileDirectory.imageHeight, rasters.height
         )
@@ -92,11 +92,11 @@ object TiffTestUtils {
             fileDirectory.samplesPerPixel, rasters.samplesPerPixel
         )
         Assertions.assertEquals(
-            fileDirectory.bitsPerSample.size, rasters.fields.size
+            fileDirectory.stats.bitsPerSample.size, rasters.fields.size
         )
-        for (i in fileDirectory.bitsPerSample.indices) {
+        for (i in fileDirectory.stats.bitsPerSample.indices) {
             Assertions.assertEquals(
-                fileDirectory.bitsPerSample[i], rasters.fields[i].bytesPerSample * 8
+                fileDirectory.stats.bitsPerSample[i], rasters.fields[i].bytesPerSample * 8
             )
         }
     }

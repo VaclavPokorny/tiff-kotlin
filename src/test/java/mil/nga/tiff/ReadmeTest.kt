@@ -43,7 +43,7 @@ class ReadmeTest {
      * @throws IOException upon error
      */
     @Throws(IOException::class)
-    fun testRead(input: ByteArray?) {
+    fun testRead(input: ByteArray) {
         // File input = ...
         // InputStream input = ...
         // byte[] input = ...
@@ -54,7 +54,7 @@ class ReadmeTest {
             .read()
             .fromByteArray(input)
 
-        val directories = tiffImage.fileDirectories()
+        val directories = tiffImage.fileDirectories
         val directory = directories[0]
         directory.readRasters()
     }
@@ -78,13 +78,13 @@ class ReadmeTest {
 
         val order = ByteOrder.LITTLE_ENDIAN
         val sampleValues = createSampleValues(width, height, fieldTypes, order)
-        val rasters = Rasters(width, height, fieldTypes, sampleValues, null)
+        val rasters = Rasters.create(width, height, fieldTypes, sampleValues, null)
 
         val rowsPerStrip = rasters.calculateRowsPerStrip(
             PlanarConfiguration.CHUNKY
         )
 
-        val directory = FileDirectory(TreeSet(), null, false, DefaultFieldTypeDictionary())
+        val directory = FileDirectory.create(emptySet(), null, false, DefaultFieldTypeDictionary(), rasters)
         directory.setImageWidth(width)
         directory.setImageHeight(height)
         directory.setBitsPerSample(bitsPerSample)
@@ -94,7 +94,6 @@ class ReadmeTest {
         directory.setRowsPerStrip(rowsPerStrip)
         directory.planarConfiguration = PlanarConfiguration.CHUNKY
         directory.setSampleFormat(SampleFormat.FLOAT)
-        directory.writeRasters = rasters
 
         for (y in 0 until height) {
             for (x in 0 until width) {

@@ -23,13 +23,13 @@ object RasterTestUtils {
         Assertions.assertNotNull(rasters1.sampleValues)
         Assertions.assertNotNull(rasters2.sampleValues)
         Assertions.assertEquals(
-            rasters1.sampleValues.values.size, rasters2.sampleValues.values.size
+            rasters1.sampleValues.values!!.size, rasters2.sampleValues.values!!.size
         )
 
-        for (i in rasters1.sampleValues.values.indices) {
-            val capacity1 = rasters1.sampleValues.values[i].capacity()
+        for (i in rasters1.sampleValues.values!!.indices) {
+            val capacity1 = rasters1.sampleValues.values!![i].capacity()
             val bytesPerSample1 = rasters1.metadata.fields[i].metadata().bytesPerSample
-            val capacity2 = rasters2.sampleValues.values[i].capacity()
+            val capacity2 = rasters2.sampleValues.values!![i].capacity()
             val bytesPerSample2 = rasters2.metadata.fields[i].metadata().bytesPerSample
             Assertions.assertEquals(capacity1 / bytesPerSample1, capacity2 / bytesPerSample2)
 
@@ -60,7 +60,7 @@ object RasterTestUtils {
         Assertions.assertNotNull(rasters1.interleaveValues)
         Assertions.assertNotNull(rasters2.interleaveValues)
         Assertions.assertEquals(
-            rasters1.interleaveValues.values.capacity() / rasters1.sizePixel(), rasters2.interleaveValues.values.capacity() / rasters2.sizePixel()
+            rasters1.interleaveValues.values!!.capacity() / rasters1.sizePixel(), rasters2.interleaveValues.values!!.capacity() / rasters2.sizePixel()
         )
 
         for (i in 0 until rasters1.samplesPerPixel) {

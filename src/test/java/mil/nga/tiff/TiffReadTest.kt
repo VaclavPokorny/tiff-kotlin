@@ -187,8 +187,8 @@ class TiffReadTest {
             .fromFile(file)
 
         Assertions.assertNotNull(tiff)
-        Assertions.assertTrue(tiff.fileDirectories().size > 0)
-        for (i in tiff.fileDirectories().indices) {
+        Assertions.assertTrue(tiff.fileDirectories.size > 0)
+        for (i in tiff.fileDirectories.indices) {
             val fileDirectory = tiff.fileDirectories[i]
             Assertions.assertNotNull(fileDirectory)
             try {
