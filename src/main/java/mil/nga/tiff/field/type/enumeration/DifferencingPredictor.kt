@@ -11,7 +11,8 @@ enum class DifferencingPredictor(val id: Int, val implementation: Predictor) {
     FLOATINGPOINT(3, FloatingPointPredictor());
 
     companion object {
-        private val DEFAULT = NO
+        @JvmField
+        public val DEFAULT = NO
 
         @JvmStatic
         fun findById(id: Int?): DifferencingPredictor {

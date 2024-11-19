@@ -13,8 +13,6 @@ import java.util.*
  * @param bytes     bytes
  * @param byteOrder byte order
  * @param nextByte  next byte index to read
- *
- * @author osbornb
  */
 class ByteReader @JvmOverloads constructor(private val bytes: ByteArray, @JvmField val byteOrder: ByteOrder, var nextByte: Int = 0) {
 

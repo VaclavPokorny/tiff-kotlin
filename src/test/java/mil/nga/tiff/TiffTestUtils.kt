@@ -17,8 +17,6 @@ import java.util.*
 
 /**
  * TIFF Test Utility methods
- *
- * @author osbornb
  */
 object TiffTestUtils {
 

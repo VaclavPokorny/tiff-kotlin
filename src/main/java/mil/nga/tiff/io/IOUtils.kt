@@ -4,14 +4,10 @@ import java.io.*
 
 /**
  * Input / Output utility methods
- *
- * @author osbornb
  */
 object IOUtils {
     /**
      * Copy stream buffer chunk size in bytes
-     *
-     * @since 2.0.3
      */
     @JvmField
     var COPY_BUFFER_SIZE: Int = 8192

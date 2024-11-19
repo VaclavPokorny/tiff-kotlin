@@ -2,8 +2,6 @@ package mil.nga.tiff
 
 /**
  * TIFF Test Constants
- *
- * @author osbornb
  */
 object TiffTestConstants {
     /**

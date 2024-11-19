@@ -1,14 +1,11 @@
-package mil.nga.tiff.compression;
+package mil.nga.tiff.compression
 
-import java.nio.ByteOrder;
+import java.nio.ByteOrder
 
 /**
  * Compression decoder interface
- *
- * @author osbornb
  */
-public interface CompressionDecoder {
-
+interface CompressionDecoder {
     /**
      * Decode the bytes
      *
@@ -16,6 +13,5 @@ public interface CompressionDecoder {
      * @param byteOrder byte order
      * @return decoded bytes
      */
-    byte[] decode(byte[] bytes, ByteOrder byteOrder);
-
+    fun decode(bytes: ByteArray, byteOrder: ByteOrder): ByteArray
 }

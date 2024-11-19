@@ -4,8 +4,6 @@ import java.io.Serial;
 
 /**
  * TIFF exception
- *
- * @author osbornb
  */
 public class TiffException extends RuntimeException {
 

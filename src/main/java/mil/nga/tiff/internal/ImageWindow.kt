@@ -9,7 +9,6 @@ import mil.nga.tiff.util.TiffException
  * @param minY Min y
  * @param maxX Max x
  * @param maxY Max y
- * @author osbornb
  */
 @JvmRecord
 data class ImageWindow(@JvmField val minX: Int, @JvmField val minY: Int, @JvmField val maxX: Int, @JvmField val maxY: Int) {

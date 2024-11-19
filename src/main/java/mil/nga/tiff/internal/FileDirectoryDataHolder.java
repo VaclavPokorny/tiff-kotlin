@@ -12,16 +12,13 @@ import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.field.type.enumeration.SampleFormat;
 import mil.nga.tiff.util.TiffConstants;
 import mil.nga.tiff.util.TiffException;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.SortedMap;
 import java.util.function.Function;
 
-public record FileDirectoryDataHolder(
-    SortedMap<FieldTagType, FileDirectoryEntry<?>> fieldTagTypeMapping
-) {
+public record FileDirectoryDataHolder(SortedMap<FieldTagType, FileDirectoryEntry<?>> fieldTagTypeMapping) {
 
     /**
      * Get the rows per strip
@@ -29,16 +26,7 @@ public record FileDirectoryDataHolder(
      * @return rows per strip
      */
     public Integer getRowsPerStrip() {
-        return getSingleWithConversion(TiffBasicTag.RowsPerStrip, Number::intValue);
-    }
-
-    /**
-     * Is this a tiled image
-     *
-     * @return true if tiled
-     */
-    public boolean isTiled() {
-        return getRowsPerStrip() == null;
+        return getSingleValue(TiffBasicTag.RowsPerStrip, Number::intValue);
     }
 
     /**
@@ -75,7 +63,7 @@ public record FileDirectoryDataHolder(
      * @return image imageWidth
      */
     public Integer getImageWidth() {
-        return getSingleWithConversion(TiffBasicTag.ImageWidth, Number::intValue);
+        return getSingleValue(TiffBasicTag.ImageWidth, Number::intValue);
     }
 
     /**
@@ -84,25 +72,7 @@ public record FileDirectoryDataHolder(
      * @return image imageHeight
      */
     public Integer getImageHeight() {
-        return getSingleWithConversion(TiffBasicTag.ImageLength, Number::intValue);
-    }
-
-    /**
-     * Get the tile imageWidth
-     *
-     * @return tile imageWidth
-     */
-    public Integer getTileWidth() {
-        return isTiled() ? getSingleWithConversion(TiffExtendedTag.TileWidth, Number::intValue) : getImageWidth();
-    }
-
-    /**
-     * Get the tile imageHeight
-     *
-     * @return tile imageHeight
-     */
-    public Integer getTileHeight() {
-        return isTiled() ? getSingleWithConversion(TiffExtendedTag.TileLength, Number::intValue) : getRowsPerStrip();
+        return getSingleValue(TiffBasicTag.ImageLength, Number::intValue);
     }
 
     /**
@@ -110,7 +80,6 @@ public record FileDirectoryDataHolder(
      *
      * @param fieldTagType field tag type
      * @return string value
-     * @since 2.0.0
      */
     public String getStringEntryValue(FieldTagType fieldTagType) {
         String value = null;
@@ -126,7 +95,6 @@ public record FileDirectoryDataHolder(
      *
      * @param fieldTagType field tag type
      * @param value        long list value
-     * @since 2.0.1
      */
     public void setRationalEntryValue(FieldTagType fieldTagType, UnsignedRational value) {
         if (value == null) {
@@ -141,8 +109,8 @@ public record FileDirectoryDataHolder(
      * @param fieldTagType field tag type
      * @return value
      */
-    public <T> T getSingleValue(FieldTagType fieldTagType) {
-        return getSingleWithConversion(fieldTagType, Function.identity());
+    public <T> T getSingleValue(FieldTagType fieldTagType, T defaultValue) {
+        return getSingleValue(fieldTagType, Function.identity(), defaultValue);
     }
 
     /**
@@ -151,10 +119,30 @@ public record FileDirectoryDataHolder(
      * @param fieldTagType field tag type
      * @return value
      */
-    public <F, T> T getSingleWithConversion(FieldTagType fieldTagType, Function<F, T> converter) {
-        List<T> values = getMultiValuesWithConversion(fieldTagType, converter);
-        if (values == null) {
-            return null;
+    public <T> T getSingleValue(FieldTagType fieldTagType) {
+        return getSingleValue(fieldTagType, Function.identity());
+    }
+
+    /**
+     * Get an entry value
+     *
+     * @param fieldTagType field tag type
+     * @return value
+     */
+    public <F, T> T getSingleValue(FieldTagType fieldTagType, Function<F, T> converter) {
+        return getSingleValue(fieldTagType, converter, null);
+    }
+
+    /**
+     * Get an entry value
+     *
+     * @param fieldTagType field tag type
+     * @return value
+     */
+    public <F, T> T getSingleValue(FieldTagType fieldTagType, Function<F, T> converter, T defaultValue) {
+        List<T> values = getMultiValues(fieldTagType, converter);
+        if (values == null || values.isEmpty() || values.getFirst() == null) {
+            return defaultValue;
         }
         return values.getFirst();
     }
@@ -166,17 +154,18 @@ public record FileDirectoryDataHolder(
      * @return value
      */
     public <T> List<T> getMultiValues(FieldTagType fieldTagType) {
-        return getMultiValuesWithConversion(fieldTagType, Function.identity());
+        return getMultiValues(fieldTagType, Function.identity());
     }
 
     /**
-     * Get an entry value
+     * Get an entry values
      *
      * @param fieldTagType field tag type
-     * @return value
+     * @param converter conversion function
+     * @return values
      */
     @SuppressWarnings("unchecked")
-    public <F, T> List<T> getMultiValuesWithConversion(FieldTagType fieldTagType, Function<F, T> converter) {
+    public <F, T> List<T> getMultiValues(FieldTagType fieldTagType, Function<F, T> converter) {
         FileDirectoryEntry<F> entry = (FileDirectoryEntry<F>) fieldTagTypeMapping.get(fieldTagType);
         if (entry != null) {
             return entry.values.stream().map(converter).toList();
@@ -209,7 +198,6 @@ public record FileDirectoryDataHolder(
      *
      * @param fieldTagType field tag type
      * @param value        string value
-     * @since 2.0.0
      */
     public void setStringEntryValue(FieldTagType fieldTagType, String value) {
         addEntry(new FileDirectoryEntry<>(fieldTagType, new ASCIIField(), value.length() + 1, List.of(value)));
@@ -239,16 +227,9 @@ public record FileDirectoryDataHolder(
      * Get the samples per pixel
      *
      * @return samples per pixel
-     * @since 2.0.0
      */
     public int getSamplesPerPixel() {
-        Integer samplesPerPixel = getSingleValue(TiffBasicTag.SamplesPerPixel);
-        if (samplesPerPixel == null) {
-            // if SamplesPerPixel tag is missing, use default value defined by
-            // TIFF standard
-            samplesPerPixel = 1;
-        }
-        return samplesPerPixel;
+        return getSingleValue(TiffBasicTag.SamplesPerPixel, 1);
     }
 
     /**
@@ -257,7 +238,7 @@ public record FileDirectoryDataHolder(
      * @return bits per sample
      */
     public List<Integer> getBitsPerSample() {
-        return getMultiValuesWithConversion(TiffBasicTag.BitsPerSample, Number::intValue);
+        return getMultiValues(TiffBasicTag.BitsPerSample, Number::intValue);
     }
 
 
@@ -281,7 +262,7 @@ public record FileDirectoryDataHolder(
      * @return strip offsets
      */
     public List<Long> getStripOffsets() {
-        return getMultiValuesWithConversion(TiffBasicTag.StripOffsets, Number::longValue);
+        return getMultiValues(TiffBasicTag.StripOffsets, Number::longValue);
     }
 
     /**
@@ -290,13 +271,7 @@ public record FileDirectoryDataHolder(
      * @return sample format
      */
     public List<SampleFormat> getSampleFormat() {
-        List<Integer> idList = getMultiValues(TiffExtendedTag.SampleFormat);
-        if (idList != null) {
-            return idList.stream()
-                .map(SampleFormat::findById)
-                .toList();
-        }
-        return null;
+        return getMultiValues(TiffExtendedTag.SampleFormat, SampleFormat::findById);
     }
 
     /**
@@ -305,7 +280,7 @@ public record FileDirectoryDataHolder(
      * @return planar configuration
      */
     public PlanarConfiguration getPlanarConfiguration() {
-        return PlanarConfiguration.findById(getSingleValue(TiffBasicTag.PlanarConfiguration));
+        return getSingleValue(TiffBasicTag.PlanarConfiguration, PlanarConfiguration::findById);
     }
 
 
@@ -324,7 +299,7 @@ public record FileDirectoryDataHolder(
      * @return tile byte counts
      */
     public List<Integer> getTileByteCounts() {
-        return getMultiValuesWithConversion(TiffExtendedTag.TileByteCounts, Number::intValue);
+        return getMultiValues(TiffExtendedTag.TileByteCounts, Number::intValue);
     }
 
     /**
@@ -333,7 +308,7 @@ public record FileDirectoryDataHolder(
      * @return strip byte counts
      */
     public List<Integer> getStripByteCounts() {
-        return getMultiValuesWithConversion(TiffBasicTag.StripByteCounts, Number::intValue);
+        return getMultiValues(TiffBasicTag.StripByteCounts, Number::intValue);
     }
 
     /**
@@ -349,11 +324,9 @@ public record FileDirectoryDataHolder(
      * Get the predictor
      *
      * @return predictor
-     * @since 3.0.0
      */
-    @NotNull
     public DifferencingPredictor getPredictor() {
-        return DifferencingPredictor.findById(getSingleValue(TiffExtendedTag.Predictor));
+        return getSingleValue(TiffExtendedTag.Predictor, DifferencingPredictor::findById);
     }
 
 }

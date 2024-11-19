@@ -5,9 +5,6 @@ import java.nio.ByteOrder
 
 /**
  * Differencing Predictor decoder
- *
- * @author osbornb
- * @since 3.0.0
  */
 interface Predictor {
     /**
@@ -28,5 +25,5 @@ interface Predictor {
         bitsPerSample: List<Int>,
         planarConfiguration: PlanarConfiguration,
         byteOrder: ByteOrder
-    ): ByteArray?
+    ): ByteArray
 }

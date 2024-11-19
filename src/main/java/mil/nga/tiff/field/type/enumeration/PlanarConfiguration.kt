@@ -5,7 +5,9 @@ enum class PlanarConfiguration(val id: Int) {
     PLANAR(2);
 
     companion object {
-        private val DEFAULT = CHUNKY
+
+        @JvmField
+        public val DEFAULT = CHUNKY
 
         @JvmStatic
         fun findById(id: Int?): PlanarConfiguration {

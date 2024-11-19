@@ -47,8 +47,6 @@ class Tiff {
 
     /**
      * TIFF reader
-     *
-     * @author osbornb
      */
     class Reader(private val useCache: Boolean, private val typeDictionary: FieldTypeDictionary) {
         /**

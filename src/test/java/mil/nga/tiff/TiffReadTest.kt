@@ -10,8 +10,6 @@ import java.util.*
 
 /**
  * TIFF Read tests
- *
- * @author osbornb
  */
 class TiffReadTest {
 

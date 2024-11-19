@@ -10,8 +10,6 @@ import java.nio.ByteOrder
  *
  * @param byteOrder byte order
  * @param outputStream output stream
- *
- * @author osbornb
  */
 class ByteWriter @JvmOverloads constructor(val byteOrder: ByteOrder, private val outputStream: ByteArrayOutputStream = ByteArrayOutputStream()) : AutoCloseable {
 

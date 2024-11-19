@@ -6,8 +6,6 @@ import java.util.Arrays;
 
 /**
  * TIFF Byte Order identifier
- *
- * @author osbornb
  */
 public enum TiffByteOrder {
     LITTLE_ENDIAN("II", ByteOrder.LITTLE_ENDIAN),

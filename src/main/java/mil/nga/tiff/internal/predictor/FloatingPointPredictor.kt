@@ -5,9 +5,6 @@ import mil.nga.tiff.io.ByteWriter
 
 /**
  * Differencing Predictor decoder
- *
- * @author osbornb
- * @since 3.0.0
  */
 class FloatingPointPredictor : AbstractPredictor() {
     /**

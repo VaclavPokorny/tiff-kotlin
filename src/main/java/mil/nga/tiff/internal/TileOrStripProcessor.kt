@@ -12,6 +12,7 @@ import java.nio.ByteOrder
  * @param cache true to cache tiles and strips
  */
 class TileOrStripProcessor(private val stats: DirectoryStats, private val cache: TileOrStripCache) {
+
     /**
      * Get the tile or strip for the sample coordinate
      *

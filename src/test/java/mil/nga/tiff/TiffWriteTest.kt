@@ -20,8 +20,6 @@ import kotlin.math.pow
 
 /**
  * TIFF Write tests
- *
- * @author osbornb
  */
 class TiffWriteTest {
 

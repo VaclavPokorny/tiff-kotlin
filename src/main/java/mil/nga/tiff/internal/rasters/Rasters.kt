@@ -14,7 +14,6 @@ import java.nio.ByteOrder
  * @param sampleValues Values separated by sample
  * @param interleaveValues Interleaved pixel sample values
  * @param metadata Rasters metadata
- * @author osbornb
  */
 @JvmRecord
 data class Rasters(
@@ -60,7 +59,6 @@ data class Rasters(
      * @param sampleIndex sample index
      * @param coordinate  coordinate location
      * @param value       value
-     * @since 2.0.0
      */
     fun addToInterleave(sampleIndex: Int, coordinate: Int, value: Number) {
         interleaveValues.addValue(sampleIndex, coordinate, value)
@@ -140,7 +138,6 @@ data class Rasters(
      * @param y        Row index
      * @param newOrder Desired byte order of result byte array
      * @return Byte array of pixel row
-     * @since 2.0.0
      */
     fun getPixelRow(y: Int, newOrder: ByteOrder): ByteArray {
         return if (sampleValues.isNotEmpty) {
@@ -157,7 +154,6 @@ data class Rasters(
      * @param sample   Sample index
      * @param newOrder Desired byte order of resulting byte array
      * @return Byte array of sample row
-     * @since 2.0.0
      */
     fun getSampleRow(y: Int, sample: Int, newOrder: ByteOrder): ByteArray {
         return if (sampleValues.isNotEmpty) {

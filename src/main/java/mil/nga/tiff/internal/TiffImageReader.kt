@@ -9,8 +9,6 @@ import mil.nga.tiff.util.TiffException
 
 /**
  * TIFF reader
- *
- * @author osbornb
  */
 class TiffImageReader(private val reader: ByteReader, private val typeDictionary: FieldTypeDictionary) {
 

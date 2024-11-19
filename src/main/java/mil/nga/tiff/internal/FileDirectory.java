@@ -8,6 +8,7 @@ import mil.nga.tiff.field.tag.TiffExtendedTag;
 import mil.nga.tiff.field.type.GenericFieldType;
 import mil.nga.tiff.field.type.UnsignedLongField;
 import mil.nga.tiff.field.type.UnsignedShortField;
+import mil.nga.tiff.field.type.enumeration.DifferencingPredictor;
 import mil.nga.tiff.field.type.enumeration.PhotometricInterpretation;
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration;
 import mil.nga.tiff.field.type.enumeration.ResolutionUnit;
@@ -81,23 +82,7 @@ public class FileDirectory {
         }
 
         FileDirectoryDataHolder data = new FileDirectoryDataHolder(fieldTagTypeMapping);
-
-        DirectoryStats stats = new DirectoryStats(
-            data.getImageWidth(),
-            data.getImageHeight(),
-            (data.getRowsPerStrip() == null) ? data.getSingleWithConversion(TiffExtendedTag.TileWidth, Number::intValue) : data.getImageWidth(),
-            (data.getRowsPerStrip() == null) ? data.getSingleWithConversion(TiffExtendedTag.TileLength, Number::intValue) : data.getRowsPerStrip(),
-            data.getSamplesPerPixel(),
-            data.getBitsPerSample(),
-            data.getSampleFormat(),
-            data.getPlanarConfiguration(),
-            data.getTileOffsets(),
-            data.getTileByteCounts(),
-            data.getStripOffsets(),
-            data.getStripByteCounts(),
-            data.getCompression(),
-            data.getPredictor()
-        );
+        DirectoryStats stats = createStats(data);
 
         TileOrStripCache cache = new TileOrStripCache(cacheData);
         TileOrStripProcessor tileOrStripProcessor = new TileOrStripProcessor(stats, cache);
@@ -107,6 +92,29 @@ public class FileDirectory {
         return new FileDirectory(data, writeRasters, rasterReader, stats);
     }
 
+    private static DirectoryStats createStats(FileDirectoryDataHolder data) {
+        Integer rowsPerStrip = data.getSingleValue(TiffBasicTag.RowsPerStrip, Number::intValue);
+        boolean isTiled = rowsPerStrip == null;
+        Integer width = data.getSingleValue(TiffBasicTag.ImageWidth, Number::intValue);
+        Integer height = data.getSingleValue(TiffBasicTag.ImageLength, Number::intValue);
+
+        return new DirectoryStats(
+            width,
+            height,
+            isTiled ? data.getSingleValue(TiffExtendedTag.TileWidth, Number::intValue) : width,
+            isTiled ? data.getSingleValue(TiffExtendedTag.TileLength, Number::intValue) : rowsPerStrip,
+            data.getSingleValue(TiffBasicTag.SamplesPerPixel, 1),
+            data.getMultiValues(TiffBasicTag.BitsPerSample, Number::intValue),
+            data.getMultiValues(TiffExtendedTag.SampleFormat, SampleFormat::findById),
+            data.getSingleValue(TiffBasicTag.PlanarConfiguration, PlanarConfiguration::findById, PlanarConfiguration.DEFAULT),
+            data.getMultiValues(TiffExtendedTag.TileOffsets),
+            data.getMultiValues(TiffExtendedTag.TileByteCounts, Number::intValue),
+            data.getMultiValues(TiffBasicTag.StripOffsets, Number::longValue),
+            data.getMultiValues(TiffBasicTag.StripByteCounts, Number::intValue),
+            data.getSingleValue(TiffBasicTag.Compression),
+            data.getSingleValue(TiffExtendedTag.Predictor, DifferencingPredictor::findById, DifferencingPredictor.DEFAULT)
+        );
+    }
 
     /**
      * Is this a tiled image
@@ -152,7 +160,7 @@ public class FileDirectory {
      * @return image imageHeight
      */
     public Integer getImageHeight() {
-        return data.getSingleWithConversion(TiffBasicTag.ImageLength, Number::intValue);
+        return data.getSingleValue(TiffBasicTag.ImageLength, Number::intValue);
     }
 
     /**
@@ -233,7 +241,6 @@ public class FileDirectory {
      * Get the samples per pixel
      *
      * @return samples per pixel
-     * @since 2.0.0
      */
     public int getSamplesPerPixel() {
         return data.getSamplesPerPixel();

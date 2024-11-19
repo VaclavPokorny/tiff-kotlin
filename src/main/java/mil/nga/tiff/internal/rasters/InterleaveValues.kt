@@ -102,7 +102,6 @@ data class InterleaveValues(val values: ByteBuffer?, val metadata: RasterMetadat
      * @param sampleIndex sample index
      * @param coordinate  coordinate location
      * @param value       value
-     * @since 2.0.0
      */
     fun addValue(sampleIndex: Int, coordinate: Int, value: Number) {
         val bufferPos = (coordinate * metadata.pixelSize) + metadata.bytesPerSampleTotal(sampleIndex)

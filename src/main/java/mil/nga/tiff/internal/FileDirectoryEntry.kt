@@ -13,7 +13,6 @@ import java.io.IOException
  * @param fieldType Field Type
  * @param typeCount Type Count
  * @param values    Values
- * @author osbornb
  */
 @JvmRecord
 data class FileDirectoryEntry<T>(

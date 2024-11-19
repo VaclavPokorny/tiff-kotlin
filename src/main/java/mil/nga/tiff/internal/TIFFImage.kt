@@ -8,7 +8,6 @@ import java.nio.ByteOrder
  *
  * @param fileDirectories File directories
  * @param byteOrder       Byte order used in source image file
- * @author osbornb
  */
 @JvmRecord
 data class TIFFImage(val fileDirectories: List<FileDirectory>, val byteOrder: ByteOrder) {

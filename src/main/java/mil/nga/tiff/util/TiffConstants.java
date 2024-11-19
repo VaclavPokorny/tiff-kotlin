@@ -2,8 +2,6 @@ package mil.nga.tiff.util;
 
 /**
  * TIFF Constants
- *
- * @author osbornb
  */
 public class TiffConstants {
 

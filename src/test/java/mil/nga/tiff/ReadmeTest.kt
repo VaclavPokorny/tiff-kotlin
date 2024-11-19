@@ -20,8 +20,6 @@ import java.util.*
 
 /**
  * README example tests
- *
- * @author osbornb
  */
 class ReadmeTest {
 

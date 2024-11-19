@@ -6,8 +6,6 @@ import java.io.IOException
 
 /**
  * Test reading an argument provided TIFF file
- *
- * @author osbornb
  */
 object TiffFileTester {
 
