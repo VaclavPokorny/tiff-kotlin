@@ -7,8 +7,16 @@ enum class SampleFormat(val id: Int) {
     UNDEFINED(4);
 
     companion object {
+
+        @JvmField
+        public val DEFAULT = UNDEFINED
+
         @JvmStatic
-        fun findById(id: Int): SampleFormat {
+        fun findById(id: Int?): SampleFormat {
+            if (id == null) {
+                return DEFAULT
+            }
+
             return entries.first { it.id == id}
         }
     }

@@ -15,7 +15,7 @@ enum class PlanarConfiguration(val id: Int) {
                 return DEFAULT
             }
 
-            return entries.first { it.id == id}
+            return entries.first { it.id == id }
         }
     }
 }

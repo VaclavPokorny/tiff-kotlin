@@ -63,7 +63,7 @@ class TiffImageWriter(private val writer: ByteWriter) {
         val valueBytesCheck: MutableList<Long> = ArrayList()
 
         // Write the raster bytes to temporary storage
-        if (fileDirectory.isTiled) {
+        if (fileDirectory.isTiled()) {
             throw TiffException("Tiled images are not supported")
         }
 
@@ -129,7 +129,7 @@ class TiffImageWriter(private val writer: ByteWriter) {
         fileDirectory.writeRasters ?: throw TiffException("File Directory Writer Rasters is required to create a TIFF")
 
         // Populate the raster entries
-        if (!fileDirectory.isTiled) {
+        if (!fileDirectory.isTiled()) {
             populateStripEntries(fileDirectory)
         } else {
             throw TiffException("Tiled images are not supported")
@@ -142,11 +142,11 @@ class TiffImageWriter(private val writer: ByteWriter) {
      * @param fileDirectory file internal
      */
     private fun populateStripEntries(fileDirectory: FileDirectory) {
-        val rowsPerStrip = fileDirectory.rowsPerStrip.toInt()
-        val imageHeight = fileDirectory.imageHeight.toInt()
+        val rowsPerStrip = fileDirectory.getRowsPerStrip()!!
+        val imageHeight = fileDirectory.imageHeight!!
         var strips = (imageHeight + rowsPerStrip - 1) / rowsPerStrip
         if (fileDirectory.planarConfiguration == PlanarConfiguration.PLANAR) {
-            strips *= fileDirectory.samplesPerPixel
+            strips *= fileDirectory.getSamplesPerPixel()!!
         }
 
         fileDirectory.setStripOffsetsAsLongs(ArrayList(Collections.nCopies(strips, 0L)))
@@ -173,7 +173,7 @@ class TiffImageWriter(private val writer: ByteWriter) {
         val writer = ByteWriter(byteOrder)
 
         // Write the rasters
-        if (!fileDirectory.isTiled) {
+        if (!fileDirectory.isTiled()) {
             writeStripRasters(writer, fileDirectory, offset, encoder)
         } else {
             throw TiffException("Tiled images are not supported")
@@ -203,15 +203,15 @@ class TiffImageWriter(private val writer: ByteWriter) {
         encoder: CompressionEncoder
     ) {
         var currentOffset = offset
-        val rasters = fileDirectory.writeRasters
+        val rasters = fileDirectory.writeRasters!!
 
         // Get the row and strip counts
-        val rowsPerStrip = fileDirectory.rowsPerStrip.toInt()
-        val maxY = fileDirectory.imageHeight.toInt()
+        val rowsPerStrip = fileDirectory.getRowsPerStrip()!!
+        val maxY = fileDirectory.imageHeight!!
         val stripsPerSample = (maxY + rowsPerStrip - 1) / rowsPerStrip
         var strips = stripsPerSample
         if (fileDirectory.planarConfiguration == PlanarConfiguration.PLANAR) {
-            strips *= fileDirectory.samplesPerPixel
+            strips *= fileDirectory.getSamplesPerPixel()!!
         }
 
         // Build the strip offsets and byte counts

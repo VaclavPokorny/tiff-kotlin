@@ -87,14 +87,14 @@ object TiffTestUtils {
             fileDirectory.imageHeight, rasters.height
         )
         Assertions.assertEquals(
-            fileDirectory.samplesPerPixel, rasters.samplesPerPixel
+            fileDirectory.getSamplesPerPixel(), rasters.samplesPerPixel
         )
         Assertions.assertEquals(
-            fileDirectory.stats.bitsPerSample.size, rasters.fields.size
+            fileDirectory.stats.bitsPerSample!!.size, rasters.fields.size
         )
-        for (i in fileDirectory.stats.bitsPerSample.indices) {
+        for (i in fileDirectory.stats.bitsPerSample!!.indices) {
             Assertions.assertEquals(
-                fileDirectory.stats.bitsPerSample[i], rasters.fields[i].bytesPerSample * 8
+                fileDirectory.stats.bitsPerSample!![i], rasters.fields[i].bytesPerSample * 8
             )
         }
     }

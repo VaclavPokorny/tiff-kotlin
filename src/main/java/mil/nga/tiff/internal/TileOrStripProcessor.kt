@@ -31,11 +31,11 @@ class TileOrStripProcessor(private val stats: DirectoryStats, private val cache:
             var tileOrStrip: ByteArray?
 
             if (tiled) {
-                offset = stats.tileOffsets[index]
-                byteCount = stats.tileByteCounts[index]
+                offset = stats.tileOffsets!![index]
+                byteCount = stats.tileByteCounts!![index]
             } else {
-                offset = stats.stripOffsets[index]
-                byteCount = stats.stripByteCounts[index]
+                offset = stats.stripOffsets!![index]
+                byteCount = stats.stripByteCounts!![index]
             }
 
             reader.setNextByte(offset)
@@ -46,10 +46,10 @@ class TileOrStripProcessor(private val stats: DirectoryStats, private val cache:
 
             tileOrStrip = stats.predictor.implementation.decode(
                 tileOrStrip,
-                stats.tileWidth,
-                stats.tileHeight,
-                stats.bitsPerSample,
-                stats.planarConfiguration,
+                stats.tileWidth!!,
+                stats.tileHeight!!,
+                stats.bitsPerSample!!,
+                stats.planarConfiguration!!,
                 byteOrder
             )
             tileOrStrip
@@ -57,10 +57,10 @@ class TileOrStripProcessor(private val stats: DirectoryStats, private val cache:
     }
 
     private fun determineIndex(x: Int, y: Int, sample: Int): Int {
-        val imageWidth = stats.imageWidth
-        val imageHeight = stats.imageHeight
-        val tileWidth = stats.tileWidth
-        val tileHeight = stats.tileHeight
+        val imageWidth = stats.imageWidth!!
+        val imageHeight = stats.imageHeight!!
+        val tileWidth = stats.tileWidth!!
+        val tileHeight = stats.tileHeight!!
         val numTilesPerRow = (imageWidth + tileWidth - 1) / tileWidth
         val numTilesPerCol = (imageHeight + tileHeight - 1) / tileHeight
 

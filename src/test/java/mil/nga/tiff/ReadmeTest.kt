@@ -84,11 +84,11 @@ class ReadmeTest {
 
         val directory = FileDirectory.create(emptySet(), null, false, DefaultFieldTypeDictionary(), rasters)
         directory.setImageWidth(width)
-        directory.setImageHeight(height)
+        directory.imageHeight = height
         directory.setBitsPerSample(bitsPerSample)
         directory.compression = Compression.NO.id
         directory.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
-        directory.samplesPerPixel = samplesPerPixel
+        directory.setSamplesPerPixel(samplesPerPixel)
         directory.setRowsPerStrip(rowsPerStrip)
         directory.planarConfiguration = PlanarConfiguration.CHUNKY
         directory.setSampleFormat(SampleFormat.FLOAT)

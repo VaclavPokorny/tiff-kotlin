@@ -37,7 +37,7 @@ class FileDirectoryRasterReader(
         val numPixels = window.numPixels()
 
         // Set or validate the samples
-        val samplesPerPixel = stats.samplesPerPixel
+        val samplesPerPixel = stats.samplesPerPixel!!
         if (actualSamples == null) {
             actualSamples = IntArray(samplesPerPixel)
             for (i in actualSamples.indices) {
@@ -52,7 +52,7 @@ class FileDirectoryRasterReader(
         }
 
         // Create the interleaved result buffer
-        val bitsPerSample = stats.bitsPerSample
+        val bitsPerSample = stats.bitsPerSample!!
         var bytesPerPixel = 0
         for (i in 0..<samplesPerPixel) {
             bytesPerPixel += bitsPerSample[i] / 8
@@ -126,7 +126,7 @@ class FileDirectoryRasterReader(
         for (i in samples.indices) {
             var sampleOffset = 0
             if (stats.planarConfiguration == PlanarConfiguration.CHUNKY) {
-                sampleOffset = stats.bitsPerSample
+                sampleOffset = stats.bitsPerSample!!
                     .subList(0, samples[i])
                     .stream()
                     .mapToInt { obj: Int -> obj }
@@ -192,7 +192,7 @@ class FileDirectoryRasterReader(
      * @return byte size
      */
     private fun getSampleByteSize(sampleIndex: Int): Int {
-        val bitsPerSample = stats.bitsPerSample
+        val bitsPerSample = stats.bitsPerSample!!
         if (sampleIndex >= bitsPerSample.size) {
             throw TiffException("Sample index $sampleIndex is out of range")
         }
@@ -213,7 +213,7 @@ class FileDirectoryRasterReader(
          */
         get() {
             var bitsPerSample = 0
-            val bitsPerSamples = stats.bitsPerSample
+            val bitsPerSamples = stats.bitsPerSample!!
             for (i in bitsPerSamples.indices) {
                 val bits = bitsPerSamples[i]
                 if ((bits % 8) != 0) {
@@ -234,14 +234,14 @@ class FileDirectoryRasterReader(
      */
     fun getFieldTypeForSample(sampleIndex: Int): NumericFieldType<*>? {
         val sampleFormat: SampleFormat
-        val sampleFormatList = stats.sampleFormatList
+        val sampleFormatList = stats.sampleFormatList!!
         if (sampleFormatList.isEmpty()) {
             sampleFormat = SampleFormat.UNSIGNED_INT
         } else {
             val listId = if (sampleIndex < sampleFormatList.size) sampleIndex else 0
             sampleFormat = sampleFormatList[listId]
         }
-        val bitsPerSample = stats.bitsPerSample[sampleIndex]
+        val bitsPerSample = stats.bitsPerSample!![sampleIndex]
         return typeDictionary.findBySampleParams(sampleFormat, bitsPerSample)
     }
 }

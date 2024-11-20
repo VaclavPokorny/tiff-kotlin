@@ -128,14 +128,14 @@ class TiffWriteTest {
         val fileDirs = FileDirectory.create(emptySet(), null, false, DefaultFieldTypeDictionary(), newRaster)
 
         fileDirs.setImageWidth(inpWidth)
-        fileDirs.setImageHeight(inpHeight)
+        fileDirs.imageHeight = inpHeight
         fileDirs.setBitsPerSample(bitsPerSample)
-        fileDirs.samplesPerPixel = samplesPerPixel
+        fileDirs.setSamplesPerPixel(samplesPerPixel)
         fileDirs.setSampleFormat(SampleFormat.UNSIGNED_INT)
         fileDirs.setRowsPerStrip(rowsPerStrip)
         fileDirs.resolutionUnit = ResolutionUnit.INCH
-        fileDirs.setXResolution(UnsignedRational(xResolution, 1L))
-        fileDirs.setYResolution(UnsignedRational(yResolution, 1L))
+        fileDirs.xResolution = UnsignedRational(xResolution, 1L)
+        fileDirs.yResolution = UnsignedRational(yResolution, 1L)
         fileDirs.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = PlanarConfiguration.CHUNKY
         fileDirs.compression = Compression.NO.id
@@ -166,25 +166,25 @@ class TiffWriteTest {
         val fileDirectory = image.fileDirectories.first()
         Assertions.assertEquals(inpWidth, fileDirectory.stats.imageWidth)
         Assertions.assertEquals(inpHeight, fileDirectory.stats.imageHeight)
-        val bitsPerSamp = fileDirectory.stats.bitsPerSample
+        val bitsPerSamp = fileDirectory.stats.bitsPerSample!!
         Assertions.assertEquals(1, bitsPerSamp.size)
         Assertions.assertEquals(bitsPerSample, bitsPerSamp[0])
         Assertions.assertEquals(
-            samplesPerPixel, fileDirectory.samplesPerPixel
+            samplesPerPixel, fileDirectory.getSamplesPerPixel()
         )
-        val sampleFormat = fileDirectory.sampleFormat
+        val sampleFormat = fileDirectory.sampleFormat!!
         Assertions.assertEquals(1, sampleFormat.size)
         Assertions.assertEquals(
             SampleFormat.UNSIGNED_INT, sampleFormat[0]
         )
-        Assertions.assertEquals(rowsPerStrip, fileDirectory.rowsPerStrip)
+        Assertions.assertEquals(rowsPerStrip, fileDirectory.getRowsPerStrip())
         Assertions.assertEquals(
             ResolutionUnit.INCH, fileDirectory.resolutionUnit
         )
-        val xRes = fileDirectory.xResolution
+        val xRes = fileDirectory.xResolution!!
         Assertions.assertEquals(xResolution, xRes.numerator)
         Assertions.assertEquals(1L, xRes.denominator)
-        val yRes = fileDirectory.yResolution
+        val yRes = fileDirectory.yResolution!!
         Assertions.assertEquals(yResolution, yRes.numerator)
         Assertions.assertEquals(1L, yRes.denominator)
         Assertions.assertEquals(
