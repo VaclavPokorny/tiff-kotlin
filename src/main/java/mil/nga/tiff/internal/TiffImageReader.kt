@@ -1,7 +1,6 @@
 package mil.nga.tiff.internal
 
-import mil.nga.tiff.field.FieldTypeDictionary
-import mil.nga.tiff.field.tag.FieldTagType
+import mil.nga.tiff.field.TagDictionary
 import mil.nga.tiff.field.type.GenericFieldType
 import mil.nga.tiff.io.ByteReader
 import mil.nga.tiff.util.TiffConstants
@@ -10,7 +9,7 @@ import mil.nga.tiff.util.TiffException
 /**
  * TIFF reader
  */
-class TiffImageReader(private val reader: ByteReader, private val typeDictionary: FieldTypeDictionary) {
+class TiffImageReader(private val reader: ByteReader, private val tagDictionary: TagDictionary) {
 
     /**
      * Read a TIFF from the byte reader
@@ -65,7 +64,7 @@ class TiffImageReader(private val reader: ByteReader, private val typeDictionary
             }
 
             // Add the file internal
-            val fileDirectory = FileDirectory.create(entries, reader, cache, typeDictionary, null)
+            val fileDirectory = FileDirectory.create(entries, reader, cache, tagDictionary, null)
             dirs.add(fileDirectory)
 
             // Read the next byte offset location
@@ -79,48 +78,29 @@ class TiffImageReader(private val reader: ByteReader, private val typeDictionary
     private fun <T> parseEntry(entries: MutableSet<FileDirectoryEntry<*>>) {
         // Read the field tag, field type, and type count
         val fieldTagValue = reader.readUnsignedShort()
-        val fieldTag = FieldTagType.getById(fieldTagValue)
-        if (fieldTag == null) {
-            println("Unrecognized tag: $fieldTagValue")
-        }
+        val fieldTag = tagDictionary.findTagById(fieldTagValue)
 
         val fieldTypeValue = reader.readUnsignedShort()
-        val fieldType = (typeDictionary.findById(fieldTypeValue) ?: throw TiffException("Unknown field type value $fieldTypeValue")) as GenericFieldType<T>
+        val fieldType = (tagDictionary.findTypeById(fieldTypeValue) ?: throw TiffException("Unknown field type value $fieldTypeValue")) as GenericFieldType<T>
 
         val typeCount = reader.readUnsignedInt()
 
         // Save off the next byte to read location
         val nextByte = reader.nextByte
 
-        // Read the field values
-        val values = readFieldValues<T>(fieldTag, fieldType, typeCount)
-
-        // Create and add a file internal if the tag is recognized.
-        if (fieldTag != null) {
-            val entry = FileDirectoryEntry<T>(fieldTag, fieldType, typeCount, values)
-            entries.add(entry)
-        }
-
-        // Restore the next byte to read location
-        reader.setNextByte((nextByte + 4).toLong())
-    }
-
-    /**
-     * Read the field values
-     *
-     * @param fieldTag  field tag type
-     * @param fieldType field type
-     * @param typeCount type count
-     * @return values
-     */
-    private fun <T> readFieldValues(fieldTag: FieldTagType?, fieldType: GenericFieldType<T>, typeCount: Long): List<T> {
         // If the value is larger and not stored inline, determine the offset
         if (fieldType.metadata().bytesPerSample * typeCount > 4) {
             val valueOffset = reader.readUnsignedInt()
             reader.setNextByte(valueOffset)
         }
 
-        // Read the internal entry values
-        return fieldType.readDirectoryEntryValues(reader, typeCount)
+        // Read the field values
+        val values = fieldType.readDirectoryEntryValues(reader, typeCount)
+
+        // Create and add a file internal if the tag is recognized.
+        entries.add(FileDirectoryEntry(fieldTag, fieldTagValue, fieldType, typeCount, values))
+
+        // Restore the next byte to read location
+        reader.setNextByte((nextByte + 4).toLong())
     }
 }

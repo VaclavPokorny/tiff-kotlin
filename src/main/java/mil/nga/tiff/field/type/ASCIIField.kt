@@ -1,7 +1,7 @@
 package mil.nga.tiff.field.type
 
 import mil.nga.tiff.field.FieldType
-import mil.nga.tiff.field.tag.FieldTagType
+import mil.nga.tiff.field.FieldTagType
 import mil.nga.tiff.io.ByteReader
 import mil.nga.tiff.io.ByteWriter
 import mil.nga.tiff.util.TiffException
@@ -9,10 +9,9 @@ import java.io.IOException
 import java.io.UnsupportedEncodingException
 
 /**
- * 8-bit byte that contains a 7-bit ASCII code; the last byte must be NUL
- * (binary zero)
+ * 8-bit byte that contains a 7-bit ASCII code; the last byte must be NUL (binary zero)
  */
-@FieldType(id = 2, bytesPerSample = 1)
+@FieldType(name = "ASCII", id = 2, bytesPerSample = 1)
 object ASCIIField : GenericFieldType<String> {
     override fun readDirectoryEntryValues(reader: ByteReader, typeCount: Long): List<String> {
         val values: MutableList<String?> = ArrayList()

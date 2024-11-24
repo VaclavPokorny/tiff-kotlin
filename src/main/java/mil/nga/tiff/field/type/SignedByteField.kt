@@ -10,7 +10,7 @@ import java.nio.ByteBuffer
 /**
  * An 8-bit signed (twos-complement) integer
  */
-@FieldType(id = 6, bytesPerSample = 1, sampleFormat = SampleFormat.SIGNED_INT)
+@FieldType(name = "SBYTE", id = 6, bytesPerSample = 1, sampleFormat = SampleFormat.SIGNED_INT)
 object SignedByteField : ByteField<Byte>() {
     override fun readValue(reader: ByteReader): Byte {
         return reader.readByte()

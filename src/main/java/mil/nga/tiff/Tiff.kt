@@ -1,7 +1,7 @@
 package mil.nga.tiff
 
-import mil.nga.tiff.field.DefaultFieldTypeDictionary
-import mil.nga.tiff.field.FieldTypeDictionary
+import mil.nga.tiff.field.DefaultTagDictionary
+import mil.nga.tiff.field.TagDictionary
 import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.internal.TiffImageReader
 import mil.nga.tiff.internal.TiffImageWriter
@@ -23,7 +23,16 @@ class Tiff {
      * Create a TIFF image read query
      */
     fun read(): Reader {
-        return Reader(true, DefaultFieldTypeDictionary())
+        return Reader(true, DefaultTagDictionary)
+    }
+
+    /**
+     * Create a TIFF image read query
+     *
+     * @param typeDictionary field type dictionary
+     */
+    fun read(typeDictionary: TagDictionary): Reader {
+        return Reader(true, typeDictionary)
     }
 
     /**
@@ -32,7 +41,7 @@ class Tiff {
      * @param useCache       true to use caching for reading operations
      * @param typeDictionary field type dictionary
      */
-    fun read(useCache: Boolean, typeDictionary: FieldTypeDictionary): Reader {
+    fun read(useCache: Boolean, typeDictionary: TagDictionary): Reader {
         return Reader(useCache, typeDictionary)
     }
 
@@ -48,7 +57,7 @@ class Tiff {
     /**
      * TIFF reader
      */
-    class Reader(private val useCache: Boolean, private val typeDictionary: FieldTypeDictionary) {
+    class Reader(private val useCache: Boolean, private val typeDictionary: TagDictionary) {
         /**
          * Read a TIFF from a file
          *

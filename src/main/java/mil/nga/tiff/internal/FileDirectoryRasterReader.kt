@@ -1,6 +1,6 @@
 package mil.nga.tiff.internal
 
-import mil.nga.tiff.field.FieldTypeDictionary
+import mil.nga.tiff.field.TagDictionary
 import mil.nga.tiff.field.type.NumericFieldType
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
 import mil.nga.tiff.field.type.enumeration.SampleFormat
@@ -15,7 +15,7 @@ import kotlin.math.min
 class FileDirectoryRasterReader(
     private val stats: DirectoryStats,
     private val tileOrStripProcessor: TileOrStripProcessor,
-    private val typeDictionary: FieldTypeDictionary,
+    private val typeDictionary: TagDictionary,
     private val reader: ByteReader?
 ) {
     fun readRasters(
@@ -242,6 +242,6 @@ class FileDirectoryRasterReader(
             sampleFormat = sampleFormatList[listId]
         }
         val bitsPerSample = stats.bitsPerSample!![sampleIndex]
-        return typeDictionary.findBySampleParams(sampleFormat, bitsPerSample)
+        return typeDictionary.findNumericTypeBySampleParams(sampleFormat, bitsPerSample)
     }
 }

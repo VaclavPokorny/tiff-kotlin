@@ -10,7 +10,7 @@ import java.nio.ByteBuffer
 /**
  * A 32-bit (4-byte) signed (twos-complement) integer
  */
-@FieldType(id = 9, bytesPerSample = 4, sampleFormat = SampleFormat.SIGNED_INT)
+@FieldType(name = "SLONG", id = 9, bytesPerSample = 4, sampleFormat = SampleFormat.SIGNED_INT)
 object SignedLongField : LongField<Int>() {
     override fun readValue(reader: ByteReader): Int {
         return reader.readInt()

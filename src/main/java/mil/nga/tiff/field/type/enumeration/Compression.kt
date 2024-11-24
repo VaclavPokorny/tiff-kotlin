@@ -16,6 +16,19 @@ enum class Compression {
     PACKBITS(32773, PackbitsCompression(), PackbitsCompression());
 
 
+    fun decoder(): CompressionDecoder {
+        return decoder
+    }
+
+    fun encoder(): CompressionEncoder {
+        if (encoder == null) {
+            throw TiffException("Compression not supported: $this")
+        }
+
+        return encoder
+    }
+
+
     val id: Int
     private val decoder: CompressionDecoder
     private val encoder: CompressionEncoder?
@@ -44,32 +57,5 @@ enum class Compression {
             return entries.first { it.id == id}
         }
 
-        /**
-         * Get the compression encoder
-         *
-         * @param compression compression ID
-         * @return encoder
-         */
-        @JvmStatic
-        fun getEncoder(compression: Int?): CompressionEncoder {
-            val o = findById(compression)
-
-            if (o.encoder == null) {
-                throw TiffException("Compression not supported: $o")
-            }
-
-            return o.encoder
-        }
-
-        /**
-         * Get the compression decoder
-         *
-         * @param compression compression ID
-         * @return encoder
-         */
-        @JvmStatic
-        fun getDecoder(compression: Int?): CompressionDecoder {
-            return findById(compression).decoder
-        }
     }
 }

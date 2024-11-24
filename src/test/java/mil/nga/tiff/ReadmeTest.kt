@@ -2,7 +2,7 @@ package mil.nga.tiff
 
 import mil.nga.tiff.TiffTestUtils.createFieldTypeArray
 import mil.nga.tiff.TiffTestUtils.createSampleValues
-import mil.nga.tiff.field.DefaultFieldTypeDictionary
+import mil.nga.tiff.field.DefaultTagDictionary
 import mil.nga.tiff.field.type.FloatField
 import mil.nga.tiff.field.type.NumericFieldType
 import mil.nga.tiff.field.type.enumeration.Compression
@@ -82,11 +82,11 @@ class ReadmeTest {
             PlanarConfiguration.CHUNKY
         )
 
-        val directory = FileDirectory.create(emptySet(), null, false, DefaultFieldTypeDictionary(), rasters)
+        val directory = FileDirectory.create(emptySet(), null, false, DefaultTagDictionary, rasters)
         directory.setImageWidth(width)
         directory.imageHeight = height
         directory.setBitsPerSample(bitsPerSample)
-        directory.compression = Compression.NO.id
+        directory.compression = Compression.NO
         directory.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
         directory.setSamplesPerPixel(samplesPerPixel)
         directory.setRowsPerStrip(rowsPerStrip)

@@ -1,7 +1,5 @@
 package mil.nga.tiff.field.tag
 
-import mil.nga.tiff.field.FieldTagType
-
 /**
  * TIFF extended tags
  *

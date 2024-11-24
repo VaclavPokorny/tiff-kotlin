@@ -1,8 +1,8 @@
 package mil.nga.tiff.internal
 
 import mil.nga.tiff.domain.UnsignedRational
-import mil.nga.tiff.field.FieldTypeDictionary
-import mil.nga.tiff.field.tag.FieldTagType
+import mil.nga.tiff.field.TagDictionary
+import mil.nga.tiff.field.FieldTagType
 import mil.nga.tiff.field.tag.TiffBaselineTag
 import mil.nga.tiff.field.tag.TiffExtendedTag
 import mil.nga.tiff.field.type.GenericFieldType
@@ -15,8 +15,7 @@ import mil.nga.tiff.io.ByteReader
 import java.util.*
 
 /**
- * File Directory, represents all internal entries and can be used to read the
- * image raster
+ * File Directory, represents all internal entries and can be used to read the image raster
  */
 class FileDirectory(
     /**
@@ -28,16 +27,6 @@ class FileDirectory(
     stats: DirectoryStats
 ) {
     /**
-     * Get the rasters for writing a TIFF file
-     *
-     * @return rasters image rasters
-     */
-    /**
-     * Set write rasters
-     *
-     * @param writeRasters write rasters
-     */
-    /**
      * Rasters to write to the TIFF file
      */
     var writeRasters: Rasters? = null
@@ -45,7 +34,7 @@ class FileDirectory(
     /**
      * Raster reader
      */
-    val rasterReader: FileDirectoryRasterReader
+    private val rasterReader: FileDirectoryRasterReader
 
     /**
      * Directory basic statistics
@@ -56,6 +45,12 @@ class FileDirectory(
         this.writeRasters = writeRasters
         this.rasterReader = rasterReader
         this.stats = stats
+    }
+
+    fun analyze(analyzer: TiffImageAnalyzer) {
+        analyzer.commenceDirectory(data.size(), stats)
+        writeRasters?.analyze(analyzer)
+        data.analyze(analyzer)
     }
 
     /**
@@ -82,7 +77,7 @@ class FileDirectory(
      * @param fieldTagType field tag type
      * @return file internal entry
      */
-    fun get(fieldTagType: FieldTagType): FileDirectoryEntry<*> {
+    fun get(fieldTagType: FieldTagType): FileDirectoryEntry<*>? {
         return data.get(fieldTagType)
     }
 
@@ -122,7 +117,7 @@ class FileDirectory(
         data.setSingleValue(TiffBaselineTag.BitsPerSample, UnsignedShortField, value)
     }
 
-    var compression: Int?
+    var compression: Compression
         /**
          * Get the compression
          *
@@ -135,7 +130,7 @@ class FileDirectory(
          * @param value compression
          */
         set(value) {
-            data.setSingleValue(TiffBaselineTag.Compression, UnsignedShortField, value!!)
+            data.setSingleValue(TiffBaselineTag.Compression, UnsignedShortField, value.id)
         }
 
     var photometricInterpretation: PhotometricInterpretation?
@@ -606,16 +601,10 @@ class FileDirectory(
             entries: Set<FileDirectoryEntry<*>>,
             reader: ByteReader?,
             cacheData: Boolean,
-            typeDictionary: FieldTypeDictionary,
+            typeDictionary: TagDictionary,
             writeRasters: Rasters?
         ): FileDirectory {
-            val fieldTagTypeMapping: SortedMap<FieldTagType, FileDirectoryEntry<*>> =
-                TreeMap(Comparator.comparingInt(FieldTagType::id))
-            for (entry in entries) {
-                fieldTagTypeMapping[entry.fieldTag] = entry
-            }
-
-            val data = FileDirectoryDataHolder(fieldTagTypeMapping)
+            val data = FileDirectoryDataHolder(entries.toSortedSet(Comparator.comparingInt(FileDirectoryEntry<*>::fieldTagId)))
             val stats = createStats(data)
 
             val cache = TileOrStripCache(cacheData)
@@ -645,7 +634,7 @@ class FileDirectory(
                 data.getMultiValues<Number>(TiffExtendedTag.TileByteCounts)?.map { it.toInt() },
                 data.getMultiValues<Number>(TiffBaselineTag.StripOffsets)?.map { it.toLong() },
                 data.getMultiValues<Number>(TiffBaselineTag.StripByteCounts)?.map { it.toInt() },
-                data.getSingleValue<Number>(TiffBaselineTag.Compression)?.toInt(),
+                Compression.findById(data.getSingleValue<Number>(TiffBaselineTag.Compression)?.toInt()),
                 DifferencingPredictor.findById(data.getSingleValue<Int>(TiffExtendedTag.Predictor))
             )
         }

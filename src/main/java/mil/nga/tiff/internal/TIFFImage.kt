@@ -33,5 +33,10 @@ data class TIFFImage(val fileDirectories: List<FileDirectory>, val byteOrder: By
             .mapToLong { obj: FileDirectory -> obj.sizeWithValues() }
             .sum()
     }
-}
 
+    fun analyze(analyzer: TiffImageAnalyzer) {
+        analyzer.describeImage(byteOrder, sizeHeaderAndDirectoriesWithValues(), fileDirectories.size)
+        fileDirectories.forEach { it.analyze(analyzer) }
+    }
+
+}

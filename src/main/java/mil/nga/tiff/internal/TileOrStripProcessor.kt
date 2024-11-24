@@ -40,8 +40,7 @@ class TileOrStripProcessor(private val stats: DirectoryStats, private val cache:
 
             reader.setNextByte(offset)
             val bytes = reader.readBytes(byteCount)
-            val decoder =
-                Compression.getDecoder(stats.compression)
+            val decoder = stats.compression.decoder()
             tileOrStrip = decoder.decode(bytes, reader.byteOrder)
 
             tileOrStrip = stats.predictor.implementation.decode(

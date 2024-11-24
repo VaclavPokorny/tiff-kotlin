@@ -5,14 +5,9 @@ import mil.nga.tiff.internal.FileDirectory
 import mil.nga.tiff.internal.TIFFImage
 import mil.nga.tiff.internal.rasters.RasterTestUtils
 import mil.nga.tiff.internal.rasters.Rasters
-import mil.nga.tiff.util.TiffException
 import org.junit.jupiter.api.Assertions
-import java.io.File
-import java.net.URISyntaxException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.*
 
 /**
@@ -97,25 +92,6 @@ object TiffTestUtils {
                 fileDirectory.stats.bitsPerSample!![i], rasters.fields[i].bytesPerSample * 8
             )
         }
-    }
-
-    /**
-     * Get the file
-     *
-     * @param fileName file name
-     * @return file
-     */
-    @JvmStatic
-    fun getTestFile(fileName: String): File {
-        val resourceUrl = TiffTestUtils::class.java.getResource("/$fileName")
-        val resourcePath: Path
-        try {
-            resourcePath = Paths.get(resourceUrl!!.toURI())
-        } catch (e: URISyntaxException) {
-            throw TiffException("Failed to get test file path", e)
-        }
-        val file = resourcePath.toFile()
-        return file
     }
 
     /**

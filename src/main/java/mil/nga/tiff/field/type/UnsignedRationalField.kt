@@ -7,10 +7,9 @@ import mil.nga.tiff.io.ByteWriter
 import java.io.IOException
 
 /**
- * Two LONGs: the first represents the numerator of a fraction; the second,
- * the denominator
+ * Two LONGs: the first represents the numerator of a fraction; the second, the denominator
  */
-@FieldType(id = 5, bytesPerSample = 8)
+@FieldType(name = "RATIONAL", id = 5, bytesPerSample = 8)
 object UnsignedRationalField : RationalField<UnsignedRational>() {
     override fun readValue(reader: ByteReader): UnsignedRational {
         return UnsignedRational(

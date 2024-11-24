@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 /**
  * 8-bit unsigned integer
  */
-@FieldType(id = 1, bytesPerSample = 1, sampleFormat = SampleFormat.UNSIGNED_INT)
+@FieldType(name = "BYTE", id = 1, bytesPerSample = 1, sampleFormat = SampleFormat.UNSIGNED_INT)
 object UnsignedByteField : ByteField<Short>() {
     override fun readValue(reader: ByteReader): Short {
         return reader.readUnsignedByte()

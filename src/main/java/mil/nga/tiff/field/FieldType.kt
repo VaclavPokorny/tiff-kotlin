@@ -10,5 +10,6 @@ import mil.nga.tiff.field.type.enumeration.SampleFormat
 annotation class FieldType(
     val id: Int,
     val bytesPerSample: Int,
-    val sampleFormat: SampleFormat = SampleFormat.UNDEFINED
+    val sampleFormat: SampleFormat = SampleFormat.UNDEFINED,
+    val name: String
 )

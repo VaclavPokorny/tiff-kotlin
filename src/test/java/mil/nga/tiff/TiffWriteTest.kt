@@ -26,7 +26,7 @@ class TiffWriteTest {
     @Test
     @Throws(IOException::class)
     fun `Test writing and reading a stripped chunky file`() {
-        val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
+        val strippedFile = TiffTestFiles.FILE_STRIPPED.asFile()
         val strippedTiff = Tiff
             .create()
             .read()
@@ -37,7 +37,7 @@ class TiffWriteTest {
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
         fileDirectory.writeRasters = rasters
-        fileDirectory.compression = Compression.NO.id
+        fileDirectory.compression = Compression.NO
         fileDirectory.planarConfiguration = PlanarConfiguration.CHUNKY
         val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
@@ -64,7 +64,7 @@ class TiffWriteTest {
     @Test
     @Throws(IOException::class)
     fun `Test writing and reading a stripped planar file`() {
-        val strippedFile = TiffTestUtils.getTestFile(TiffTestConstants.FILE_STRIPPED)
+        val strippedFile = TiffTestFiles.FILE_STRIPPED.asFile()
         val strippedTiff = Tiff
             .create()
             .read()
@@ -75,7 +75,7 @@ class TiffWriteTest {
         val rastersInterleaved = fileDirectory.readInterleavedRasters()
 
         fileDirectory.writeRasters = rasters
-        fileDirectory.compression = Compression.NO.id
+        fileDirectory.compression = Compression.NO
         fileDirectory.planarConfiguration = PlanarConfiguration.PLANAR
         val rowsPerStrip = rasters.calculateRowsPerStrip(fileDirectory.planarConfiguration)
         fileDirectory.setRowsPerStrip(rowsPerStrip)
@@ -114,8 +114,8 @@ class TiffWriteTest {
             }
         }
 
-        val dictionary = DefaultFieldTypeDictionary()
-        @Suppress("UNCHECKED_CAST") val field = dictionary.findBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample) as NumericFieldType<Number>
+        val dictionary = DefaultTagDictionary
+        @Suppress("UNCHECKED_CAST") val field = dictionary.findNumericTypeBySampleParams(SampleFormat.UNSIGNED_INT, bitsPerSample) as NumericFieldType<Number>
         val rasterFieldTypes = createFieldTypeArray(samplesPerPixel, field)
         val order = ByteOrder.LITTLE_ENDIAN
         val sampleValues = createSampleValues(inpWidth, inpHeight, rasterFieldTypes, order)
@@ -125,7 +125,7 @@ class TiffWriteTest {
         val rowsPerStrip = newRaster.calculateRowsPerStrip(
             PlanarConfiguration.CHUNKY
         )
-        val fileDirs = FileDirectory.create(emptySet(), null, false, DefaultFieldTypeDictionary(), newRaster)
+        val fileDirs = FileDirectory.create(emptySet(), null, false, DefaultTagDictionary, newRaster)
 
         fileDirs.setImageWidth(inpWidth)
         fileDirs.imageHeight = inpHeight
@@ -138,7 +138,7 @@ class TiffWriteTest {
         fileDirs.yResolution = UnsignedRational(yResolution, 1L)
         fileDirs.photometricInterpretation = PhotometricInterpretation.BLACK_IS_ZERO
         fileDirs.planarConfiguration = PlanarConfiguration.CHUNKY
-        fileDirs.compression = Compression.NO.id
+        fileDirs.compression = Compression.NO
 
         for (y in 0 until inpHeight) {
             for (x in 0 until inpWidth) {
@@ -147,6 +147,7 @@ class TiffWriteTest {
                 )
             }
         }
+
         val newImage = TIFFImage(listOf(fileDirs), ByteOrder.LITTLE_ENDIAN)
 
         val tiffBytes = Tiff

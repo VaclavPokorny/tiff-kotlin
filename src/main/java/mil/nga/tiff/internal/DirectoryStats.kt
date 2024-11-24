@@ -1,5 +1,6 @@
 package mil.nga.tiff.internal
 
+import mil.nga.tiff.field.type.enumeration.Compression
 import mil.nga.tiff.field.type.enumeration.DifferencingPredictor
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
 import mil.nga.tiff.field.type.enumeration.SampleFormat
@@ -18,6 +19,6 @@ data class DirectoryStats(
     val tileByteCounts: List<Int>?,
     val stripOffsets: List<Long>?,
     val stripByteCounts: List<Int>?,
-    val compression: Int?,
+    val compression: Compression,
     val predictor: DifferencingPredictor
 )

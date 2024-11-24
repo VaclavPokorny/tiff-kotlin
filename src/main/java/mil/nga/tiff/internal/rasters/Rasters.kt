@@ -3,6 +3,7 @@ package mil.nga.tiff.internal.rasters
 import mil.nga.tiff.field.FieldType
 import mil.nga.tiff.field.type.NumericFieldType
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
+import mil.nga.tiff.internal.TiffImageAnalyzer
 import mil.nga.tiff.util.TiffConstants
 import mil.nga.tiff.util.TiffException
 import java.nio.ByteBuffer
@@ -256,6 +257,10 @@ data class Rasters(
             PlanarConfiguration.CHUNKY -> metadata.calculateRowsPerStripChunky(maxBytesPerStrip)
             PlanarConfiguration.PLANAR -> metadata.calculateRowsPerStripPlanar(maxBytesPerStrip)
         }
+    }
+
+    fun analyze(analyzer: TiffImageAnalyzer) {
+        analyzer.describeRasters(metadata.width, metadata.height, metadata.fields.map { it.metadata() }, metadata.pixelSize, sampleValues.values, interleaveValues.values)
     }
 
     companion object {

@@ -41,10 +41,10 @@ object TiffFileTester {
             }
             println("--")
 
-            for (entry in fileDirectory.data.fieldTagTypeMapping.values) {
+            for (entry in fileDirectory.data.entries) {
                 println()
                 println(
-                    (entry.fieldTag.toString() + " (" + entry.fieldTag.id + ")")
+                    (entry.fieldTag.toString() + " (" + entry.fieldTagId + ")")
                 )
                 println(
                     (entry.fieldType.toString() + " (" + entry.fieldType.metadata().bytesPerSample + " bytes)")

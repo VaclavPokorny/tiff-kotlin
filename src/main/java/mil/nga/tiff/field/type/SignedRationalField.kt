@@ -7,10 +7,9 @@ import mil.nga.tiff.io.ByteWriter
 import java.io.IOException
 
 /**
- * Two SLONG’s: the first represents the numerator of a fraction, the second
- * the denominator
+ * Two SLONG’s: the first represents the numerator of a fraction, the second the denominator
  */
-@FieldType(id = 10, bytesPerSample = 8)
+@FieldType(name = "SRATIONAL", id = 10, bytesPerSample = 8)
 object SignedRationalField : RationalField<SignedRational>() {
     override fun readValue(reader: ByteReader): SignedRational {
         return SignedRational(

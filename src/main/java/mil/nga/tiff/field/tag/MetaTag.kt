@@ -1,5 +1,7 @@
 package mil.nga.tiff.field.tag
 
+import mil.nga.tiff.field.FieldTagType
+
 /**
  * Meta tags containg embedded custom data
  *

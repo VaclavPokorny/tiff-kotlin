@@ -1,7 +1,6 @@
 package mil.nga.tiff.internal
 
 import mil.nga.tiff.compression.CompressionEncoder
-import mil.nga.tiff.field.type.enumeration.Compression
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
 import mil.nga.tiff.io.ByteWriter
 import mil.nga.tiff.util.TiffByteOrder
@@ -71,8 +70,8 @@ class TiffImageWriter(private val writer: ByteWriter) {
         val rastersBytes = writeRasters(writer.byteOrder, fileDirectory, afterValues)
 
         // Write each entry
-        for (entry in fileDirectory.data.fieldTagTypeMapping.values) {
-            writer.writeUnsignedShort(entry.fieldTag.id)
+        for (entry in fileDirectory.data.entries) {
+            writer.writeUnsignedShort(entry.fieldTagId)
             writer.writeUnsignedShort(entry.fieldType.metadata().id)
             writer.writeUnsignedInt(entry.typeCount)
             val valueBytes = entry.valueBytes()
@@ -167,7 +166,7 @@ class TiffImageWriter(private val writer: ByteWriter) {
         fileDirectory.writeRasters ?: throw TiffException("File Directory Writer Rasters is required to create a TIFF")
 
         // Get the compression encoder
-        val encoder = Compression.getEncoder(fileDirectory.compression)
+        val encoder = fileDirectory.compression.encoder()
 
         // Byte writer to write the raster
         val writer = ByteWriter(byteOrder)

@@ -1,12 +1,13 @@
 package mil.nga.tiff.internal
 
 import mil.nga.tiff.domain.UnsignedRational
-import mil.nga.tiff.field.tag.FieldTagType
+import mil.nga.tiff.field.FieldTagType
 import mil.nga.tiff.field.tag.TiffBaselineTag
 import mil.nga.tiff.field.tag.TiffExtendedTag
 import mil.nga.tiff.field.type.ASCIIField
 import mil.nga.tiff.field.type.GenericFieldType
 import mil.nga.tiff.field.type.UnsignedRationalField
+import mil.nga.tiff.field.type.enumeration.Compression
 import mil.nga.tiff.field.type.enumeration.DifferencingPredictor
 import mil.nga.tiff.field.type.enumeration.PlanarConfiguration
 import mil.nga.tiff.field.type.enumeration.SampleFormat
@@ -15,7 +16,7 @@ import mil.nga.tiff.util.TiffException
 import java.util.*
 
 @JvmRecord
-data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagType, FileDirectoryEntry<*>>) {
+data class FileDirectoryDataHolder(val entries: SortedSet<FileDirectoryEntry<*>>) {
 
     /**
      * Get the rows per strip
@@ -32,7 +33,8 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @param entry file internal entry
      */
     private fun addEntry(entry: FileDirectoryEntry<*>) {
-        fieldTagTypeMapping[entry.fieldTag] = entry
+        entries.removeIf { it.fieldTagId == entry.fieldTagId }
+        entries.add(entry)
     }
 
     /**
@@ -41,17 +43,17 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return entry count
      */
     fun numEntries(): Int {
-        return fieldTagTypeMapping.size
+        return entries.size
     }
 
     /**
      * Get a file internal entry from the field tag type
      *
-     * @param fieldTagType field tag type
+     * @param fieldTag field tag type
      * @return file internal entry
      */
-    fun get(fieldTagType: FieldTagType): FileDirectoryEntry<*> {
-        return fieldTagTypeMapping[fieldTagType]!!
+    fun get(fieldTag: FieldTagType): FileDirectoryEntry<*>? {
+        return entries.firstOrNull { it.fieldTag == fieldTag }
     }
 
     /**
@@ -127,12 +129,12 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
     /**
      * Get an entry value
      *
-     * @param fieldTagType field tag type
+     * @param fieldTag field tag type
      * @return value
      */
     @Suppress("UNCHECKED_CAST")
-    fun <T> getMultiValues(fieldTagType: FieldTagType): List<T>? {
-        val entry = fieldTagTypeMapping[fieldTagType] as FileDirectoryEntry<T>?
+    fun <T> getMultiValues(fieldTag: FieldTagType): List<T>? {
+        val entry = get(fieldTag) as FileDirectoryEntry<T>?
         if (entry != null) {
             return entry.values
         }
@@ -176,7 +178,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return size in bytes
      */
     fun size(): Long {
-        return TiffConstants.IFD_HEADER_BYTES + (fieldTagTypeMapping.size.toLong() * TiffConstants.IFD_ENTRY_BYTES) + TiffConstants.IFD_OFFSET_BYTES
+        return TiffConstants.IFD_HEADER_BYTES + (entries.size.toLong() * TiffConstants.IFD_ENTRY_BYTES) + TiffConstants.IFD_OFFSET_BYTES
     }
 
     /**
@@ -186,7 +188,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return size in bytes
      */
     fun sizeWithValues(): Long {
-        return TiffConstants.IFD_HEADER_BYTES + TiffConstants.IFD_OFFSET_BYTES + fieldTagTypeMapping.values.stream()
+        return TiffConstants.IFD_HEADER_BYTES + TiffConstants.IFD_OFFSET_BYTES + entries.stream()
             .mapToLong { obj: FileDirectoryEntry<*> -> obj.sizeWithValues() }.sum()
     }
 
@@ -277,8 +279,8 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      *
      * @return compression
      */
-    fun getCompression(): Int? {
-        return getSingleValue(TiffBaselineTag.Compression)
+    fun getCompression(): Compression {
+        return Compression.findById(getSingleValue<Int>(TiffBaselineTag.Compression))
     }
 
     /**
@@ -288,6 +290,10 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      */
     fun getPredictor(): DifferencingPredictor {
         return DifferencingPredictor.findById(getSingleValue<Int>(TiffExtendedTag.Predictor))
+    }
+
+    fun analyze(analyzer: TiffImageAnalyzer) {
+        entries.forEach { it.analyze(analyzer) }
     }
 
 }

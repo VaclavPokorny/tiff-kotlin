@@ -1,6 +1,6 @@
 package mil.nga.tiff.field.type
 
-import mil.nga.tiff.field.tag.FieldTagType
+import mil.nga.tiff.field.FieldTagType
 import mil.nga.tiff.io.ByteReader
 import mil.nga.tiff.io.ByteWriter
 import java.io.IOException

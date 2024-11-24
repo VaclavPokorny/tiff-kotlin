@@ -6,10 +6,9 @@ import mil.nga.tiff.io.ByteWriter
 import java.io.IOException
 
 /**
- * An 8-bit byte that may contain anything, depending on the definition of
- * the field
+ * An 8-bit byte that may contain anything, depending on the definition of the field
  */
-@FieldType(id = 7, bytesPerSample = 1)
+@FieldType(name = "UNDEFINED", id = 7, bytesPerSample = 1)
 object UndefinedField : SingleValueFieldType<Short>() {
     override fun readValue(reader: ByteReader): Short {
         return reader.readUnsignedByte()

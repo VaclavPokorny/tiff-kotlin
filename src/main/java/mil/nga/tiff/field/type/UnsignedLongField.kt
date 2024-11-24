@@ -10,7 +10,7 @@ import java.nio.ByteBuffer
 /**
  * 32-bit (4-byte) unsigned integer
  */
-@FieldType(id = 4, bytesPerSample = 4, sampleFormat = SampleFormat.UNSIGNED_INT)
+@FieldType(name = "LONG", id = 4, bytesPerSample = 4, sampleFormat = SampleFormat.UNSIGNED_INT)
 object UnsignedLongField : LongField<Long>() {
     override fun readValue(reader: ByteReader): Long {
         return reader.readUnsignedInt()
