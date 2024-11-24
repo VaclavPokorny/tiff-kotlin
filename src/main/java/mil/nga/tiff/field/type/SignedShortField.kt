@@ -11,7 +11,7 @@ import java.nio.ByteBuffer
  * A 16-bit (2-byte) signed (twos-complement) integer
  */
 @FieldType(id = 8, bytesPerSample = 2, sampleFormat = SampleFormat.SIGNED_INT)
-class SignedShortField : ShortField<Short>() {
+object SignedShortField : ShortField<Short>() {
     override fun readValue(reader: ByteReader): Short {
         return reader.readShort()
     }

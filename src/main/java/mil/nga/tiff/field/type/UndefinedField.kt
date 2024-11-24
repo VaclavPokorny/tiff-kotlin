@@ -10,7 +10,7 @@ import java.io.IOException
  * the field
  */
 @FieldType(id = 7, bytesPerSample = 1)
-class UndefinedField : SingleValueFieldType<Short>() {
+object UndefinedField : SingleValueFieldType<Short>() {
     override fun readValue(reader: ByteReader): Short {
         return reader.readUnsignedByte()
     }

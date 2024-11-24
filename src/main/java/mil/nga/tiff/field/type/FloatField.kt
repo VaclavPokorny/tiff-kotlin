@@ -11,7 +11,7 @@ import java.nio.ByteBuffer
  * Single precision (4-byte) IEEE format
  */
 @FieldType(id = 11, bytesPerSample = 4, sampleFormat = SampleFormat.FLOAT)
-class FloatField : NumericFieldType<Float>() {
+object FloatField : NumericFieldType<Float>() {
     override fun readValue(reader: ByteReader): Float {
         return reader.readFloat()
     }

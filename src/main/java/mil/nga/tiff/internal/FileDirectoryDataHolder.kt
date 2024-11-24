@@ -2,7 +2,7 @@ package mil.nga.tiff.internal
 
 import mil.nga.tiff.domain.UnsignedRational
 import mil.nga.tiff.field.tag.FieldTagType
-import mil.nga.tiff.field.tag.TiffBasicTag
+import mil.nga.tiff.field.tag.TiffBaselineTag
 import mil.nga.tiff.field.tag.TiffExtendedTag
 import mil.nga.tiff.field.type.ASCIIField
 import mil.nga.tiff.field.type.GenericFieldType
@@ -23,7 +23,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return rows per strip
      */
     fun getRowsPerStrip(): Int? {
-        return getSingleValue<Int>(TiffBasicTag.RowsPerStrip)?.toInt()
+        return getSingleValue<Int>(TiffBaselineTag.RowsPerStrip)?.toInt()
     }
 
     /**
@@ -60,7 +60,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return image imageWidth
      */
     fun getImageWidth(): Int? {
-        return getSingleValue<Int>(TiffBasicTag.ImageWidth)?.toInt()
+        return getSingleValue<Int>(TiffBaselineTag.ImageWidth)?.toInt()
     }
 
     /**
@@ -69,7 +69,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return image imageHeight
      */
     fun getImageHeight(): Int? {
-        return getSingleValue<Int>(TiffBasicTag.ImageLength)?.toInt()
+        return getSingleValue<Int>(TiffBaselineTag.ImageLength)?.toInt()
     }
 
     /**
@@ -97,7 +97,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
         if (value == null) {
             throw TiffException("Invalid rational value.")
         }
-        setSingleValue(fieldTagType, UnsignedRationalField(), value)
+        setSingleValue(fieldTagType, UnsignedRationalField, value)
     }
 
     /**
@@ -166,7 +166,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @param value        string value
      */
     fun setStringEntryValue(fieldTagType: FieldTagType, value: String) {
-        addEntry(FileDirectoryEntry(fieldTagType, ASCIIField(), (value.length + 1).toLong(), listOf(value)))
+        addEntry(FileDirectoryEntry(fieldTagType, ASCIIField, (value.length + 1).toLong(), listOf(value)))
     }
 
 
@@ -196,7 +196,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return samples per pixel
      */
     fun getSamplesPerPixel(): Int? {
-        return getSingleValue(TiffBasicTag.SamplesPerPixel, 1)
+        return getSingleValue(TiffBaselineTag.SamplesPerPixel, 1)
     }
 
     /**
@@ -205,7 +205,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return bits per sample
      */
     fun getBitsPerSample(): List<Int>? {
-        return getMultiValues<Int>(TiffBasicTag.BitsPerSample)?.map { it.toInt() }
+        return getMultiValues<Int>(TiffBaselineTag.BitsPerSample)?.map { it.toInt() }
     }
 
     /**
@@ -214,7 +214,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return max bits per sample
      */
     fun getMaxBitsPerSample(): Int? {
-        val bitsPerSample = getMultiValues<Int>(TiffBasicTag.BitsPerSample)
+        val bitsPerSample = getMultiValues<Int>(TiffBaselineTag.BitsPerSample)
         return bitsPerSample?.maxOrNull()
     }
 
@@ -224,7 +224,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return strip offsets
      */
     fun getStripOffsets(): List<Long>? {
-        return getMultiValues<Number>(TiffBasicTag.StripOffsets)?.map { it.toLong() }
+        return getMultiValues<Number>(TiffBaselineTag.StripOffsets)?.map { it.toLong() }
     }
 
     /**
@@ -242,7 +242,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return planar configuration
      */
     fun getPlanarConfiguration(): PlanarConfiguration {
-        return PlanarConfiguration.findById(getSingleValue<Int>(TiffBasicTag.PlanarConfiguration))
+        return PlanarConfiguration.findById(getSingleValue<Int>(TiffBaselineTag.PlanarConfiguration))
     }
 
     /**
@@ -269,7 +269,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return strip byte counts
      */
     fun getStripByteCounts(): List<Int>? {
-        return getMultiValues<Number>(TiffBasicTag.StripByteCounts)?.map { it.toInt() }
+        return getMultiValues<Number>(TiffBaselineTag.StripByteCounts)?.map { it.toInt() }
     }
 
     /**
@@ -278,7 +278,7 @@ data class FileDirectoryDataHolder(val fieldTagTypeMapping: SortedMap<FieldTagTy
      * @return compression
      */
     fun getCompression(): Int? {
-        return getSingleValue(TiffBasicTag.Compression)
+        return getSingleValue(TiffBaselineTag.Compression)
     }
 
     /**

@@ -11,7 +11,7 @@ import java.nio.ByteBuffer
  * 16-bit (2-byte) unsigned integer
  */
 @FieldType(id = 3, bytesPerSample = 2, sampleFormat = SampleFormat.UNSIGNED_INT)
-class UnsignedShortField : ShortField<Int>() {
+object UnsignedShortField : ShortField<Int>() {
     override fun readValue(reader: ByteReader): Int {
         return reader.readUnsignedShort()
     }

@@ -69,7 +69,7 @@ class ReadmeTest {
         val width = 256
         val height = 256
         val samplesPerPixel = 1
-        @Suppress("UNCHECKED_CAST") val fieldType = FloatField() as NumericFieldType<Number>
+        @Suppress("UNCHECKED_CAST") val fieldType = FloatField as NumericFieldType<Number>
         val bitsPerSample = fieldType.metadata().bytesPerSample * 8
 
         val fieldTypes = createFieldTypeArray(samplesPerPixel, fieldType)

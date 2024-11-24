@@ -3,7 +3,7 @@ package mil.nga.tiff.internal
 import mil.nga.tiff.domain.UnsignedRational
 import mil.nga.tiff.field.FieldTypeDictionary
 import mil.nga.tiff.field.tag.FieldTagType
-import mil.nga.tiff.field.tag.TiffBasicTag
+import mil.nga.tiff.field.tag.TiffBaselineTag
 import mil.nga.tiff.field.tag.TiffExtendedTag
 import mil.nga.tiff.field.type.GenericFieldType
 import mil.nga.tiff.field.type.UnsignedLongField
@@ -93,7 +93,7 @@ class FileDirectory(
      */
     //TODO REMOVE
     fun setImageWidth(value: Int) {
-        data.setSingleValue(TiffBasicTag.ImageWidth, UnsignedShortField(), value)
+        data.setSingleValue(TiffBaselineTag.ImageWidth, UnsignedShortField, value)
     }
 
     var imageHeight: Int?
@@ -102,14 +102,14 @@ class FileDirectory(
          *
          * @return image imageHeight
          */
-        get() = data.getSingleValue<Number>(TiffBasicTag.ImageLength)?.toInt()
+        get() = data.getSingleValue<Number>(TiffBaselineTag.ImageLength)?.toInt()
         /**
          * Set the image imageHeight
          *
          * @param value image imageHeight
          */
         set(value) {
-            data.setSingleValue(TiffBasicTag.ImageLength, UnsignedShortField(), value!!)
+            data.setSingleValue(TiffBaselineTag.ImageLength, UnsignedShortField, value!!)
         }
 
     /**
@@ -119,7 +119,7 @@ class FileDirectory(
      */
     //TODO REMOVE
     fun setBitsPerSample(value: Int) {
-        data.setSingleValue(TiffBasicTag.BitsPerSample, UnsignedShortField(), value)
+        data.setSingleValue(TiffBaselineTag.BitsPerSample, UnsignedShortField, value)
     }
 
     var compression: Int?
@@ -135,7 +135,7 @@ class FileDirectory(
          * @param value compression
          */
         set(value) {
-            data.setSingleValue(TiffBasicTag.Compression, UnsignedShortField(), value!!)
+            data.setSingleValue(TiffBaselineTag.Compression, UnsignedShortField, value!!)
         }
 
     var photometricInterpretation: PhotometricInterpretation?
@@ -145,7 +145,7 @@ class FileDirectory(
          * @return photometric interpretation
          */
         get() {
-            val id = data.getSingleValue<Int>(TiffBasicTag.PhotometricInterpretation)
+            val id = data.getSingleValue<Int>(TiffBaselineTag.PhotometricInterpretation)
             if (id != null) {
                 return PhotometricInterpretation.findById(id)
             }
@@ -157,7 +157,7 @@ class FileDirectory(
          * @param value photometric interpretation
          */
         set(value) {
-            data.setSingleValue(TiffBasicTag.PhotometricInterpretation, UnsignedShortField(), value!!.id)
+            data.setSingleValue(TiffBaselineTag.PhotometricInterpretation, UnsignedShortField, value!!.id)
         }
 
     /**
@@ -166,7 +166,7 @@ class FileDirectory(
      * @param value strip offsets
      */
     fun setStripOffsets(value: List<Int>) {
-        data.setMultiValues(TiffBasicTag.StripOffsets, UnsignedShortField(), value)
+        data.setMultiValues(TiffBaselineTag.StripOffsets, UnsignedShortField, value)
     }
 
     /**
@@ -175,7 +175,7 @@ class FileDirectory(
      * @param value strip offsets
      */
     fun setStripOffsetsAsLongs(value: List<Long>) {
-        data.setMultiValues(TiffBasicTag.StripOffsets, UnsignedLongField(), value)
+        data.setMultiValues(TiffBaselineTag.StripOffsets, UnsignedLongField, value)
     }
 
     /**
@@ -193,7 +193,7 @@ class FileDirectory(
      * @param value samples per pixel
      */
     fun setSamplesPerPixel(value: Int) {
-        return data.setSingleValue(TiffBasicTag.SamplesPerPixel, UnsignedShortField(), value)
+        return data.setSingleValue(TiffBaselineTag.SamplesPerPixel, UnsignedShortField, value)
     }
 
     /**
@@ -211,7 +211,7 @@ class FileDirectory(
      * @param value rows per strip
      */
     fun setRowsPerStrip(value: Int) {
-        return data.setSingleValue(TiffBasicTag.RowsPerStrip, UnsignedShortField(), value)
+        return data.setSingleValue(TiffBaselineTag.RowsPerStrip, UnsignedShortField, value)
     }
 
     /**
@@ -220,7 +220,7 @@ class FileDirectory(
      * @param value strip byte counts
      */
     fun setStripByteCounts(value: List<Int>) {
-        data.setMultiValues(TiffBasicTag.StripByteCounts, UnsignedShortField(), value)
+        data.setMultiValues(TiffBaselineTag.StripByteCounts, UnsignedShortField, value)
     }
 
     /**
@@ -229,7 +229,7 @@ class FileDirectory(
      * @param value strip byte counts
      */
     fun setStripByteCountsAsLongs(value: List<Long>) {
-        data.setMultiValues(TiffBasicTag.StripByteCounts, UnsignedLongField(), value)
+        data.setMultiValues(TiffBaselineTag.StripByteCounts, UnsignedLongField, value)
     }
 
     /**
@@ -238,7 +238,7 @@ class FileDirectory(
      * @param value strip byte count
      */
     fun setStripByteCounts(value: Int) {
-        data.setSingleValue(TiffBasicTag.StripByteCounts, UnsignedShortField(), value)
+        data.setSingleValue(TiffBaselineTag.StripByteCounts, UnsignedShortField, value)
     }
 
     /**
@@ -247,7 +247,7 @@ class FileDirectory(
      * @param value strip byte count
      */
     fun setStripByteCounts(value: Long) {
-        data.setSingleValue(TiffBasicTag.StripByteCounts, UnsignedLongField(), value)
+        data.setSingleValue(TiffBaselineTag.StripByteCounts, UnsignedLongField, value)
     }
 
     var xResolution: UnsignedRational?
@@ -256,14 +256,14 @@ class FileDirectory(
          *
          * @return x resolution
          */
-        get() = data.getSingleValue<UnsignedRational>(TiffBasicTag.XResolution)
+        get() = data.getSingleValue<UnsignedRational>(TiffBaselineTag.XResolution)
         /**
          * Set the x resolution
          *
          * @param value x resolution
          */
         set(value) {
-            data.setRationalEntryValue(TiffBasicTag.XResolution, value)
+            data.setRationalEntryValue(TiffBaselineTag.XResolution, value)
         }
 
     var yResolution: UnsignedRational?
@@ -272,14 +272,14 @@ class FileDirectory(
          *
          * @return y resolution
          */
-        get() = data.getSingleValue<UnsignedRational>(TiffBasicTag.YResolution)
+        get() = data.getSingleValue<UnsignedRational>(TiffBaselineTag.YResolution)
         /**
          * Set the y resolution
          *
          * @param value y resolution
          */
         set(value) {
-            data.setRationalEntryValue(TiffBasicTag.YResolution, value)
+            data.setRationalEntryValue(TiffBaselineTag.YResolution, value)
         }
 
     var planarConfiguration: PlanarConfiguration
@@ -295,7 +295,7 @@ class FileDirectory(
          * @param value planar configuration
          */
         set(value) {
-            data.setSingleValue(TiffBasicTag.PlanarConfiguration, UnsignedShortField(), value.id)
+            data.setSingleValue(TiffBaselineTag.PlanarConfiguration, UnsignedShortField, value.id)
         }
 
     var resolutionUnit: ResolutionUnit?
@@ -305,7 +305,7 @@ class FileDirectory(
          * @return resolution unit
          */
         get() {
-            val id = data.getSingleValue<Int>(TiffBasicTag.ResolutionUnit)
+            val id = data.getSingleValue<Int>(TiffBaselineTag.ResolutionUnit)
             if (id != null) {
                 return ResolutionUnit.findById(id)
             }
@@ -317,7 +317,7 @@ class FileDirectory(
          * @param value resolution unit
          */
         set(value) {
-            data.setSingleValue(TiffBasicTag.ResolutionUnit, UnsignedShortField(), value!!.id)
+            data.setSingleValue(TiffBaselineTag.ResolutionUnit, UnsignedShortField, value!!.id)
         }
 
     var tileOffsets: List<Long>?
@@ -333,7 +333,7 @@ class FileDirectory(
          * @param value tile offsets
          */
         set(value) {
-            data.setMultiValues(TiffExtendedTag.TileOffsets, UnsignedLongField(), value!!)
+            data.setMultiValues(TiffExtendedTag.TileOffsets, UnsignedLongField, value!!)
         }
 
     /**
@@ -342,7 +342,7 @@ class FileDirectory(
      * @param value tile offset
      */
     fun setTileOffsets(value: Long) {
-        data.setSingleValue(TiffExtendedTag.TileOffsets, UnsignedLongField(), value)
+        data.setSingleValue(TiffExtendedTag.TileOffsets, UnsignedLongField, value)
     }
 
     var tileByteCounts: List<Int>?
@@ -358,7 +358,7 @@ class FileDirectory(
          * @param values tile byte counts
          */
         set(values) {
-            data.setMultiValues(TiffExtendedTag.TileByteCounts, UnsignedShortField(), values!!)
+            data.setMultiValues(TiffExtendedTag.TileByteCounts, UnsignedShortField, values!!)
         }
 
     /**
@@ -367,7 +367,7 @@ class FileDirectory(
      * @param values tile byte counts
      */
     fun setTileByteCountsAsLongs(values: List<Long>) {
-        data.setMultiValues(TiffExtendedTag.TileByteCounts, UnsignedLongField(), values)
+        data.setMultiValues(TiffExtendedTag.TileByteCounts, UnsignedLongField, values)
     }
 
     /**
@@ -376,7 +376,7 @@ class FileDirectory(
      * @param value tile byte count
      */
     fun setTileByteCounts(value: Int) {
-        data.setSingleValue(TiffExtendedTag.TileByteCounts, UnsignedShortField(), value)
+        data.setSingleValue(TiffExtendedTag.TileByteCounts, UnsignedShortField, value)
     }
 
     /**
@@ -385,7 +385,7 @@ class FileDirectory(
      * @param value tile byte count
      */
     fun setTileByteCounts(value: Long) {
-        data.setSingleValue(TiffExtendedTag.TileByteCounts, UnsignedLongField(), value)
+        data.setSingleValue(TiffExtendedTag.TileByteCounts, UnsignedLongField, value)
     }
 
     var sampleFormat: List<SampleFormat>?
@@ -403,7 +403,7 @@ class FileDirectory(
         set(value) {
             data.setMultiValues(
                 TiffExtendedTag.SampleFormat,
-                UnsignedShortField(),
+                UnsignedShortField,
                 value!!.stream().map(SampleFormat::id).toList()
             )
         }
@@ -627,25 +627,25 @@ class FileDirectory(
         }
 
         private fun createStats(data: FileDirectoryDataHolder): DirectoryStats {
-            val rowsPerStrip = data.getSingleValue<Number>(TiffBasicTag.RowsPerStrip)?.toInt()
+            val rowsPerStrip = data.getSingleValue<Number>(TiffBaselineTag.RowsPerStrip)?.toInt()
             val isTiled = rowsPerStrip == null
-            val width = data.getSingleValue<Number>(TiffBasicTag.ImageWidth)?.toInt()
-            val height = data.getSingleValue<Number>(TiffBasicTag.ImageLength)?.toInt()
+            val width = data.getSingleValue<Number>(TiffBaselineTag.ImageWidth)?.toInt()
+            val height = data.getSingleValue<Number>(TiffBaselineTag.ImageLength)?.toInt()
 
             return DirectoryStats(
                 width,
                 height,
                 if (isTiled) data.getSingleValue<Int>(TiffExtendedTag.TileWidth)?.toInt() else width,
                 if (isTiled) data.getSingleValue<Int>(TiffExtendedTag.TileLength)?.toInt() else rowsPerStrip,
-                data.getSingleValue(TiffBasicTag.SamplesPerPixel, 1),
-                data.getMultiValues<Number>(TiffBasicTag.BitsPerSample)?.map { it.toInt() },
+                data.getSingleValue(TiffBaselineTag.SamplesPerPixel, 1),
+                data.getMultiValues<Number>(TiffBaselineTag.BitsPerSample)?.map { it.toInt() },
                 data.getMultiValues<Int>(TiffExtendedTag.SampleFormat)?.map { SampleFormat.findById(it) },
-                PlanarConfiguration.findById(data.getSingleValue<Int>(TiffBasicTag.PlanarConfiguration)),
+                PlanarConfiguration.findById(data.getSingleValue<Int>(TiffBaselineTag.PlanarConfiguration)),
                 data.getMultiValues(TiffExtendedTag.TileOffsets),
                 data.getMultiValues<Number>(TiffExtendedTag.TileByteCounts)?.map { it.toInt() },
-                data.getMultiValues<Number>(TiffBasicTag.StripOffsets)?.map { it.toLong() },
-                data.getMultiValues<Number>(TiffBasicTag.StripByteCounts)?.map { it.toInt() },
-                data.getSingleValue<Number>(TiffBasicTag.Compression)?.toInt(),
+                data.getMultiValues<Number>(TiffBaselineTag.StripOffsets)?.map { it.toLong() },
+                data.getMultiValues<Number>(TiffBaselineTag.StripByteCounts)?.map { it.toInt() },
+                data.getSingleValue<Number>(TiffBaselineTag.Compression)?.toInt(),
                 DifferencingPredictor.findById(data.getSingleValue<Int>(TiffExtendedTag.Predictor))
             )
         }

@@ -6,8 +6,7 @@ package mil.nga.tiff.field.tag
  * @param id      tag id
  * @param isArray true if an array type
  */
-enum class TiffExtendedTag(override val id: Int, override val isArray: Boolean
-) : FieldTagType {
+enum class TiffExtendedTag(override val id: Int, override val isArray: Boolean) : FieldTagType {
     BadFaxLines(326, false),
     CleanFaxData(327, false),
     ClipPath(343, false),

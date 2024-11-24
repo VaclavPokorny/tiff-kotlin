@@ -11,7 +11,7 @@ import java.io.IOException
  * the denominator
  */
 @FieldType(id = 5, bytesPerSample = 8)
-class UnsignedRationalField : RationalField<UnsignedRational>() {
+object UnsignedRationalField : RationalField<UnsignedRational>() {
     override fun readValue(reader: ByteReader): UnsignedRational {
         return UnsignedRational(
             reader.readUnsignedInt(),

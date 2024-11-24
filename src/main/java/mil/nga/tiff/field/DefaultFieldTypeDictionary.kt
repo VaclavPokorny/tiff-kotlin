@@ -18,22 +18,22 @@ class DefaultFieldTypeDictionary : FieldTypeDictionary {
 
     companion object {
         private val NUMERIC_TYPES: List<NumericFieldType<*>> = listOf<NumericFieldType<*>>(
-            UnsignedByteField(),
-            UnsignedShortField(),
-            UnsignedLongField(),
-            SignedByteField(),
-            SignedShortField(),
-            SignedLongField(),
-            FloatField(),
-            DoubleField()
+            UnsignedByteField,
+            UnsignedShortField,
+            UnsignedLongField,
+            SignedByteField,
+            SignedShortField,
+            SignedLongField,
+            FloatField,
+            DoubleField
         )
 
         private val ALL_TYPES: List<GenericFieldType<*>> = Stream.concat(
             Stream.of(
-                UndefinedField(),
-                ASCIIField(),
-                UnsignedRationalField(),
-                SignedRationalField()
+                UndefinedField,
+                ASCIIField,
+                UnsignedRationalField,
+                SignedRationalField
             ),
             NUMERIC_TYPES.stream()
         ).toList()

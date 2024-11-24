@@ -11,7 +11,7 @@ interface FieldTagType {
                 GeoTiffTag.entries,
                 JpegTag.entries,
                 MetaTag.entries,
-                TiffBasicTag.entries,
+                TiffBaselineTag.entries,
                 TiffExtendedTag.entries
             ).flatten();
 

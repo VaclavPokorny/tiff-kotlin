@@ -13,7 +13,7 @@ import java.io.UnsupportedEncodingException
  * (binary zero)
  */
 @FieldType(id = 2, bytesPerSample = 1)
-class ASCIIField : GenericFieldType<String> {
+object ASCIIField : GenericFieldType<String> {
     override fun readDirectoryEntryValues(reader: ByteReader, typeCount: Long): List<String> {
         val values: MutableList<String?> = ArrayList()
 

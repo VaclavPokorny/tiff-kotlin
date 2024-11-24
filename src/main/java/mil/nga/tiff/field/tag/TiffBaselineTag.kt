@@ -6,7 +6,7 @@ package mil.nga.tiff.field.tag
  * @param id      tag id
  * @param isArray true if an array type
  */
-enum class TiffBasicTag(override val id: Int, override val isArray: Boolean) : FieldTagType {
+enum class TiffBaselineTag(override val id: Int, override val isArray: Boolean) : FieldTagType {
     Artist(315, false),
     BitsPerSample(258, true),
     CellLength(265, false),

@@ -11,7 +11,7 @@ import java.nio.ByteBuffer
  * Double precision (8-byte) IEEE format
  */
 @FieldType(id = 12, bytesPerSample = 8, sampleFormat = SampleFormat.FLOAT)
-class DoubleField : NumericFieldType<Double>() {
+object DoubleField : NumericFieldType<Double>() {
     override fun readValue(reader: ByteReader): Double {
         return reader.readDouble()
     }
